@@ -107,6 +107,12 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
   </div>
 </div>
 
+    <div class="panel" style="margin-top:16px; border-color: rgba(178,102,255,0.4); background: linear-gradient(180deg, rgba(178,102,255,0.05), var(--panel));">
+        <div class="pt" style="color:var(--purple); border-bottom-color:rgba(178,102,255,0.2);">⚡ VANTIX AI PROFIT ADVISOR <span>Groq Llama 3</span></div>
+        <div id="ai-advice" style="font-size:13px; line-height:1.6; color:var(--text);">
+            Loading AI strategy...
+        </div>
+    </div>
 <div class="screen" id="screen-competitors">
   <div class="screen-title">Competitors</div>
   <div class="screen-sub">Scrape and track rival Shopify stores</div>
@@ -243,6 +249,34 @@ async function fetchTerminal() {
         }).join('');
     } catch(e) { tbody.innerHTML = '<tr><td colspan="4">Backend asleep. Try again.</td></tr>'; }
 }
+
+async function fetchAIAdvice() {
+    const div = document.getElementById('ai-advice');
+    if(!div) return;
+    div.innerHTML = 'Analyzing margins and competitor prices...';
+    
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/ai/advisor');
+        const data = await res.json();
+        
+        if(data.status === "success") {
+            div.innerHTML = `
+                <div style="margin-bottom:8px; font-weight:700; color:var(--purple);">${data.product}</div>
+                <div style="font-size:11px; color:var(--dim); margin-bottom:12px; font-family:'JetBrains Mono';">
+                    Your Price: ${data.my_price} | Competitor: ${data.competitor_price}
+                </div>
+                <div style="background:rgba(255,255,255,0.05); padding:12px; border-left:3px solid var(--purple);">
+                    ${data.advice}
+                </div>
+            `;
+        } else {
+            div.innerHTML = `<span style="color:var(--red);">${data.detail || 'AI failed to respond'}</span>`;
+        }
+    } catch(e) {
+        div.innerHTML = 'Backend asleep. Try again.';
+    }
+}
 </script>
 </body>
 </html>
+
