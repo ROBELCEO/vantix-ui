@@ -171,9 +171,11 @@ async function fetchStoreMetrics() {
             const aovEl = document.getElementById('kpi-aov');
             
             if(revEl) revEl.innerText = '
+
  + m.total_revenue_30d.toLocaleString();
             if(ordEl) ordEl.innerText = m.order_count_30d;
             if(aovEl) aovEl.innerText = '
+
  + m.average_order_value.toFixed(2);
         }
     } catch(e) {
@@ -183,4 +185,5 @@ async function fetchStoreMetrics() {
 </script>
 </body>
 </html>
+
 
