@@ -3,108 +3,6 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Platform</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js">
-async function addCompetitor() {
-    const domainInput = document.getElementById('comp-domain').value;
-    const btn = document.getElementById('add-btn');
-    const status = document.getElementById('comp-status');
-    
-    if(!domainInput) return;
-    
-    btn.innerText = "Scraping... (this may take 10s)";
-    btn.disabled = true;
-    status.innerText = "";
-    
-    try {
-        const res = await fetch(`https://vantix-my5f.onrender.com/api/competitors/add?domain=${domainInput}`);
-        const data = await res.json();
-        
-        if(data.status === "success") {
-            status.style.color = "var(--green)";
-            status.innerText = data.message;
-            document.getElementById('comp-domain').value = "";
-            fetchCompetitors(); // Reload the list
-        } else {
-            status.style.color = "var(--red)";
-            status.innerText = data.detail || data.message;
-        }
-    } catch(e) {
-        status.style.color = "var(--red)";
-        status.innerText = "Error: Backend might be asleep. Try again.";
-    }
-    
-    btn.innerText = "Scrape Competitor →";
-    btn.disabled = false;
-}
-
-async function fetchCompetitors() {
-    const list = document.getElementById('comp-list');
-    try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/list');
-        const data = await res.json();
-        
-        if(!data.competitors || data.competitors.length === 0) {
-            list.innerHTML = "No competitors added yet.";
-            return;
-        }
-        
-        list.innerHTML = data.competitors.map(c => `
-            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border);">
-                <span style="font-weight:700;">${c.domain}</span>
-                <span class="tag tag-shopify">${c.product_count} Products Scraped</span>
-            </div>
-        `).join('');
-    } catch(e) {
-        list.innerHTML = "Failed to load list.";
-    }
-}
-
-async function fetchTerminal() {
-    const tbody = document.getElementById('terminal-body');
-    tbody.innerHTML = '<tr><td colspan="4">Loading comparison data...</td></tr>';
-    
-    try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison');
-        const data = await res.json();
-        
-        if(!data.comparisons || data.comparisons.length === 0) {
-             tbody.innerHTML = '<tr><td colspan="4">No comparisons found. Sync your products and competitors first.</td></tr>';
-             return;
-        }
-        
-        tbody.innerHTML = data.comparisons.map(c => {
-            let diffColor = "var(--text)";
-            let diffText = "Tied";
-            
-            if(c.price_diff > 0) {
-                diffColor = "var(--red)"; // You are more expensive
-                diffText = `+${c.price_diff.toFixed(2)}`;
-            } else if (c.price_diff < 0) {
-                diffColor = "var(--green)"; // You are cheaper
-                diffText = `-${Math.abs(c.price_diff).toFixed(2)}`;
-            }
-
-            if(c.comp_product === "No match found") {
-                return `<tr>
-                    <td>${c.my_product}</td>
-                    <td>${parseFloat(c.my_price).toFixed(2)}</td>
-                    <td style="color:var(--dim);">No Match</td>
-                    <td>—</td>
-                </tr>`;
-            }
-
-            return `<tr>
-                <td>${c.my_product}</td>
-                <td>${parseFloat(c.my_price).toFixed(2)}</td>
-                <td>${parseFloat(c.comp_price).toFixed(2)}</td>
-                <td style="color:${diffColor}; font-weight:bold;">${diffText}</td>
-            </tr>`;
-        }).join('');
-    } catch(e) {
-        tbody.innerHTML = '<tr><td colspan="4">Backend asleep. Try again.</td></tr>';
-    }
-}
-</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#000;--panel:#0A0A0A;--surface:#141414;--elev:#1E1E1E;--border:#262626;--text:#fff;--muted:#BDBDBD;--dim:#7A7A7A;--accent:#00E5FF;--green:#00FF88;--red:#FF2266;--amber:#FFAA00;--purple:#B266FF;}
@@ -158,12 +56,12 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
     <div class="tab active" data-tab="connect" onclick="switchTab(this)">Connect</div>
     <div class="tab" data-tab="mystore" onclick="switchTab(this)">My Store</div>
     <div class="tab" data-tab="inventory" onclick="switchTab(this)">Inventory</div>
-    <div class="tab" data-tab="overview" onclick="switchTab(this)">Overview</div>
     <div class="tab" data-tab="terminal" onclick="switchTab(this)">Terminal</div>
+    <div class="tab" data-tab="competitors" onclick="switchTab(this)">Competitors</div>
+    <div class="tab" data-tab="overview" onclick="switchTab(this)">Overview</div>
     <div class="tab" data-tab="categories" onclick="switchTab(this)">Categories</div>
     <div class="tab" data-tab="social" onclick="switchTab(this)">Social</div>
     <div class="tab" data-tab="alerts" onclick="switchTab(this)">Alerts</div>
-    <div class="tab" data-tab="competitors" onclick="switchTab(this)">Competitors</div>
     <div class="tab" data-tab="membership" onclick="switchTab(this)">Membership</div>
   </div>
 </div>
@@ -191,37 +89,27 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
   <div class="screen-title">Product Inventory</div>
   <div class="screen-sub">Auto-imported from Shopify</div>
   <div class="panel">
-    <table class="inv-table" id="inventory-table">
+    <table class="inv-table">
       <thead><tr><th>Product</th><th>Price</th><th>Cost</th><th>Status</th></tr></thead>
-      <tbody id="inventory-body">
-        <tr><td colspan="4">Loading real data from Shopify...</td></tr>
-      </tbody>
+      <tbody id="inventory-body"><tr><td colspan="4">Loading...</td></tr></tbody>
     </table>
   </div>
 </div>
 
-<!-- Placeholder screens for the other tabs -->
-<div class="screen" id="screen-overview"><div class="screen-title">Overview</div><p class="screen-sub">Coming soon in Step 3</p></div>
 <div class="screen" id="screen-terminal">
   <div class="screen-title">Competitor Terminal</div>
   <div class="screen-sub">Real-time price comparison</div>
-  
   <div class="panel">
     <table class="inv-table">
       <thead><tr><th>Your Product</th><th>Your Price</th><th>Competitor Price</th><th>Difference</th></tr></thead>
-      <tbody id="terminal-body">
-        <tr><td colspan="4">Loading comparison data...</td></tr>
-      </tbody>
+      <tbody id="terminal-body"><tr><td colspan="4">Loading comparison data...</td></tr></tbody>
     </table>
   </div>
-</div><p class="screen-sub">Coming soon in Step 4</p></div>
-<div class="screen" id="screen-categories"><div class="screen-title">Categories</div><p class="screen-sub">Coming soon in Step 4</p></div>
-<div class="screen" id="screen-social"><div class="screen-title">Social</div><p class="screen-sub">Coming soon in Step 5</p></div>
-<div class="screen" id="screen-alerts"><div class="screen-title">Alerts</div><p class="screen-sub">Coming soon in Step 6</p></div>
+</div>
+
 <div class="screen" id="screen-competitors">
   <div class="screen-title">Competitors</div>
   <div class="screen-sub">Scrape and track rival Shopify stores</div>
-  
   <div class="panel">
     <div class="pt">Add New Competitor <span>Public Shopify Store</span></div>
     <div style="display:flex; gap:10px; flex-direction:column;">
@@ -230,33 +118,31 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
     </div>
     <div id="comp-status" style="margin-top:10px; font-size:12px; color:var(--dim);"></div>
   </div>
-
   <div class="panel">
     <div class="pt">Tracked Competitors <span>Live Data</span></div>
     <div id="comp-list" style="font-size:12px;">Loading...</div>
   </div>
-</div><p class="screen-sub">Coming soon in Step 2</p></div>
-<div class="screen" id="screen-membership"><div class="screen-title">Membership</div><p class="screen-sub">Coming soon in Step 7</p></div>
+</div>
+
+<div class="screen" id="screen-overview"><div class="screen-title">Overview</div></div>
+<div class="screen" id="screen-categories"><div class="screen-title">Categories</div></div>
+<div class="screen" id="screen-social"><div class="screen-title">Social</div></div>
+<div class="screen" id="screen-alerts"><div class="screen-title">Alerts</div></div>
+<div class="screen" id="screen-membership"><div class="screen-title">Membership</div></div>
 
 <script>
 function switchTab(el) {
-    // 1. Remove active class from all tabs and screens
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     
-    // 2. Add active class to clicked tab
     el.classList.add('active');
-    
-    // 3. Show the corresponding screen
     const targetId = 'screen-' + el.getAttribute('data-tab');
-    const targetScreen = document.getElementById(targetId);
-    if (targetScreen) {
-        targetScreen.classList.add('active');
-    }
+    document.getElementById(targetId).classList.add('active');
     
-    // 4. Fetch data if needed
     if (el.getAttribute('data-tab') === 'inventory') fetchProducts();
     if (el.getAttribute('data-tab') === 'mystore') fetchStoreMetrics();
+    if (el.getAttribute('data-tab') === 'competitors') fetchCompetitors();
+    if (el.getAttribute('data-tab') === 'terminal') fetchTerminal();
 }
 
 async function fetchProducts() {
@@ -271,17 +157,14 @@ async function fetchProducts() {
         }
         tbody.innerHTML = data.products.map(p => `
             <tr>
-                <td style="display:flex; align-items:center;">
-                    <img src="${p.image_url}" class="inv-img"> 
-                    <span style="font-weight:600;">${p.title}</span>
-                </td>
+                <td style="display:flex; align-items:center;"><img src="${p.image_url}" class="inv-img"> <span style="font-weight:600;">${p.title}</span></td>
                 <td style="font-family:'JetBrains Mono';">$${parseFloat(p.price).toFixed(2)}</td>
                 <td style="font-family:'JetBrains Mono';">$${parseFloat(p.cost).toFixed(2)}</td>
                 <td><span class="tag tag-shopify">SYNCED</span></td>
             </tr>
         `).join('');
     } catch(e) {
-        tbody.innerHTML = '<tr><td colspan="4">Backend is waking up. Wait 30s and try again.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4">Backend asleep. Try again.</td></tr>';
     }
 }
 
@@ -296,42 +179,30 @@ async function fetchStoreMetrics() {
             document.getElementById('kpi-aov').innerText = '$' + m.average_order_value.toFixed(2);
             document.getElementById('kpi-products').innerText = m.total_products;
         }
-    } catch(e) {
-        console.error("Failed to load metrics", e);
-    }
+    } catch(e) {}
 }
 
 async function addCompetitor() {
     const domainInput = document.getElementById('comp-domain').value;
     const btn = document.getElementById('add-btn');
     const status = document.getElementById('comp-status');
-    
     if(!domainInput) return;
     
-    btn.innerText = "Scraping... (this may take 10s)";
-    btn.disabled = true;
-    status.innerText = "";
-    
+    btn.innerText = "Scraping... (10s)"; btn.disabled = true; status.innerText = "";
     try {
         const res = await fetch(`https://vantix-my5f.onrender.com/api/competitors/add?domain=${domainInput}`);
         const data = await res.json();
-        
         if(data.status === "success") {
-            status.style.color = "var(--green)";
-            status.innerText = data.message;
+            status.style.color = "var(--green)"; status.innerText = data.message;
             document.getElementById('comp-domain').value = "";
-            fetchCompetitors(); // Reload the list
+            fetchCompetitors();
         } else {
-            status.style.color = "var(--red)";
-            status.innerText = data.detail || data.message;
+            status.style.color = "var(--red)"; status.innerText = data.detail || data.message;
         }
     } catch(e) {
-        status.style.color = "var(--red)";
-        status.innerText = "Error: Backend might be asleep. Try again.";
+        status.style.color = "var(--red)"; status.innerText = "Error: Backend asleep.";
     }
-    
-    btn.innerText = "Scrape Competitor →";
-    btn.disabled = false;
+    btn.innerText = "Scrape Competitor →"; btn.disabled = false;
 }
 
 async function fetchCompetitors() {
@@ -339,70 +210,39 @@ async function fetchCompetitors() {
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/list');
         const data = await res.json();
-        
         if(!data.competitors || data.competitors.length === 0) {
-            list.innerHTML = "No competitors added yet.";
-            return;
+            list.innerHTML = "No competitors added yet."; return;
         }
-        
         list.innerHTML = data.competitors.map(c => `
             <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border);">
                 <span style="font-weight:700;">${c.domain}</span>
-                <span class="tag tag-shopify">${c.product_count} Products Scraped</span>
+                <span class="tag tag-shopify">${c.product_count} Scraped</span>
             </div>
         `).join('');
-    } catch(e) {
-        list.innerHTML = "Failed to load list.";
-    }
+    } catch(e) { list.innerHTML = "Failed to load list."; }
 }
 
 async function fetchTerminal() {
     const tbody = document.getElementById('terminal-body');
     tbody.innerHTML = '<tr><td colspan="4">Loading comparison data...</td></tr>';
-    
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison');
         const data = await res.json();
-        
         if(!data.comparisons || data.comparisons.length === 0) {
-             tbody.innerHTML = '<tr><td colspan="4">No comparisons found. Sync your products and competitors first.</td></tr>';
-             return;
+             tbody.innerHTML = '<tr><td colspan="4">No comparisons found.</td></tr>'; return;
         }
-        
         tbody.innerHTML = data.comparisons.map(c => {
-            let diffColor = "var(--text)";
-            let diffText = "Tied";
-            
-            if(c.price_diff > 0) {
-                diffColor = "var(--red)"; // You are more expensive
-                diffText = `+${c.price_diff.toFixed(2)}`;
-            } else if (c.price_diff < 0) {
-                diffColor = "var(--green)"; // You are cheaper
-                diffText = `-${Math.abs(c.price_diff).toFixed(2)}`;
-            }
+            let diffColor = "var(--text)", diffText = "Tied";
+            if(c.price_diff > 0) { diffColor = "var(--red)"; diffText = `+$${c.price_diff.toFixed(2)}`; }
+            else if (c.price_diff < 0) { diffColor = "var(--green)"; diffText = `-$${Math.abs(c.price_diff).toFixed(2)}`; }
 
             if(c.comp_product === "No match found") {
-                return `<tr>
-                    <td>${c.my_product}</td>
-                    <td>${parseFloat(c.my_price).toFixed(2)}</td>
-                    <td style="color:var(--dim);">No Match</td>
-                    <td>—</td>
-                </tr>`;
+                return `<tr><td>${c.my_product}</td><td>$${parseFloat(c.my_price).toFixed(2)}</td><td style="color:var(--dim);">No Match</td><td>—</td></tr>`;
             }
-
-            return `<tr>
-                <td>${c.my_product}</td>
-                <td>${parseFloat(c.my_price).toFixed(2)}</td>
-                <td>${parseFloat(c.comp_price).toFixed(2)}</td>
-                <td style="color:${diffColor}; font-weight:bold;">${diffText}</td>
-            </tr>`;
+            return `<tr><td>${c.my_product}</td><td>$${parseFloat(c.my_price).toFixed(2)}</td><td>$${parseFloat(c.comp_price).toFixed(2)}</td><td style="color:${diffColor}; font-weight:bold;">${diffText}</td></tr>`;
         }).join('');
-    } catch(e) {
-        tbody.innerHTML = '<tr><td colspan="4">Backend asleep. Try again.</td></tr>';
-    }
+    } catch(e) { tbody.innerHTML = '<tr><td colspan="4">Backend asleep. Try again.</td></tr>'; }
 }
 </script>
 </body>
 </html>
-
-
