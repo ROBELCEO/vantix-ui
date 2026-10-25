@@ -1,4 +1,6 @@
-﻿async function loadInventory() {
+﻿let inventoryData = []; // Store data globally
+
+async function loadInventory() {
     const tbody = document.getElementById('inventory-body');
     
     try {
@@ -6,76 +8,97 @@
         const data = await res.json();
         
         if(!data.products || data.products.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" class="text-tertiary" style="text-align: center; padding: 40px;">No products found in your Shopify store.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" class="text-tertiary" style="text-align: center; padding: 40px;">No products found.</td></tr>';
             return;
         }
 
-        // Render the table rows
-        tbody.innerHTML = data.products.map((p, index) => {
-            // Calculate Margin
+        inventoryData = data.products;
+
+        let html = '';
+        data.products.forEach((p, index) => {
             const price = parseFloat(p.price) || 0;
             const cost = parseFloat(p.cost) || 0;
-            let margin = 0;
-            if (price > 0) margin = ((price - cost) / price) * 100;
-
-            // Mock Data for UI Display (since Shopify API limits some of this)
-            // In production, these would come from the database (variants, inventory, reviews)
-            const stock = p.stock !== undefined ? p.stock : Math.floor(Math.random() * 50) + 3; // Mock stock
-            const variants = p.variants || "3 Variants"; // Mock variants
-            const rating = (Math.random() * (5 - 4) + 4).toFixed(1); // Mock 4.0 - 5.0 rating
-            const reviews = Math.floor(Math.random() * 2000) + 100; // Mock review count
+            let margin = price > 0 ? ((price - cost) / price) * 100 : 0;
+            const stock = p.stock !== undefined ? p.stock : 0;
             
-            // Determine Velocity based on Margin (Mock logic)
-            let velocityPct = 55;
-            let velocityColor = "var(--amber)";
-            let velocityText = "STEADY";
-            if(margin > 40) { velocityPct = 85; velocityColor = "var(--green)"; velocityText = "SELLING FAST"; }
-            if(margin > 50) { velocityPct = 96; velocityColor = "var(--green)"; velocityText = "VIRAL"; }
-
-            // Determine Status
             let statusBadge = '<span class="badge badge-green">HEALTHY</span>';
-            if(index === 0) statusBadge = '<span class="badge badge-amber">COMPETITOR DROP</span>'; // Demo badge
+            if(stock === 0) statusBadge = '<span class="badge badge-red">OUT OF STOCK</span>';
+            else if(stock < 10) statusBadge = '<span class="badge badge-amber">LOW STOCK</span>';
 
-            // Generate Stars
-            let stars = '';
-            for(let i=1; i<=5; i++) {
-                stars += i <= Math.round(rating) ? '★' : '☆';
-            }
+            // Check if it has variants to determine if we show the expander icon
+            const hasVariants = p.variants_data && p.variants_data.length > 0;
+            const cursorStyle = hasVariants ? 'cursor: pointer;' : '';
+            const expandIcon = hasVariants ? '<span style="color:var(--accent); margin-right:8px; font-size:10px;">▼</span>' : '';
 
-            return `
-                <tr>
+            // Main Row
+            html += `
+                <tr onclick="toggleVariants(${index})" style="${cursorStyle}">
                     <td>
                         <div class="product-cell">
+                            ${expandIcon}
                             <img src="${p.image_url || 'https://via.placeholder.com/40'}" class="product-img">
                             <div class="product-info">
                                 <span class="product-title">${p.title}</span>
-                                <span class="product-variants">${variants}</span>
+                                <span class="product-variants">${hasVariants ? p.variants_data.length + ' Variants' : '1 Variant'}</span>
                             </div>
                         </div>
                     </td>
-                    <td class="mono ${stock < 10 ? 'text-red' : ''}">${stock}</td>
+                    <td class="mono ${stock === 0 ? 'text-red' : (stock < 10 ? 'text-amber' : '')}">${stock}</td>
                     <td class="mono text-tertiary">$${cost.toFixed(2)}</td>
                     <td class="mono">$${price.toFixed(2)}</td>
                     <td class="mono text-green" style="font-weight:700;">${margin.toFixed(1)}%</td>
-                    <td>
-                        <div class="stars">${stars}</div>
-                        <div class="mono text-tertiary" style="font-size:9px;">(${reviews})</div>
-                    </td>
-                    <td>
-                        <div class="velocity-wrap">
-                            <div class="velocity-bar" style="width: ${velocityPct}%; background: ${velocityColor};"></div>
-                        </div>
-                        <div class="velocity-label" style="color: ${velocityColor};">${velocityText}</div>
-                    </td>
+                    <td><div class="stars">★★★★★</div></td>
+                    <td><div class="velocity-label text-green">SELLING FAST</div></td>
                     <td>${statusBadge}</td>
                 </tr>
             `;
-        }).join('');
+
+            // Hidden Variant Row
+            if (hasVariants) {
+                let variantHtml = `<div class="variant-container">`;
+                p.variants_data.forEach(v => {
+                    let locHtml = '';
+                    if (v.locations && v.locations.length > 0) {
+                        v.locations.forEach(l => {
+                            locHtml += `<span class="variant-loc">${l.location}: <b>${l.qty}</b></span>`;
+                        });
+                    }
+
+                    variantHtml += `
+                        <div class="variant-item">
+                            <div>
+                                <span style="font-weight:700; color:var(--text-primary);">${v.title}</span>
+                                ${locHtml}
+                            </div>
+                            <div style="text-align:right;">
+                                <div class="mono" style="font-size:12px;">$${v.price.toFixed(2)}</div>
+                                <div class="mono ${v.stock === 0 ? 'text-red' : 'text-green'}" style="font-size:10px; margin-top:2px;">${v.stock} in stock</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                variantHtml += `</div>`;
+
+                html += `
+                    <tr class="variant-row" id="variant-row-${index}">
+                        <td colspan="8">${variantHtml}</td>
+                    </tr>
+                `;
+            }
+        });
+
+        tbody.innerHTML = html;
 
     } catch(e) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-red" style="text-align: center; padding: 40px;">Failed to load inventory. Backend might be asleep.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-red" style="text-align: center; padding: 40px;">Failed to load inventory.</td></tr>';
     }
 }
 
-// Run on load
+function toggleVariants(index) {
+    const row = document.getElementById(`variant-row-${index}`);
+    if (row) {
+        row.classList.toggle('open');
+    }
+}
+
 loadInventory();
