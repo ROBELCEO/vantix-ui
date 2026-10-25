@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vantix — My Store</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
+<div class="drawer" id="mobile-drawer">
+    <div class="drawer-header">
+        <div class="brand"><div class="brand-text">VANTI<span>X</span></div></div>
+        <button onclick="toggleMenu()" style="background:none; border:none; color:var(--text); font-size:20px; cursor:pointer;">✕</button>
+    </div>
+    <a href="index.html" class="drawer-tab">Connect</a>
+    <a href="store.html" class="drawer-tab active">My Store</a>
+    <a href="competitors.html" class="drawer-tab">Competitors</a>
+    <a href="terminal.html" class="drawer-tab">Terminal</a>
+    <a href="alerts.html" class="drawer-tab">Alerts</a>
+    <a href="membership.html" class="drawer-tab">Membership</a>
+</div>
+<div class="header">
+  <a href="index.html" class="brand">
+    <div class="mark"><svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#262626" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg></div>
+    <div class="brand-text">VANTI<span>X</span></div>
+  </a>
+  <div class="tabs">
+    <a href="index.html" class="tab">Connect</a>
+    <a href="store.html" class="tab active">My Store</a>
+    <a href="competitors.html" class="tab">Competitors</a>
+    <a href="terminal.html" class="tab">Terminal</a>
+    <a href="alerts.html" class="tab">Alerts</a>
+    <a href="membership.html" class="tab">Membership</a>
+  </div>
+  <button id="mobile-btn" onclick="toggleMenu()" style="display:none; font-size:24px; color:var(--text); background:none; border:none; cursor:pointer;">☰</button>
+</div>
+<div class="screen">
+  <div class="screen-title">My Store</div>
+  <div class="screen-sub">Your real Shopify data — live</div>
+  <div class="store-banner">
+    <img id="store-avatar" src="https://ui-avatars.com/api/?name=Store&background=5E8E3E&color=fff&size=64" class="store-avatar">
+    <div style="flex:1;">
+      <div id="store-name" class="store-name">Loading...</div>
+      <div id="store-domain" class="store-domain">Loading...</div>
+    </div>
+    <div style="text-align:right; font-family:'JetBrains Mono'; font-size:10px; color:var(--dim);">
+      SYNCED <b style="color:var(--green);">Just now</b><br>
+      <span style="padding:2px 7px; background:rgba(0,255,136,0.12); color:var(--green); border:1px solid rgba(0,255,136,0.25); font-size:9px; font-weight:800; display:inline-block; margin-top:4px;">SHOPIFY API</span>
+    </div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-label">Revenue (30d)</div><div class="kpi-val" id="kpi-revenue">Loading...</div></div>
+    <div class="kpi" style="--accent:var(--purple);"><div class="kpi-label">Orders (30d)</div><div class="kpi-val" id="kpi-orders">Loading...</div></div>
+    <div class="kpi" style="--accent:var(--green);"><div class="kpi-label">Avg Order Value</div><div class="kpi-val" id="kpi-aov">Loading...</div></div>
+    <div class="kpi" style="--accent:var(--amber);"><div class="kpi-label">Abandoned Carts</div><div class="kpi-val" id="kpi-abandoned">Loading...</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="panel" style="display:flex; flex-direction:column;">
+      <div class="pt">Revenue — Last 30 Days <span>SHOPIFY ORDERS</span></div>
+      <div style="flex:1; min-height:250px; position:relative;"><canvas id="revenueChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="pt">Top Selling Products <span>30 DAYS</span></div>
+      <div id="top-products-list">Loading...</div>
+    </div>
+  </div>
+  <div class="grid-3">
+    <div class="panel">
+      <div class="pt">Abandoned Carts <span>RECOVERABLE</span></div>
+      <div style="text-align:center; padding:10px 0 16px; border-bottom:1px solid var(--border); margin-bottom:12px;">
+        <div id="abandoned-total" style="font-family:'JetBrains Mono'; font-size:28px; font-weight:800; color:var(--amber);">$0.00</div>
+        <div style="font-size:10px; color:var(--dim); margin-top:4px;">Total value</div>
+      </div>
+      <div id="carts-list">Loading...</div>
+    </div>
+    <div class="panel">
+      <div class="pt">Low Stock Alerts <span>RESTOCK NOW</span></div>
+      <div id="low-stock-list">Loading...</div>
+    </div>
+    <div class="panel">
+      <div class="pt">Customer Segments <span>SHOPIFY CUSTOMERS</span></div>
+      <div style="display:flex; align-items:center; gap:16px; margin-top:20px;">
+        <div style="width:110px; height:110px; position:relative;"><canvas id="customerChart"></canvas></div>
+        <div style="flex:1;">
+          <div style="display:flex; justify-content:space-between; padding:6px 0; font-size:11px; border-bottom:1px solid var(--border);"><span><span style="display:inline-block; width:8px; height:8px; background:var(--green); margin-right:6px;"></span>Returning</span><b style="font-family:'JetBrains Mono'">38%</b></div>
+          <div style="display:flex; justify-content:space-between; padding:6px 0; font-size:11px; border-bottom:1px solid var(--border);"><span><span style="display:inline-block; width:8px; height:8px; background:var(--accent); margin-right:6px;"></span>New</span><b style="font-family:'JetBrains Mono'">62%</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/app.js"></script>
+<script src="js/store.js"></script>
+</body>
+</html>
