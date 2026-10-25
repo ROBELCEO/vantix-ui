@@ -1,84 +1,177 @@
 ﻿let revChartInstance = null;
 let custChartInstance = null;
 
-async function loadStore() {
+async function loadStoreData() {
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/store/detailed?shop_domain=trendywear-dev.myshopify.com');
         const data = await res.json();
-        if(data.error) { return; }
+        
+        if(data.error) {
+            console.error("API Error:", data.error);
+            return;
+        }
 
-        const storeName = data.profile.name;
-        document.getElementById('store-name').innerText = storeName;
+        // 1. Update Store Banner
+        document.getElementById('store-name').innerText = data.profile.name;
         document.getElementById('store-domain').innerText = data.profile.domain;
-        document.getElementById('store-avatar').src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(storeName) + '&background=5E8E3E&color=fff&size=64';
+        document.getElementById('store-avatar').src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.profile.name) + '&background=00E5FF&color=000&size=64&bold=true';
 
-        document.getElementById('kpi-revenue').innerText = '$' + data.kpis.total_revenue.toLocaleString();
+        // 2. Update KPIs
+        document.getElementById('kpi-revenue').innerText = '$' + data.kpis.total_revenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
         document.getElementById('kpi-orders').innerText = data.kpis.order_count;
         document.getElementById('kpi-aov').innerText = '$' + data.kpis.aov.toFixed(2);
         document.getElementById('kpi-abandoned').innerText = '$' + data.kpis.abandoned_value.toFixed(2);
         document.getElementById('abandoned-total').innerText = '$' + data.kpis.abandoned_value.toFixed(2);
 
-        if(revChartInstance) revChartInstance.destroy();
-        const ctx = document.getElementById('revenueChart').getContext('2d');
-        let gradient = ctx.createLinearGradient(0, 0, 0, 250);
-        gradient.addColorStop(0, 'rgba(0, 229, 255, 0.2)');
-        gradient.addColorStop(1, 'rgba(0, 229, 255, 0)');
-        const labels = data.chart.labels.length ? data.chart.labels : ['Today'];
-        const chartData = data.chart.data.length ? data.chart.data : [0];
+        // 3. Render Revenue Chart
+        renderRevenueChart(data.chart);
 
-        revChartInstance = new Chart(ctx, {
-            type: 'line',
-            data: { labels: labels, datasets: [{ data: chartData, borderColor: '#00E5FF', backgroundColor: gradient, borderWidth: 2, tension: 0.4, fill: true, pointRadius: 3 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#262626' } }, x: { grid: { display: false } } } }
-        });
+        // 4. Render Top Products
+        renderTopProducts(data.top_products);
 
-        if(data.top_products.length) {
-            let html = '';
-            data.top_products.forEach((p, i) => {
-                html += '<div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--border);">';
-                html += '<div style="font-family:JetBrains Mono; font-size:11px; color:var(--dim); width:20px;">#' + (i+1) + '</div>';
-                html += '<img src="' + (p.image || 'https://via.placeholder.com/40') + '" style="width:40px; height:40px; object-fit:cover; border-radius:6px;">';
-                html += '<div style="flex:1;"><div style="font-size:12px; font-weight:700;">' + p.title + '</div><div style="font-size:10px; color:var(--dim); font-family:JetBrains Mono;">' + p.units + ' sold</div></div>';
-                html += '<div style="font-family:JetBrains Mono; font-size:13px; font-weight:800; color:var(--green);">$' + p.revenue.toFixed(2) + '</div></div>';
-            });
-            document.getElementById('top-products-list').innerHTML = html;
-        } else {
-            document.getElementById('top-products-list').innerHTML = '<div style="color:var(--dim); text-align:center; padding:20px 0;">No sales data yet.</div>';
-        }
+        // 5. Render Abandoned Carts
+        renderCarts(data.carts);
 
-        if(data.carts.length) {
-            let html = '';
-            data.carts.forEach(c => {
-                html += '<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-size:11px;">';
-                html += '<div><div style="font-weight:700;">' + c.item + '</div><div style="color:var(--dim); font-size:9px;">' + c.email + '</div></div>';
-                html += '<div style="font-family:JetBrains Mono; color:var(--amber); font-weight:800;">$' + c.value + '</div></div>';
-            });
-            document.getElementById('carts-list').innerHTML = html;
-        } else {
-            document.getElementById('carts-list').innerHTML = '<div style="color:var(--dim); text-align:center; padding:20px 0;">No abandoned carts.</div>';
-        }
+        // 6. Render Low Stock
+        renderLowStock(data.low_stock);
 
-        if(data.low_stock.length) {
-            let html = '';
-            data.low_stock.forEach(s => {
-                html += '<div style="display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); font-size:11px;">';
-                html += '<img src="' + (s.image || 'https://via.placeholder.com/30') + '" style="width:30px; height:30px; object-fit:cover; border-radius:4px;">';
-                html += '<div style="flex:1; font-weight:700;">' + s.title + '</div>';
-                html += '<div style="font-family:JetBrains Mono; color:var(--red); font-weight:800;">' + s.qty + ' left</div></div>';
-            });
-            document.getElementById('low-stock-list').innerHTML = html;
-        } else {
-            document.getElementById('low-stock-list').innerHTML = '<div style="color:var(--dim); text-align:center; padding:20px 0;">Stock is healthy.</div>';
-        }
+        // 7. Render Customer Donut
+        renderCustomerChart();
 
-        if(custChartInstance) custChartInstance.destroy();
-        const ctx2 = document.getElementById('customerChart').getContext('2d');
-        custChartInstance = new Chart(ctx2, {
-            type: 'doughnut',
-            data: { labels: ['Returning', 'New'], datasets: [{ data: [38, 62], backgroundColor: ['#00FF88', '#00E5FF'], borderWidth: 0, cutout: '75%' }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-
-    } catch(e) { console.error(e); }
+    } catch(e) {
+        console.error("Failed to connect to backend", e);
+    }
 }
-loadStore();
+
+function renderRevenueChart(chartData) {
+    if(revChartInstance) revChartInstance.destroy();
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    
+    let gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(0, 229, 255, 0.15)');
+    gradient.addColorStop(1, 'rgba(0, 229, 255, 0)');
+
+    const labels = chartData.labels.length ? chartData.labels : ['No Data'];
+    const data = chartData.data.length ? chartData.data : [0];
+
+    revChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Revenue',
+                data: data,
+                borderColor: '#00E5FF',
+                backgroundColor: gradient,
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true,
+                pointRadius: 3,
+                pointBackgroundColor: '#000',
+                pointBorderColor: '#00E5FF',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { 
+                    grid: { color: '#1F1F1F' }, 
+                    ticks: { color: '#8A8A94', font: { family: 'JetBrains Mono', size: 10 } } 
+                },
+                x: { 
+                    grid: { display: false }, 
+                    ticks: { color: '#8A8A94', font: { family: 'JetBrains Mono', size: 10 } } 
+                }
+            }
+        }
+    });
+}
+
+function renderTopProducts(products) {
+    const list = document.getElementById('top-products-list');
+    if(!products.length) {
+        list.innerHTML = '<div class="text-tertiary" style="padding: 20px 0; text-align: center;">No sales data yet.</div>';
+        return;
+    }
+    
+    let html = '';
+    products.forEach((p, i) => {
+        html += `<div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
+            <div class="mono text-tertiary" style="font-size: 11px; width: 15px;">#${i+1}</div>
+            <img src="${p.image || 'https://ui-avatars.com/api/?name=' + p.title + '&background=141414&color=fff'}" class="thumb">
+            <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.title}</div>
+                <div class="mono text-tertiary" style="font-size: 10px;">${p.units} sold</div>
+            </div>
+            <div class="mono text-green" style="font-size: 12px; font-weight: 700;">$${p.revenue.toFixed(2)}</div>
+        </div>`;
+    });
+    list.innerHTML = html;
+}
+
+function renderCarts(carts) {
+    const list = document.getElementById('carts-list');
+    if(!carts.length) {
+        list.innerHTML = '<div class="text-tertiary" style="padding: 10px 0; text-align: center; font-size: 11px;">No abandoned carts.</div>';
+        return;
+    }
+    
+    let html = '';
+    carts.forEach(c => {
+        html += `<div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 11px;">
+            <div style="min-width: 0;">
+                <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${c.item}</div>
+                <div class="text-tertiary" style="font-size: 9px;">${c.email}</div>
+            </div>
+            <div class="mono text-amber" style="font-weight: 700;">$${c.value}</div>
+        </div>`;
+    });
+    list.innerHTML = html;
+}
+
+function renderLowStock(stock) {
+    const list = document.getElementById('low-stock-list');
+    if(!stock.length) {
+        list.innerHTML = '<div class="text-tertiary" style="padding: 10px 0; text-align: center; font-size: 11px;">Stock is healthy.</div>';
+        return;
+    }
+    
+    let html = '';
+    stock.forEach(s => {
+        html += `<div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 11px;">
+            <img src="${s.image || 'https://ui-avatars.com/api/?name=' + s.title + '&background=141414&color=fff'}" class="thumb" style="width: 28px; height: 28px;">
+            <div style="flex: 1; min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.title}</div>
+            <div class="mono text-red" style="font-weight: 700;">${s.qty} left</div>
+        </div>`;
+    });
+    list.innerHTML = html;
+}
+
+function renderCustomerChart() {
+    if(custChartInstance) custChartInstance.destroy();
+    const ctx2 = document.getElementById('customerChart').getContext('2d');
+    
+    custChartInstance = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: ['Returning', 'New'],
+            datasets: [{
+                data: [38, 62],
+                backgroundColor: ['#00FF88', '#00E5FF'],
+                borderWidth: 0,
+                cutout: '75%'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }
+        }
+    });
+}
+
+// Run on load
+loadStoreData();

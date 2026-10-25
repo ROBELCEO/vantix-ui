@@ -1,17 +1,20 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Connect</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
+<!-- MOBILE DRAWER -->
 <div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
 <div class="drawer" id="mobile-drawer">
     <div class="drawer-header">
-        <div class="brand"><div class="brand-text">VANTI<span>X</span></div></div>
-        <button onclick="toggleMenu()" style="background:none; border:none; color:var(--text); font-size:20px; cursor:pointer;">✕</button>
+        <div class="brand"><div>VANTI<span>X</span></div></div>
+        <button class="drawer-close" onclick="toggleMenu()">✕</button>
     </div>
     <a href="index.html" class="drawer-tab active">Connect</a>
     <a href="store.html" class="drawer-tab">My Store</a>
@@ -20,52 +23,162 @@
     <a href="alerts.html" class="drawer-tab">Alerts</a>
     <a href="membership.html" class="drawer-tab">Membership</a>
 </div>
+
+<!-- HEADER -->
 <div class="header">
-  <a href="index.html" class="brand">
-    <div class="mark"><svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#262626" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg></div>
-    <div class="brand-text">VANTI<span>X</span></div>
-  </a>
-  <div class="tabs">
-    <a href="index.html" class="tab active">Connect</a>
-    <a href="store.html" class="tab">My Store</a>
-    <a href="competitors.html" class="tab">Competitors</a>
-    <a href="terminal.html" class="tab">Terminal</a>
-    <a href="alerts.html" class="tab">Alerts</a>
-    <a href="membership.html" class="tab">Membership</a>
-  </div>
-  <button id="mobile-btn" onclick="toggleMenu()" style="display:none; font-size:24px; color:var(--text); background:none; border:none; cursor:pointer;">☰</button>
+    <a href="index.html" class="brand">
+        <div class="mark">
+            <svg viewBox="0 0 32 32">
+                <rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/>
+                <polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/>
+                <rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/>
+            </svg>
+        </div>
+        <div>VANTI<span>X</span></div>
+    </a>
+    
+    <!-- DESKTOP NAV -->
+    <div class="tabs">
+        <a href="index.html" class="tab active">Connect</a>
+        <a href="store.html" class="tab">My Store</a>
+        <a href="competitors.html" class="tab">Competitors</a>
+        <a href="terminal.html" class="tab">Terminal</a>
+        <a href="alerts.html" class="tab">Alerts</a>
+        <a href="membership.html" class="tab">Membership</a>
+    </div>
+
+    <!-- MOBILE MENU BUTTON -->
+    <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
 </div>
+
+<!-- MAIN CONTENT -->
 <div class="screen">
-  <div id="connect-unconnected" style="display:none; text-align:center; padding:60px 20px;">
-    <h1 style="font-size:32px; margin-bottom:10px;">Welcome to Vantix</h1>
-    <p style="color:var(--muted); margin-bottom:30px;">Your real-time Shopify intelligence dashboard.</p>
-    <a href="https://vantix-my5f.onrender.com/api/shopify/install?shop=trendywear-dev.myshopify.com" style="display:inline-block; background:#5E8E3E; color:#fff; padding:14px 28px; text-decoration:none; font-weight:800; font-size:14px;">Connect Shopify Store</a>
-  </div>
-  <div id="connect-connected" style="display:none; text-align:center; padding:60px 20px;">
-      <div style="width:80px; height:80px; background:rgba(0,255,136,0.1); border:2px solid var(--green); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; font-size:40px; color:var(--green);">✓</div>
-      <h1 style="font-size:24px; font-weight:900; margin-bottom:8px;">Store Connected</h1>
-      <p style="color:var(--muted); font-size:14px; margin-bottom:4px;">Successfully linked to:</p>
-      <p style="color:var(--accent); font-size:16px; font-family:'JetBrains Mono'; font-weight:800;" id="connected-domain">store.myshopify.com</p>
-  </div>
+    
+    <!-- STATE 1: UNCONNECTED -->
+    <div id="connect-unconnected" style="display: none;">
+        <div style="text-align: center; padding: 40px 20px; max-width: 800px; margin: 0 auto;">
+            <h1 style="font-size: 32px; font-weight: 900; letter-spacing: -1px; margin-bottom: 12px;">Welcome to Vantix</h1>
+            <p style="color: var(--text-secondary); font-size: 15px; margin-bottom: 40px;">Competitor intelligence, AI margin advice, and daily bot briefings — in under 60 seconds.</p>
+
+            <!-- STEPS -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px;">
+                <div class="panel" style="margin: 0; text-align: center; border-color: var(--accent);">
+                    <div style="width: 32px; height: 32px; background: var(--accent); color: var(--bg-base); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; margin: 0 auto 12px; font-family: var(--font-mono);">1</div>
+                    <div style="font-weight: 700; margin-bottom: 4px;">Connect Shopify</div>
+                    <div style="font-size: 11px; color: var(--text-tertiary);">Read-only access</div>
+                </div>
+                <div class="panel" style="margin: 0; text-align: center;">
+                    <div style="width: 32px; height: 32px; background: var(--bg-elevated); color: var(--text-tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; margin: 0 auto 12px; font-family: var(--font-mono);">2</div>
+                    <div style="font-weight: 700; margin-bottom: 4px;">Add Competitors</div>
+                    <div style="font-size: 11px; color: var(--text-tertiary);">Up to 10 stores</div>
+                </div>
+                <div class="panel" style="margin: 0; text-align: center;">
+                    <div style="width: 32px; height: 32px; background: var(--bg-elevated); color: var(--text-tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; margin: 0 auto 12px; font-family: var(--font-mono);">3</div>
+                    <div style="font-weight: 700; margin-bottom: 4px;">Set Margins</div>
+                    <div style="font-size: 11px; color: var(--text-tertiary);">AI uses your cost</div>
+                </div>
+            </div>
+
+            <a href="https://vantix-my5f.onrender.com/api/shopify/install?shop=trendywear-dev.myshopify.com" class="btn btn-primary" style="padding: 14px 32px; font-size: 14px;">
+                Connect Shopify Store
+            </a>
+
+            <div style="display: flex; justify-content: center; gap: 24px; margin-top: 20px; font-size: 11px; color: var(--text-tertiary);">
+                <span>🔒 Read-only access</span>
+                <span>✅ SOC 2 compliant</span>
+                <span>⚡ Setup in 60 seconds</span>
+            </div>
+        </div>
+
+        <!-- BOT INTEGRATIONS -->
+        <div style="max-width: 800px; margin: 40px auto 0;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="font-size: 18px; font-weight: 800;">Your bot, your alerts</h2>
+                <p style="font-size: 12px; color: var(--text-tertiary);">Choose which platform receives your daily intelligence</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <!-- Telegram -->
+                <div class="panel" style="margin: 0; border-top: 3px solid #58a6ff; position: relative;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                        <div style="width: 44px; height: 44px; background: rgba(88,166,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 20px; border-radius: var(--r-card);">✈️</div>
+                        <div>
+                            <div style="font-weight: 800; font-size: 14px;">Telegram Bot</div>
+                            <div style="font-size: 10px; color: var(--text-tertiary); font-family: var(--font-mono);">@VANTIXSHOPIFYV1BOT</div>
+                        </div>
+                        <span class="badge badge-green" style="margin-left: auto;">LIVE</span>
+                    </div>
+                    <a href="https://t.me/VANTIXSHOPIFYV1BOT" target="_blank" class="btn btn-secondary" style="width: 100%; border-color: #58a6ff; color: #58a6ff;">Open Bot in Telegram →</a>
+                </div>
+                
+                <!-- WhatsApp -->
+                <div class="panel" style="margin: 0; border-top: 3px solid #25d366; position: relative;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                        <div style="width: 44px; height: 44px; background: rgba(37,211,102,0.1); display: flex; align-items: center; justify-content: center; font-size: 20px; border-radius: var(--r-card);">💬</div>
+                        <div>
+                            <div style="font-weight: 800; font-size: 14px;">WhatsApp Bot</div>
+                            <div style="font-size: 10px; color: var(--text-tertiary); font-family: var(--font-mono);">Coming Soon</div>
+                        </div>
+                        <span class="badge badge-amber" style="margin-left: auto;">BETA</span>
+                    </div>
+                    <button class="btn btn-secondary" style="width: 100%;" disabled>Coming Soon</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATE 2: CONNECTED -->
+    <div id="connect-connected" style="display: none; text-align: center; padding: 80px 20px;">
+        <div style="width: 80px; height: 80px; background: rgba(0,255,136,0.1); border: 2px solid var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 40px; color: var(--green);">✓</div>
+        <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 8px;">Store Connected</h1>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 4px;">Successfully linked to:</p>
+        <p style="color: var(--accent); font-size: 18px; font-family: var(--font-mono); font-weight: 700;" id="connected-domain">store.myshopify.com</p>
+        
+        <div style="margin-top: 40px;">
+            <a href="store.html" class="btn btn-primary" style="padding: 12px 32px; font-size: 14px;">Go to My Store Dashboard →</a>
+        </div>
+    </div>
+
 </div>
-<script src="js/app.js"></script>
+
 <script>
-if(window.innerWidth <= 800) document.getElementById('mobile-btn').style.display = 'block';
+// Mobile Menu Logic
+function toggleMenu() {
+    const drawer = document.getElementById('mobile-drawer');
+    const overlay = document.getElementById('drawer-overlay');
+    if(drawer.classList.contains('open')){
+        drawer.classList.remove('open');
+        overlay.style.display = 'none';
+    } else {
+        drawer.classList.add('open');
+        overlay.style.display = 'block';
+    }
+}
+
+// Connection Status Logic
 async function checkConnectionStatus() {
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/shopify/status');
         const data = await res.json();
+        
+        const unconnectedDiv = document.getElementById('connect-unconnected');
+        const connectedDiv = document.getElementById('connect-connected');
+        
         if(data.connected) {
-            document.getElementById('connect-unconnected').style.display = 'none';
-            document.getElementById('connect-connected').style.display = 'block';
+            unconnectedDiv.style.display = 'none';
+            connectedDiv.style.display = 'block';
             document.getElementById('connected-domain').innerText = data.domain;
         } else {
-            document.getElementById('connect-unconnected').style.display = 'block';
+            unconnectedDiv.style.display = 'block';
+            connectedDiv.style.display = 'none';
         }
     } catch(e) {
+        // Fallback if backend is asleep
         document.getElementById('connect-unconnected').style.display = 'block';
     }
 }
+
+// Run on load
 checkConnectionStatus();
 </script>
 </body>
