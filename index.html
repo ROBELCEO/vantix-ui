@@ -58,11 +58,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
     <div class="tab" data-tab="inventory" onclick="switchTab(this)">Inventory</div>
     <div class="tab" data-tab="terminal" onclick="switchTab(this)">Terminal</div>
     <div class="tab" data-tab="competitors" onclick="switchTab(this)">Competitors</div>
-    <div class="tab" data-tab="overview" onclick="switchTab(this)">Overview</div>
-    <div class="tab" data-tab="categories" onclick="switchTab(this)">Categories</div>
-    <div class="tab" data-tab="social" onclick="switchTab(this)">Social</div>
-    <div class="tab" data-tab="alerts" onclick="switchTab(this)">Alerts</div>
-    <div class="tab" data-tab="membership" onclick="switchTab(this)">Membership</div>
   </div>
 </div>
 
@@ -99,20 +94,22 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 <div class="screen" id="screen-terminal">
   <div class="screen-title">Competitor Terminal</div>
   <div class="screen-sub">Real-time price comparison</div>
+  
   <div class="panel">
     <table class="inv-table">
       <thead><tr><th>Your Product</th><th>Your Price</th><th>Competitor Price</th><th>Difference</th></tr></thead>
       <tbody id="terminal-body"><tr><td colspan="4">Loading comparison data...</td></tr></tbody>
     </table>
   </div>
+
+  <div class="panel" style="border-color: rgba(178,102,255,0.4); background: linear-gradient(180deg, rgba(178,102,255,0.05), var(--panel));">
+      <div class="pt" style="color:var(--purple); border-bottom-color:rgba(178,102,255,0.2);">⚡ VANTIX AI PROFIT ADVISOR <span>Groq AI</span></div>
+      <div id="ai-advice" style="font-size:13px; line-height:1.6; color:var(--text);">
+          Loading AI strategy...
+      </div>
+  </div>
 </div>
 
-    <div class="panel" style="margin-top:16px; border-color: rgba(178,102,255,0.4); background: linear-gradient(180deg, rgba(178,102,255,0.05), var(--panel));">
-        <div class="pt" style="color:var(--purple); border-bottom-color:rgba(178,102,255,0.2);">⚡ VANTIX AI PROFIT ADVISOR <span>Groq Llama 3</span></div>
-        <div id="ai-advice" style="font-size:13px; line-height:1.6; color:var(--text);">
-            Loading AI strategy...
-        </div>
-    </div>
 <div class="screen" id="screen-competitors">
   <div class="screen-title">Competitors</div>
   <div class="screen-sub">Scrape and track rival Shopify stores</div>
@@ -130,17 +127,10 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
   </div>
 </div>
 
-<div class="screen" id="screen-overview"><div class="screen-title">Overview</div></div>
-<div class="screen" id="screen-categories"><div class="screen-title">Categories</div></div>
-<div class="screen" id="screen-social"><div class="screen-title">Social</div></div>
-<div class="screen" id="screen-alerts"><div class="screen-title">Alerts</div></div>
-<div class="screen" id="screen-membership"><div class="screen-title">Membership</div></div>
-
 <script>
 function switchTab(el) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    
     el.classList.add('active');
     const targetId = 'screen-' + el.getAttribute('data-tab');
     document.getElementById(targetId).classList.add('active');
@@ -148,7 +138,7 @@ function switchTab(el) {
     if (el.getAttribute('data-tab') === 'inventory') fetchProducts();
     if (el.getAttribute('data-tab') === 'mystore') fetchStoreMetrics();
     if (el.getAttribute('data-tab') === 'competitors') fetchCompetitors();
-    if (el.getAttribute('data-tab') === 'terminal') fetchTerminal();
+    if (el.getAttribute('data-tab') === 'terminal') { fetchTerminal(); fetchAIAdvice(); }
 }
 
 async function fetchProducts() {
@@ -157,10 +147,7 @@ async function fetchProducts() {
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/products');
         const data = await res.json();
-        if(!data.products || data.products.length === 0) {
-             tbody.innerHTML = '<tr><td colspan="4">No products found.</td></tr>';
-             return;
-        }
+        if(!data.products || data.products.length === 0) { tbody.innerHTML = '<tr><td colspan="4">No products found.</td></tr>'; return; }
         tbody.innerHTML = data.products.map(p => `
             <tr>
                 <td style="display:flex; align-items:center;"><img src="${p.image_url}" class="inv-img"> <span style="font-weight:600;">${p.title}</span></td>
@@ -169,9 +156,7 @@ async function fetchProducts() {
                 <td><span class="tag tag-shopify">SYNCED</span></td>
             </tr>
         `).join('');
-    } catch(e) {
-        tbody.innerHTML = '<tr><td colspan="4">Backend asleep. Try again.</td></tr>';
-    }
+    } catch(e) { tbody.innerHTML = '<tr><td colspan="4">Backend asleep. Try again.</td></tr>'; }
 }
 
 async function fetchStoreMetrics() {
@@ -193,7 +178,6 @@ async function addCompetitor() {
     const btn = document.getElementById('add-btn');
     const status = document.getElementById('comp-status');
     if(!domainInput) return;
-    
     btn.innerText = "Scraping... (10s)"; btn.disabled = true; status.innerText = "";
     try {
         const res = await fetch(`https://vantix-my5f.onrender.com/api/competitors/add?domain=${domainInput}`);
@@ -202,12 +186,8 @@ async function addCompetitor() {
             status.style.color = "var(--green)"; status.innerText = data.message;
             document.getElementById('comp-domain').value = "";
             fetchCompetitors();
-        } else {
-            status.style.color = "var(--red)"; status.innerText = data.detail || data.message;
-        }
-    } catch(e) {
-        status.style.color = "var(--red)"; status.innerText = "Error: Backend asleep.";
-    }
+        } else { status.style.color = "var(--red)"; status.innerText = data.detail || data.message; }
+    } catch(e) { status.style.color = "var(--red)"; status.innerText = "Error: Backend asleep."; }
     btn.innerText = "Scrape Competitor →"; btn.disabled = false;
 }
 
@@ -216,9 +196,7 @@ async function fetchCompetitors() {
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/list');
         const data = await res.json();
-        if(!data.competitors || data.competitors.length === 0) {
-            list.innerHTML = "No competitors added yet."; return;
-        }
+        if(!data.competitors || data.competitors.length === 0) { list.innerHTML = "No competitors added yet."; return; }
         list.innerHTML = data.competitors.map(c => `
             <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border);">
                 <span style="font-weight:700;">${c.domain}</span>
@@ -230,13 +208,11 @@ async function fetchCompetitors() {
 
 async function fetchTerminal() {
     const tbody = document.getElementById('terminal-body');
-    tbody.innerHTML = '<tr><td colspan="4">Loading comparison data...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison');
         const data = await res.json();
-        if(!data.comparisons || data.comparisons.length === 0) {
-             tbody.innerHTML = '<tr><td colspan="4">No comparisons found.</td></tr>'; return;
-        }
+        if(!data.comparisons || data.comparisons.length === 0) { tbody.innerHTML = '<tr><td colspan="4">No comparisons found.</td></tr>'; return; }
         tbody.innerHTML = data.comparisons.map(c => {
             let diffColor = "var(--text)", diffText = "Tied";
             if(c.price_diff > 0) { diffColor = "var(--red)"; diffText = `+$${c.price_diff.toFixed(2)}`; }
@@ -263,9 +239,9 @@ async function fetchAIAdvice() {
             div.innerHTML = `
                 <div style="margin-bottom:8px; font-weight:700; color:var(--purple);">${data.product}</div>
                 <div style="font-size:11px; color:var(--dim); margin-bottom:12px; font-family:'JetBrains Mono';">
-                    Your Price: ${data.my_price} | Competitor: ${data.competitor_price}
+                    Your Price: $${data.my_price} | Competitor: $${data.competitor_price}
                 </div>
-                <div style="background:rgba(255,255,255,0.05); padding:12px; border-left:3px solid var(--purple);">
+                <div style="background:rgba(255,255,255,0.05); padding:12px; border-left:3px solid var(--purple); white-space: pre-wrap;">
                     ${data.advice}
                 </div>
             `;
@@ -279,4 +255,3 @@ async function fetchAIAdvice() {
 </script>
 </body>
 </html>
-
