@@ -139,7 +139,63 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 <div class="screen" id="screen-overview"><div class="screen-title">Overview</div><p class="screen-sub">Coming in Step 7</p></div>
 <div class="screen" id="screen-categories"><div class="screen-title">Categories</div><p class="screen-sub">Coming in Step 7</p></div>
 <div class="screen" id="screen-social"><div class="screen-title">Social</div><p class="screen-sub">Coming in Step 7</p></div>
-<div class="screen" id="screen-membership"><div class="screen-title">Membership</div><p class="screen-sub">Coming in Step 7</p></div>
+<div class="screen" id="screen-membership">
+  <div class="screen-title">Membership</div>
+  <div class="screen-sub">Upgrade your plan to unlock more intelligence</div>
+  
+  <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-top:20px;">
+      <!-- Starter Plan -->
+      <div class="panel" style="position:relative;">
+          <div style="font-size:16px; font-weight:900; margin-bottom:4px;">Starter</div>
+          <div style="font-size:11px; color:var(--dim); margin-bottom:16px;">For solo store owners</div>
+          <div style="font-family:'JetBrains Mono'; font-size:28px; font-weight:800; margin-bottom:4px;">$29<span style="font-size:12px; color:var(--dim); font-weight:500;">/mo</span></div>
+          <div style="font-size:11px; color:var(--dim); margin-bottom:20px;">billed monthly</div>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:24px; font-size:11px;">
+              <div>✓ 50 products monitored</div>
+              <div>✓ 3 competitor stores</div>
+              <div>✓ Daily Telegram alerts</div>
+              <div style="color:var(--dim); opacity:0.5;">× AI Profit Advisor</div>
+              <div style="color:var(--dim); opacity:0.5;">× WhatsApp bot</div>
+          </div>
+          <button style="width:100%; padding:10px; background:var(--surface); border:1px solid var(--border); color:var(--text); font-weight:800; cursor:pointer;">Downgrade</button>
+      </div>
+
+      <!-- Pro Plan (Current) -->
+      <div class="panel" style="position:relative; border-color:var(--accent); box-shadow:0 0 20px rgba(0,229,255,0.15);">
+          <div style="position:absolute; top:-10px; left:20px; background:var(--accent); color:#000; padding:2px 10px; font-size:9px; font-weight:900; border-radius:10px;">CURRENT PLAN</div>
+          <div style="font-size:16px; font-weight:900; margin-bottom:4px;">Pro</div>
+          <div style="font-size:11px; color:var(--dim); margin-bottom:16px;">For growing stores</div>
+          <div style="font-family:'JetBrains Mono'; font-size:28px; font-weight:800; margin-bottom:4px;">$59<span style="font-size:12px; color:var(--dim); font-weight:500;">/mo</span></div>
+          <div style="font-size:11px; color:var(--dim); margin-bottom:20px;">billed monthly</div>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:24px; font-size:11px;">
+              <div>✓ 200 products monitored</div>
+              <div>✓ 10 competitor stores</div>
+              <div>✓ Telegram + WhatsApp alerts</div>
+              <div>✓ AI Profit Advisor</div>
+              <div>✓ Abandoned cart alerts</div>
+          </div>
+          <button style="width:100%; padding:10px; background:var(--surface); border:1px solid var(--border); color:var(--dim); font-weight:800; cursor:not-allowed;">Your Current Plan</button>
+      </div>
+
+      <!-- Scale Plan -->
+      <div class="panel" style="position:relative; border-color:var(--purple);">
+          <div style="position:absolute; top:-10px; left:20px; background:var(--purple); color:#fff; padding:2px 10px; font-size:9px; font-weight:900; border-radius:10px;">BEST VALUE</div>
+          <div style="font-size:16px; font-weight:900; margin-bottom:4px;">Scale</div>
+          <div style="font-size:11px; color:var(--dim); margin-bottom:16px;">For agencies & multi-brands</div>
+          <div style="font-family:'JetBrains Mono'; font-size:28px; font-weight:800; margin-bottom:4px;">$99<span style="font-size:12px; color:var(--dim); font-weight:500;">/mo</span></div>
+          <div style="font-size:11px; color:var(--dim); margin-bottom:20px;">billed monthly</div>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:24px; font-size:11px;">
+              <div>✓ Unlimited products</div>
+              <div>✓ 25 competitor stores</div>
+              <div>✓ All alert channels</div>
+              <div>✓ Advanced AI strategies</div>
+              <div>✓ Multi-store (up to 3)</div>
+              <div>✓ Priority support</div>
+          </div>
+          <button style="width:100%; padding:10px; background:var(--purple); border:none; color:#fff; font-weight:800; cursor:pointer;" onclick="window.open('https://vantix.lemonsqueezy.com/checkout/buy/YOUR_LINK_HERE', '_blank')">Upgrade to Scale →</button>
+      </div>
+  </div>
+</div><p class="screen-sub">Coming in Step 7</p></div>
 
 <script>
 function switchTab(el) {
@@ -286,3 +342,4 @@ async function fetchAlerts() {
 </script>
 </body>
 </html>
+
