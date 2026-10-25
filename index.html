@@ -57,6 +57,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
     <div class="tab" data-tab="mystore" onclick="switchTab(this)">My Store</div>
     <div class="tab" data-tab="inventory" onclick="switchTab(this)">Inventory</div>
     <div class="tab" data-tab="terminal" onclick="switchTab(this)">Terminal</div>
+    <div class="tab" data-tab="alerts" onclick="switchTab(this)">Alerts</div>
     <div class="tab" data-tab="competitors" onclick="switchTab(this)">Competitors</div>
   </div>
 </div>
@@ -117,6 +118,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
       <div style="color:var(--dim);">Loading alerts...</div>
   </div>
 </div>
+
 <div class="screen" id="screen-competitors">
   <div class="screen-title">Competitors</div>
   <div class="screen-sub">Scrape and track rival Shopify stores</div>
@@ -146,6 +148,7 @@ function switchTab(el) {
     if (el.getAttribute('data-tab') === 'mystore') fetchStoreMetrics();
     if (el.getAttribute('data-tab') === 'competitors') fetchCompetitors();
     if (el.getAttribute('data-tab') === 'terminal') { fetchTerminal(); fetchAIAdvice(); }
+    if (el.getAttribute('data-tab') === 'alerts') fetchAlerts();
 }
 
 async function fetchProducts() {
@@ -237,27 +240,19 @@ async function fetchAIAdvice() {
     const div = document.getElementById('ai-advice');
     if(!div) return;
     div.innerHTML = 'Analyzing margins and competitor prices...';
-    
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/ai/advisor');
         const data = await res.json();
-        
         if(data.status === "success") {
             div.innerHTML = `
                 <div style="margin-bottom:8px; font-weight:700; color:var(--purple);">${data.product}</div>
-                <div style="font-size:11px; color:var(--dim); margin-bottom:12px; font-family:'JetBrains Mono';">
-                    Your Price: $${data.my_price} | Competitor: $${data.competitor_price}
-                </div>
-                <div style="background:rgba(255,255,255,0.05); padding:12px; border-left:3px solid var(--purple); white-space: pre-wrap;">
-                    ${data.advice}
-                </div>
+                <div style="font-size:11px; color:var(--dim); margin-bottom:12px; font-family:'JetBrains Mono';">Your Price: $${data.my_price} | Competitor: $${data.competitor_price}</div>
+                <div style="background:rgba(255,255,255,0.05); padding:12px; border-left:3px solid var(--purple); white-space: pre-wrap;">${data.advice}</div>
             `;
         } else {
             div.innerHTML = `<span style="color:var(--red);">${data.detail || 'AI failed to respond'}</span>`;
         }
-    } catch(e) {
-        div.innerHTML = 'Backend asleep. Try again.';
-    }
+    } catch(e) { div.innerHTML = 'Backend asleep. Try again.'; }
 }
 
 async function fetchAlerts() {
@@ -266,12 +261,10 @@ async function fetchAlerts() {
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/alerts/list');
         const data = await res.json();
-        
         if(!data.alerts || data.alerts.length === 0) {
             list.innerHTML = '<div class="panel" style="text-align:center; padding:20px;">No alerts yet. All prices are stable! 📈</div>';
             return;
         }
-        
         list.innerHTML = data.alerts.map(a => {
             const date = new Date(a.created_at).toLocaleTimeString();
             return `
@@ -282,11 +275,8 @@ async function fetchAlerts() {
                 </div>
             `;
         }).join('');
-    } catch(e) {
-        list.innerHTML = 'Failed to load alerts.';
-    }
+    } catch(e) { list.innerHTML = 'Failed to load alerts.'; }
 }
 </script>
 </body>
 </html>
-
