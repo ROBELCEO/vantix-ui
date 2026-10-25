@@ -58,6 +58,52 @@ async function fetchCompetitors() {
         list.innerHTML = "Failed to load list.";
     }
 }
+
+async function fetchTerminal() {
+    const tbody = document.getElementById('terminal-body');
+    tbody.innerHTML = '<tr><td colspan="4">Loading comparison data...</td></tr>';
+    
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison');
+        const data = await res.json();
+        
+        if(!data.comparisons || data.comparisons.length === 0) {
+             tbody.innerHTML = '<tr><td colspan="4">No comparisons found. Sync your products and competitors first.</td></tr>';
+             return;
+        }
+        
+        tbody.innerHTML = data.comparisons.map(c => {
+            let diffColor = "var(--text)";
+            let diffText = "Tied";
+            
+            if(c.price_diff > 0) {
+                diffColor = "var(--red)"; // You are more expensive
+                diffText = `+${c.price_diff.toFixed(2)}`;
+            } else if (c.price_diff < 0) {
+                diffColor = "var(--green)"; // You are cheaper
+                diffText = `-${Math.abs(c.price_diff).toFixed(2)}`;
+            }
+
+            if(c.comp_product === "No match found") {
+                return `<tr>
+                    <td>${c.my_product}</td>
+                    <td>${parseFloat(c.my_price).toFixed(2)}</td>
+                    <td style="color:var(--dim);">No Match</td>
+                    <td>—</td>
+                </tr>`;
+            }
+
+            return `<tr>
+                <td>${c.my_product}</td>
+                <td>${parseFloat(c.my_price).toFixed(2)}</td>
+                <td>${parseFloat(c.comp_price).toFixed(2)}</td>
+                <td style="color:${diffColor}; font-weight:bold;">${diffText}</td>
+            </tr>`;
+        }).join('');
+    } catch(e) {
+        tbody.innerHTML = '<tr><td colspan="4">Backend asleep. Try again.</td></tr>';
+    }
+}
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
@@ -156,7 +202,19 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 
 <!-- Placeholder screens for the other tabs -->
 <div class="screen" id="screen-overview"><div class="screen-title">Overview</div><p class="screen-sub">Coming soon in Step 3</p></div>
-<div class="screen" id="screen-terminal"><div class="screen-title">Terminal</div><p class="screen-sub">Coming soon in Step 4</p></div>
+<div class="screen" id="screen-terminal">
+  <div class="screen-title">Competitor Terminal</div>
+  <div class="screen-sub">Real-time price comparison</div>
+  
+  <div class="panel">
+    <table class="inv-table">
+      <thead><tr><th>Your Product</th><th>Your Price</th><th>Competitor Price</th><th>Difference</th></tr></thead>
+      <tbody id="terminal-body">
+        <tr><td colspan="4">Loading comparison data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div><p class="screen-sub">Coming soon in Step 4</p></div>
 <div class="screen" id="screen-categories"><div class="screen-title">Categories</div><p class="screen-sub">Coming soon in Step 4</p></div>
 <div class="screen" id="screen-social"><div class="screen-title">Social</div><p class="screen-sub">Coming soon in Step 5</p></div>
 <div class="screen" id="screen-alerts"><div class="screen-title">Alerts</div><p class="screen-sub">Coming soon in Step 6</p></div>
@@ -297,7 +355,54 @@ async function fetchCompetitors() {
         list.innerHTML = "Failed to load list.";
     }
 }
+
+async function fetchTerminal() {
+    const tbody = document.getElementById('terminal-body');
+    tbody.innerHTML = '<tr><td colspan="4">Loading comparison data...</td></tr>';
+    
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison');
+        const data = await res.json();
+        
+        if(!data.comparisons || data.comparisons.length === 0) {
+             tbody.innerHTML = '<tr><td colspan="4">No comparisons found. Sync your products and competitors first.</td></tr>';
+             return;
+        }
+        
+        tbody.innerHTML = data.comparisons.map(c => {
+            let diffColor = "var(--text)";
+            let diffText = "Tied";
+            
+            if(c.price_diff > 0) {
+                diffColor = "var(--red)"; // You are more expensive
+                diffText = `+${c.price_diff.toFixed(2)}`;
+            } else if (c.price_diff < 0) {
+                diffColor = "var(--green)"; // You are cheaper
+                diffText = `-${Math.abs(c.price_diff).toFixed(2)}`;
+            }
+
+            if(c.comp_product === "No match found") {
+                return `<tr>
+                    <td>${c.my_product}</td>
+                    <td>${parseFloat(c.my_price).toFixed(2)}</td>
+                    <td style="color:var(--dim);">No Match</td>
+                    <td>—</td>
+                </tr>`;
+            }
+
+            return `<tr>
+                <td>${c.my_product}</td>
+                <td>${parseFloat(c.my_price).toFixed(2)}</td>
+                <td>${parseFloat(c.comp_price).toFixed(2)}</td>
+                <td style="color:${diffColor}; font-weight:bold;">${diffText}</td>
+            </tr>`;
+        }).join('');
+    } catch(e) {
+        tbody.innerHTML = '<tr><td colspan="4">Backend asleep. Try again.</td></tr>';
+    }
+}
 </script>
 </body>
 </html>
+
 
