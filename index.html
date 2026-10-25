@@ -110,6 +110,13 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
   </div>
 </div>
 
+<div class="screen" id="screen-alerts">
+  <div class="screen-title">Alerts Feed</div>
+  <div class="screen-sub">Automated competitor monitoring</div>
+  <div id="alerts-list" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="color:var(--dim);">Loading alerts...</div>
+  </div>
+</div>
 <div class="screen" id="screen-competitors">
   <div class="screen-title">Competitors</div>
   <div class="screen-sub">Scrape and track rival Shopify stores</div>
@@ -252,6 +259,34 @@ async function fetchAIAdvice() {
         div.innerHTML = 'Backend asleep. Try again.';
     }
 }
+
+async function fetchAlerts() {
+    const list = document.getElementById('alerts-list');
+    if(!list) return;
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/alerts/list');
+        const data = await res.json();
+        
+        if(!data.alerts || data.alerts.length === 0) {
+            list.innerHTML = '<div class="panel" style="text-align:center; padding:20px;">No alerts yet. All prices are stable! 📈</div>';
+            return;
+        }
+        
+        list.innerHTML = data.alerts.map(a => {
+            const date = new Date(a.created_at).toLocaleTimeString();
+            return `
+                <div class="panel" style="border-left:3px solid var(--red); margin-bottom:0;">
+                    <div style="font-size:10px; color:var(--dim); font-family:'JetBrains Mono'; margin-bottom:4px;">${date}</div>
+                    <div style="font-weight:800; color:var(--text); margin-bottom:6px;">${a.title}</div>
+                    <div style="font-size:12px; color:var(--muted); line-height:1.5;">${a.body.replace(/\n/g, '<br>')}</div>
+                </div>
+            `;
+        }).join('');
+    } catch(e) {
+        list.innerHTML = 'Failed to load alerts.';
+    }
+}
 </script>
 </body>
 </html>
+
