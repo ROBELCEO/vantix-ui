@@ -1,8 +1,8 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vantix — Complete Platform</title>
+<title>Vantix � Complete Platform</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
@@ -38,7 +38,28 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .inv-table th{padding:12px;font-size:9px;color:var(--dim);text-transform:uppercase;border-bottom:1px solid var(--border);text-align:left;background:var(--surface);letter-spacing:0.5px;}
 .inv-table td{padding:12px;border-bottom:1px solid var(--border);font-size:12px;}
 .inv-img{width:36px;height:36px;object-fit:cover;vertical-align:middle;margin-right:10px;}
-</style>
+        /* =========================================
+           MOBILE RESPONSIVE FIXES FOR TELEGRAM
+           ========================================= */
+        @media (max-width: 800px) {
+            .kpi-row, .grid-2, .store-grid, .store-grid-3, .mid-grid, .features-grid, .bot-grid, .usage-grid, .plans-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .screen { padding: 12px; }
+            .brand-text { display: none; } /* Hide text, keep the logo */
+            .tabs { 
+                gap: 4px; 
+                scrollbar-width: none; /* Hide scrollbar for Firefox */
+                -webkit-overflow-scrolling: touch;
+            }
+            .tabs::-webkit-scrollbar { display: none; } /* Hide scrollbar for Chrome/Safari */
+            .tab { padding: 6px 10px; font-size: 10px; }
+            .panel { padding: 12px; }
+            .inv-table { display: block; overflow-x: auto; white-space: nowrap; }
+            .hero h1 { font-size: 24px; }
+            .kpi-val, .member-tier, .plan-price { font-size: 20px; }
+            .header { padding: 0 10px; }
+        }</style>
 </head>
 <body>
 <div class="header">
