@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vantix � Complete Platform</title>
+<title>Vantix — Complete Platform</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
@@ -96,8 +96,8 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
   <div class="screen-sub">Live data synced from Shopify</div>
   <div class="kpi-row">
     <div class="kpi"><div class="kpi-label">Revenue Today</div><div class="kpi-val">$1,842</div></div>
-    <div class="kpi"><div class="kpi-label">Revenue 30d</div><div class="kpi-val">$45,200</div></div>
-    <div class="kpi"><div class="kpi-label">Orders Today</div><div class="kpi-val">27</div></div>
+    <div class="kpi"><div class="kpi-label">Revenue 30d</div><div class="kpi-val" id="kpi-revenue-30d">...</div></div>
+    <div class="kpi"><div class="kpi-label">Orders Today</div><div class="kpi-val" id="kpi-orders-30d">...</div></div>
   </div>
 </div>
 
@@ -128,36 +128,59 @@ function switchTab(el){
   el.classList.add('active');
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+el.getAttribute('data-tab')).classList.add('active');
+  
   if(el.getAttribute('data-tab') === 'inventory') fetchProducts();
+  if(el.getAttribute('data-tab') === 'mystore') fetchStoreMetrics();
 }
 
 async function fetchProducts() {
     const tbody = document.getElementById('inventory-body');
-    tbody.innerHTML = '<tr><td colspan="4">Loading real data from Supabase...</td></tr>';
+    if(!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="4">Loading real data...</td></tr>';
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/products'); // We will build this endpoint next
+        const res = await fetch('https://vantix-my5f.onrender.com/api/products');
         const data = await res.json();
-        
         if(!data.products || data.products.length === 0) {
-             tbody.innerHTML = '<tr><td colspan="4">No products found. Click Connect to sync.</td></tr>';
+             tbody.innerHTML = '<tr><td colspan="4">No products found. Go to Shopify and sync.</td></tr>';
              return;
         }
-        
         tbody.innerHTML = data.products.map(p => `
             <tr>
-                <td><img src="${p.image_url}" class="inv-img"> ${p.title}</td>
-                <td style="font-family:'JetBrains Mono';">$${p.price.toFixed(2)}</td>
-                <td style="font-family:'JetBrains Mono';">$${p.cost.toFixed(2)}</td>
+                <td style="display:flex; align-items:center;">
+                    <img src="${p.image_url}" class="inv-img"> 
+                    <span style="font-weight:600;">${p.title}</span>
+                </td>
+                <td style="font-family:'JetBrains Mono';">${parseFloat(p.price).toFixed(2)}</td>
+                <td style="font-family:'JetBrains Mono';">${parseFloat(p.cost).toFixed(2)}</td>
                 <td><span class="tag tag-shopify">SYNCED</span></td>
             </tr>
         `).join('');
     } catch(e) {
-        tbody.innerHTML = '<tr><td colspan="4">Error loading data. Backend might be asleep.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4">Backend asleep. Try again.</td></tr>';
     }
 }
 
-// Auto trigger inventory fetch on load just to show it works
-window.onload = () => fetchProducts();
+async function fetchStoreMetrics() {
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/store/metrics?shop_domain=trendywear-dev.myshopify.com');
+        const data = await res.json();
+        if(data.status === "success") {
+            const m = data.metrics;
+            const revEl = document.getElementById('kpi-revenue-30d');
+            const ordEl = document.getElementById('kpi-orders-30d');
+            const aovEl = document.getElementById('kpi-aov');
+            
+            if(revEl) revEl.innerText = '
+ + m.total_revenue_30d.toLocaleString();
+            if(ordEl) ordEl.innerText = m.order_count_30d;
+            if(aovEl) aovEl.innerText = '
+ + m.average_order_value.toFixed(2);
+        }
+    } catch(e) {
+        console.error("Failed to load metrics", e);
+    }
+}
 </script>
 </body>
 </html>
+
