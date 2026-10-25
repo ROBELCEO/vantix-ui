@@ -4,12 +4,131 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Terminal</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<style>
+    /* Terminal-specific grid layout */
+    .terminal-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr 320px;
+        gap: 16px;
+        height: calc(100vh - 130px); /* Fill screen minus header */
+    }
+
+    /* Watchlist Column */
+    .watchlist {
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
+        border-radius: var(--r-card);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+    .watchlist-header {
+        padding: 12px 16px;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--border);
+        background: var(--bg-surface);
+    }
+    .watch-item {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    .watch-item:hover { background: var(--bg-hover); }
+    .watch-item.active {
+        background: var(--bg-elevated);
+        border-left: 3px solid var(--accent);
+    }
+    .watch-item img { width: 36px; height: 36px; border-radius: var(--r-btn); object-fit: cover; }
+    .watch-info { flex: 1; min-width: 0; }
+    .watch-title { font-size: 12px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .watch-meta { font-size: 10px; color: var(--text-tertiary); margin-top: 2px; }
+    .watch-price { font-family: var(--font-mono); font-size: 12px; font-weight: 700; text-align: right; }
+    .watch-change { font-family: var(--font-mono); font-size: 10px; margin-top: 2px; text-align: right; }
+
+    /* Chart Column */
+    .chart-panel {
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
+        border-radius: var(--r-card);
+        display: flex;
+        flex-direction: column;
+        padding: 16px;
+    }
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .chart-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+    .chart-legend { display: flex; gap: 16px; font-size: 10px; font-family: var(--font-mono); }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-color { width: 12px; height: 4px; }
+    .chart-wrap { flex: 1; position: relative; width: 100%; }
+
+    /* AI Advisor Column */
+    .ai-panel {
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
+        border-radius: var(--r-card);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+    .ai-header {
+        padding: 16px;
+        border-bottom: 1px solid var(--border);
+        color: var(--violet);
+        font-size: 11px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(180deg, rgba(139,127,255,0.05), transparent);
+    }
+    .ai-content { padding: 16px; flex: 1; }
+    .ai-text { font-size: 13px; line-height: 1.5; color: var(--text-secondary); margin-bottom: 20px; }
+    
+    .ai-data-box {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r-btn);
+        padding: 12px;
+        margin-bottom: 16px;
+    }
+    .ai-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+    .ai-row:last-child { margin-bottom: 0; padding-top: 8px; border-top: 1px solid var(--border); }
+    .ai-label { color: var(--text-tertiary); font-weight: 600; }
+    .ai-val { font-family: var(--font-mono); font-weight: 700; }
+    
+    .ai-why { font-size: 11px; color: var(--text-tertiary); line-height: 1.5; font-style: italic; }
+
+    /* Mobile Stacking */
+    @media (max-width: 1024px) {
+        .terminal-layout { grid-template-columns: 1fr; height: auto; }
+        .watchlist { max-height: 300px; }
+        .chart-panel { min-height: 400px; }
+    }
+</style>
 </head>
 <body>
 
-<!-- MOBILE DRAWER -->
 <div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
 <div class="drawer" id="mobile-drawer">
     <div class="drawer-header">
@@ -24,7 +143,6 @@
     <a href="membership.html" class="drawer-tab">Membership</a>
 </div>
 
-<!-- HEADER -->
 <div class="header">
     <a href="index.html" class="brand">
         <div class="mark">
@@ -36,7 +154,6 @@
         </div>
         <div>VANTI<span>X</span></div>
     </a>
-    
     <div class="tabs">
         <a href="index.html" class="tab">Connect</a>
         <a href="store.html" class="tab">My Store</a>
@@ -45,52 +162,46 @@
         <a href="alerts.html" class="tab">Alerts</a>
         <a href="membership.html" class="tab">Membership</a>
     </div>
-
     <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
 </div>
 
-<!-- MAIN CONTENT -->
-<div class="screen">
-    
-    <div class="screen-title">Competitor Terminal</div>
-    <div class="screen-sub">Real-time price intelligence & AI strategy</div>
-
-    <!-- PRICE COMPARISON TABLE -->
-    <div class="panel">
-        <div class="panel-header">Price Comparison <span>PUBLIC SCRAPED DATA</span></div>
-        <div style="overflow-x: auto;">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Your Product</th>
-                        <th>Your Price</th>
-                        <th>Competitor Price</th>
-                        <th>Difference</th>
-                    </tr>
-                </thead>
-                <tbody id="terminal-body">
-                    <tr><td colspan="4" class="text-tertiary" style="text-align: center;">Scanning competitor data...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- AI ADVISOR PANEL -->
-    <div class="panel ai-panel">
-        <div class="panel-header">⚡ VANTIX AI PROFIT ADVISOR <span>LLAMA 3</span></div>
-        <div id="ai-advice" class="text-secondary" style="font-size: 13px; line-height: 1.6;">
-            <div class="text-tertiary" style="display: flex; align-items: center; gap: 8px;">
-                <span style="display:inline-block; width:12px; height:12px; border:2px solid var(--violet); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite;"></span>
-                Analyzing margins and market positioning...
+<div class="screen" style="padding: 16px;">
+    <div class="terminal-layout">
+        
+        <!-- 1. WATCHLIST -->
+        <div class="watchlist">
+            <div class="watchlist-header">Watchlist</div>
+            <div id="watchlist-container">
+                <div class="text-tertiary" style="padding: 16px; font-size: 11px;">Loading...</div>
             </div>
         </div>
+
+        <!-- 2. CHART -->
+        <div class="chart-panel">
+            <div class="chart-header">
+                <div class="chart-title">Price History — <span id="chart-product-name">Loading...</span></div>
+                <div class="chart-legend">
+                    <div class="legend-item"><div class="legend-color" style="background: var(--green);"></div> Your Price</div>
+                    <div class="legend-item"><div class="legend-color" style="background: var(--red);"></div> Competitor</div>
+                </div>
+            </div>
+            <div class="chart-wrap">
+                <canvas id="terminalChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 3. AI ADVISOR -->
+        <div class="ai-panel">
+            <div class="ai-header">⚡ VANTIX AI ADVISOR</div>
+            <div class="ai-content" id="ai-advisor-content">
+                <div class="text-tertiary" style="font-size: 12px; text-align: center; padding-top: 40px;">
+                    Analyzing margins...
+                </div>
+            </div>
+        </div>
+
     </div>
-
 </div>
-
-<style>
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-</style>
 
 <script src="js/app.js"></script>
 <script src="js/terminal.js"></script>
