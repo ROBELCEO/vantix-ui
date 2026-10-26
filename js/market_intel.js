@@ -1,7 +1,18 @@
 ﻿async function loadMarketIntel() {
     const container = document.getElementById('intel-container');
+    
+    // Create a timeout controller
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 35000); // 35 seconds max
+
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/market-intel/intelligence');
+        const res = await fetch('https://vantix-my5f.onrender.com/api/market-intel/intelligence', { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+            throw new Error(`Server returned ${res.status}`);
+        }
+
         const data = await res.json();
 
         if (!data.market_intel || data.market_intel.length === 0) {
@@ -21,13 +32,11 @@
                 else if (opp.supplier === 'Competitor') sourceBadge = '<span class="badge badge-accent" style="font-size:9px;">COMPETITOR</span>';
                 else sourceBadge = '<span class="badge" style="font-size:9px; background:var(--bg-elevated); color:var(--text-tertiary);">ESTIMATED</span>';
 
-                // SHOW THE ERROR IF IT EXISTS
-                const errorHtml = opp.debug_error ? `<div style="color: var(--red); font-size: 10px; margin-top: 8px;">API Error: ${opp.debug_error}</div>` : '';
+                const errorHtml = opp.debug_error ? `<div style="color: var(--red); font-size: 10px; margin-top: 8px;">Debug: ${opp.debug_error}</div>` : '';
 
                 return `
                     <div class="opp-card">
                         <img src="${opp.image}" class="opp-img" onerror="this.onerror=null; this.src='${fallbackImg}';">
-                        
                         <div style="flex: 1;">
                             <div style="display: flex; justify-content: space-between; align-items: start;">
                                 <div style="font-weight: 800; font-size: 15px; color: var(--text-primary);">
@@ -35,12 +44,10 @@
                                 </div>
                                 <div class="margin-badge">${margin.toFixed(0)}% Margin</div>
                             </div>
-                            
                             <div style="margin-top: 8px; display: flex; gap: 16px; font-family: var(--font-mono); font-size: 12px;">
                                 <div><span class="text-tertiary">Source:</span> <span class="text-amber">$${opp.wholesale.toFixed(2)}</span></div>
                                 <div><span class="text-tertiary">Retail:</span> <span class="text-green">$${opp.retail.toFixed(2)}</span></div>
                             </div>
-                            
                             <div style="margin-top: 8px; font-size: 11px; color: var(--text-secondary); line-height: 1.4;">
                                 <b>Proof:</b> ${opp.reason}
                             </div>
@@ -68,7 +75,12 @@
         }).join('');
 
     } catch(e) {
-        container.innerHTML = '<div class="text-red" style="text-align: center;">Failed to load intelligence. Backend might be asleep.</div>';
+        clearTimeout(timeoutId);
+        if (e.name === 'AbortError') {
+            container.innerHTML = '<div class="text-red" style="text-align: center; padding: 40px;">Server took too long to respond (30s+). Google Trends or AliExpress might be blocking the server. Try again later.</div>';
+        } else {
+            container.innerHTML = `<div class="text-red" style="text-align: center; padding: 40px;">Failed to load: ${e.message}</div>`;
+        }
     }
 }
 loadMarketIntel();
