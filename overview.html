@@ -7,40 +7,55 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <style>
-    .health-ring {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        background: conic-gradient(var(--green) 0% 85%, var(--bg-elevated) 85% 100%);
+    /* Leaderboard Bars */
+    .lb-item {
         display: flex;
         align-items: center;
-        justify-content: center;
-        margin: 0 auto;
-        position: relative;
+        gap: 12px;
+        margin-bottom: 16px;
     }
-    .health-ring::before {
-        content: '';
-        position: absolute;
-        width: 100px;
-        height: 100px;
-        background: var(--bg-panel);
-        border-radius: 50%;
+    .lb-rank { font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); width: 20px; font-weight: 700; }
+    .lb-logo {
+        width: 32px; height: 32px; border-radius: var(--r-btn);
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; color: #000; font-size: 12px;
     }
-    .health-text {
-        position: relative;
-        z-index: 1;
-        text-align: center;
+    .lb-info { width: 110px; }
+    .lb-name { font-size: 12px; font-weight: 700; }
+    .lb-growth { font-size: 9px; font-family: var(--font-mono); font-weight: 700; }
+    .lb-bar-wrap { flex: 1; height: 6px; background: var(--bg-elevated); border-radius: 3px; overflow: hidden; }
+    .lb-bar { height: 100%; border-radius: 3px; }
+    .lb-rev { font-family: var(--font-mono); font-size: 12px; font-weight: 800; width: 60px; text-align: right; }
+
+    /* Playbook */
+    .playbook-item {
+        display: flex; gap: 12px; padding: 12px;
+        background: var(--bg-surface); border-radius: var(--r-btn);
+        border-left: 3px solid var(--violet); margin-bottom: 10px;
     }
-    .action-item {
-        display: flex;
-        gap: 16px;
-        padding: 16px;
-        background: var(--bg-surface);
-        border: 1px solid var(--border);
-        border-left: 3px solid var(--violet);
-        border-radius: var(--r-btn);
-        margin-bottom: 12px;
+    .playbook-icon { font-size: 18px; }
+    .playbook-title { font-size: 12px; font-weight: 700; margin-bottom: 4px; color: var(--text-primary); }
+    .playbook-desc { font-size: 11px; color: var(--text-secondary); line-height: 1.4; }
+
+    /* Telegram Briefing */
+    .tg-panel {
+        background: #17212b; border: 1px solid #2b5278;
+        border-radius: var(--r-card); padding: 16px; margin-top: 24px;
     }
+    .tg-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .tg-avatar {
+        width: 32px; height: 32px; background: var(--accent); border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: #000; font-weight: 900;
+    }
+    .tg-name { font-weight: 800; font-size: 13px; color: #fff; }
+    .tg-time { font-size: 10px; color: #7A7A7A; }
+    .tg-msg {
+        background: #182533; padding: 16px; border-radius: 8px;
+        font-size: 13px; line-height: 1.6; color: #e1e1e1;
+        border-left: 3px solid var(--accent);
+    }
+    .tg-msg b { color: #fff; }
 </style>
 </head>
 <body>
@@ -92,72 +107,64 @@
 <!-- MAIN CONTENT -->
 <div class="screen">
     
-    <div class="screen-title">Executive Overview</div>
-    <div class="screen-sub">High-level intelligence summary</div>
+    <div class="screen-title">Overview Dashboard</div>
+    <div class="screen-sub">Your store vs the market — daily briefing</div>
 
+    <!-- KPI ROW -->
     <div class="kpi-grid">
-        <div class="kpi-card">
-            <div class="kpi-label">Products Monitored</div>
-            <div class="kpi-value" id="ov-products">Loading...</div>
+        <div class="kpi-card active">
+            <div class="kpi-label">Your Revenue (30d)</div>
+            <div class="kpi-value" id="kpi-revenue">Loading...</div>
+            <div class="kpi-label text-green" style="margin-top: 8px; font-size: 9px;">▲ 12.4% vs last month</div>
         </div>
-        <div class="kpi-card">
-            <div class="kpi-label">Competitors Tracked</div>
-            <div class="kpi-value" id="ov-competitors">Loading...</div>
-        </div>
-        <div class="kpi-card warning">
-            <div class="kpi-label">Active Alerts</div>
-            <div class="kpi-value" id="ov-alerts">Loading...</div>
+        <div class="kpi-card" style="--accent: var(--violet);">
+            <div class="kpi-label">Est. Competitor Revenue</div>
+            <div class="kpi-value" id="kpi-comp-revenue">$128,500</div>
+            <div class="kpi-label text-violet" style="margin-top: 8px; font-size: 9px;">▼ 3.1% AI estimate</div>
         </div>
         <div class="kpi-card profit">
-            <div class="kpi-label">Market Status</div>
-            <div class="kpi-value text-green" style="font-size: 18px;">AGGRESSIVE</div>
+            <div class="kpi-label">Your Conversion</div>
+            <div class="kpi-value">2.8%</div>
+            <div class="kpi-label text-tertiary" style="margin-top: 8px; font-size: 9px;">Industry avg: 1.9%</div>
+        </div>
+        <div class="kpi-card warning">
+            <div class="kpi-label">Your AOV</div>
+            <div class="kpi-value" id="kpi-aov">Loading...</div>
+            <div class="kpi-label text-tertiary" style="margin-top: 8px; font-size: 9px;">Competitor AOV: $54.00</div>
         </div>
     </div>
 
-    <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 16px;">
+    <!-- MIDDLE GRID -->
+    <div class="grid-2" style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; margin-bottom: 16px;">
         
-        <!-- Store Health -->
-        <div class="panel" style="margin: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-            <div class="panel-header" style="width: 100%;">Store Health Score</div>
-            <div class="health-ring">
-                <div class="health-text">
-                    <div class="mono" style="font-size: 28px; font-weight: 800; color: var(--green);">85</div>
-                    <div class="text-tertiary" style="font-size: 10px; text-transform: uppercase;">Good</div>
-                </div>
+        <!-- Leaderboard -->
+        <div class="panel" style="margin: 0;">
+            <div class="panel-header">Revenue Leaderboard <span>EST. 30D REVENUE</span></div>
+            <div id="leaderboard-container">
+                <div class="text-tertiary" style="padding: 20px 0;">Loading leaderboard...</div>
             </div>
-            <p class="text-tertiary" style="font-size: 11px; margin-top: 16px; line-height: 1.5;">
-                Your store is healthy. AI has identified 3 pricing opportunities this week.
-            </p>
         </div>
 
-        <!-- AI Action Plan -->
+        <!-- Playbook -->
         <div class="panel" style="margin: 0;">
-            <div class="panel-header" style="color: var(--violet);">Today's Top Strategic Actions</div>
-            
-            <div class="action-item">
-                <div style="font-size: 20px;">🎯</div>
-                <div>
-                    <div style="font-weight: 700; font-size: 13px; color: var(--text-primary); margin-bottom: 4px;">Match Competitor Price</div>
-                    <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">SneakerHub dropped their price to $110. Your margin allows you to match this and still make 40% profit.</div>
-                </div>
+            <div class="panel-header">Competitor Playbook <span>THIS WEEK</span></div>
+            <div id="playbook-container">
+                <div class="text-tertiary" style="padding: 20px 0;">Generating AI Playbook...</div>
             </div>
+        </div>
+    </div>
 
-            <div class="action-item" style="border-left-color: var(--green);">
-                <div style="font-size: 20px;">📈</div>
-                <div>
-                    <div style="font-weight: 700; font-size: 13px; color: var(--text-primary); margin-bottom: 4px;">Raise Price on Viral Item</div>
-                    <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">Your Jordan 1 Low is selling 3x faster than competitors. Increase price by $5 to capture more margin.</div>
-                </div>
+    <!-- TELEGRAM BRIEFING -->
+    <div class="tg-panel">
+        <div class="tg-header">
+            <div class="tg-avatar">V</div>
+            <div>
+                <div class="tg-name">Vantix Daily Briefing</div>
+                <div class="tg-time">Today at 8:00 AM</div>
             </div>
-
-            <div class="action-item" style="border-left-color: var(--amber);">
-                <div style="font-size: 20px;">⚠️</div>
-                <div>
-                    <div style="font-weight: 700; font-size: 13px; color: var(--text-primary); margin-bottom: 4px;">Restock Warning</div>
-                    <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">Ultraboost 22 is down to 3 units. Reorder soon to avoid losing sales.</div>
-                </div>
-            </div>
-
+        </div>
+        <div class="tg-msg" id="briefing-container">
+            Loading your daily briefing...
         </div>
     </div>
 
