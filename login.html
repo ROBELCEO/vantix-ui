@@ -14,6 +14,7 @@
 </style>
 </head>
 <body>
+
 <div class="login-container">
     <div class="login-box">
         <div style="display: flex; justify-content: center; margin-bottom: 20px;">
@@ -21,27 +22,35 @@
         </div>
         <h1 style="font-size: 24px; font-weight: 900; margin-bottom: 8px;">Welcome to Vantix</h1>
         <p style="color: var(--text-tertiary); font-size: 13px; margin-bottom: 30px;">Sign in to access your intelligence dashboard.</p>
-        <button class="login-btn" onclick="signInWithGoogle()">
+        
+        <button id="login-btn" class="login-btn">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" height="20">
             Sign in with Google
         </button>
     </div>
 </div>
+
 <script>
-    // REPLACE THESE WITH YOUR ACTUAL SUPABASE KEYS
     const SUPABASE_URL = "https://odvusqxvhgyfoiyooktl.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kdnVzcXh2aGd5Zm9peW9va3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5Mzk3NzAsImV4cCI6MjEwODUxNTc3MH0.5LlYHzs4iHz7gQMCLLBCDT7deMveYpx-8fabCH5AljU"; 
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Wait for the page to load before running the script
+    window.addEventListener('DOMContentLoaded', () => {
+        try {
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    async function signInWithGoogle() {
-        const { data, error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: { redirectTo: window.location.origin + '/index.html' }
-        });
-        if (error) alert("Error: " + error.message);
-    }
+            document.getElementById('login-btn').addEventListener('click', async () => {
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: { redirectTo: window.location.origin + '/index.html' }
+                });
+                if (error) alert("Error: " + error.message);
+            });
+        } catch (e) {
+            console.error("Supabase init error:", e);
+            alert("Failed to initialize Supabase. Check your Anon key.");
+        }
+    });
 </script>
 </body>
 </html>
-
