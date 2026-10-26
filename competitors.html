@@ -6,6 +6,51 @@
 <title>Vantix — Competitors</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<style>
+    .competitor-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r-card);
+        margin-bottom: 12px;
+        transition: transform 0.15s, border-color 0.15s;
+    }
+    .competitor-row:hover {
+        border-color: var(--border-strong);
+        transform: translateY(-2px);
+    }
+    .comp-info {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+    .comp-logo {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--r-btn);
+        background: var(--bg-elevated);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        color: var(--accent);
+        font-weight: 800;
+    }
+    .comp-domain {
+        font-weight: 800;
+        font-size: 15px;
+        color: var(--text-primary);
+    }
+    .comp-date {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        font-family: var(--font-mono);
+        margin-top: 4px;
+    }
+</style>
 </head>
 <body>
 
@@ -17,12 +62,14 @@
         <button class="drawer-close" onclick="toggleMenu()">✕</button>
     </div>
     <a href="index.html" class="drawer-tab">Connect</a>
+    <a href="overview.html" class="drawer-tab">Overview</a>
     <a href="store.html" class="drawer-tab">My Store</a>
     <a href="competitors.html" class="drawer-tab active">Competitors</a>
     <a href="terminal.html" class="drawer-tab">Terminal</a>
-        <a href="discovery.html" class="drawer-tab">Discovery</a>
+    <a href="discovery.html" class="drawer-tab">Discovery</a>
     <a href="alerts.html" class="drawer-tab">Alerts</a>
     <a href="inventory.html" class="drawer-tab">Inventory</a>
+    <a href="social.html" class="drawer-tab">Social</a>
     <a href="membership.html" class="drawer-tab">Membership</a>
 </div>
 
@@ -41,12 +88,14 @@
     
     <div class="tabs">
         <a href="index.html" class="tab">Connect</a>
+        <a href="overview.html" class="tab">Overview</a>
         <a href="store.html" class="tab">My Store</a>
         <a href="competitors.html" class="tab active">Competitors</a>
         <a href="terminal.html" class="tab">Terminal</a>
         <a href="discovery.html" class="tab">Discovery</a>
         <a href="alerts.html" class="tab">Alerts</a>
         <a href="inventory.html" class="tab">Inventory</a>
+        <a href="social.html" class="tab">Social</a>
         <a href="membership.html" class="tab">Membership</a>
     </div>
 
@@ -55,46 +104,38 @@
 
 <!-- MAIN CONTENT -->
 <div class="screen">
-    
-    <div class="screen-title">Competitors</div>
-    <div class="screen-sub">Scrape and track rival Shopify stores</div>
+    <div style="max-width: 800px; margin: 0 auto;">
+        <div class="screen-title">Competitors</div>
+        <div class="screen-sub">Scrape and track rival Shopify stores</div>
 
-    <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start;">
-        
         <!-- ADD COMPETITOR FORM -->
         <div class="panel">
-            <div class="panel-header">Add New Competitor <span>PUBLIC STORE</span></div>
-            <p style="font-size: 11px; color: var(--text-tertiary); margin-bottom: 16px; line-height: 1.5;">
-                Enter a Shopify store domain (e.g., <code style="font-family: var(--font-mono); color: var(--accent);">allbirds.com</code>). We'll scrape their public catalog and compare it against your products.
+            <div class="panel-header">Add New Competitor <span>PUBLIC SHOPIFY STORE</span></div>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5;">
+                Enter a Shopify store domain (e.g., <code style="font-family: var(--font-mono); color: var(--accent);">allbirds.com</code>). Our backend will scrape their entire public catalog and compare it against your products.
             </p>
             
-            <div class="form-group">
-                <label class="form-label">Store Domain</label>
+            <div style="display: flex; gap: 12px; flex-direction: column;">
                 <input type="text" id="comp-domain" class="form-input" placeholder="competitor.com" autocomplete="off">
+                <button onclick="addCompetitor()" id="add-btn" class="btn btn-primary" style="width: 100%;">
+                    Scrape Competitor →
+                </button>
             </div>
-
-            <button onclick="addCompetitor()" id="add-btn" class="btn btn-primary" style="width: 100%;">
-                Scrape Competitor →
-            </button>
             
-            <div id="comp-status" style="margin-top: 12px; font-size: 11px; text-align: center; display: none;"></div>
+            <div id="comp-status" style="margin-top: 12px; font-size: 12px; text-align: center; display: none;"></div>
         </div>
 
         <!-- TRACKED COMPETITORS LIST -->
         <div class="panel">
-            <div class="panel-header">Tracked Stores <span>LIVE DATA</span></div>
+            <div class="panel-header">Tracked Competitors <span>LIVE DATA</span></div>
             <div id="comp-list">
                 <div class="text-tertiary" style="padding: 20px 0; text-align: center;">Loading competitors...</div>
             </div>
         </div>
-
     </div>
-
 </div>
 
 <script src="js/app.js"></script>
 <script src="js/competitors.js"></script>
 </body>
 </html>
-
-
