@@ -1,17 +1,14 @@
 ﻿async function loadMarketIntel() {
     const container = document.getElementById('intel-container');
     
-    // Create a timeout controller
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 35000); // 35 seconds max
+    const timeoutId = setTimeout(() => controller.abort(), 45000); 
 
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/market-intel/intelligence', { signal: controller.signal });
         clearTimeout(timeoutId);
 
-        if (!res.ok) {
-            throw new Error(`Server returned ${res.status}`);
-        }
+        if (!res.ok) { throw new Error(`Server returned ${res.status}`); }
 
         const data = await res.json();
 
@@ -77,7 +74,7 @@
     } catch(e) {
         clearTimeout(timeoutId);
         if (e.name === 'AbortError') {
-            container.innerHTML = '<div class="text-red" style="text-align: center; padding: 40px;">Server took too long to respond (30s+). Google Trends or AliExpress might be blocking the server. Try again later.</div>';
+            container.innerHTML = '<div class="text-red" style="text-align: center; padding: 40px;">Server took too long to respond (45s+). Try again later.</div>';
         } else {
             container.innerHTML = `<div class="text-red" style="text-align: center; padding: 40px;">Failed to load: ${e.message}</div>`;
         }
