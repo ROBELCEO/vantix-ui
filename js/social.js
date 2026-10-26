@@ -6,16 +6,22 @@
         // 1. Render Scorecard
         const scoreContainer = document.getElementById('scorecard-container');
         scoreContainer.innerHTML = data.scorecard.map(s => {
-            // Check if the raw data has an error for this platform
             let displayFollowers = s.followers;
             let textColor = "var(--text-tertiary)";
             
+            // Handle Instagram Error
             if (s.platform === "Instagram" && data.raw_scraped_data.instagram.error) {
+                displayFollowers = "Blocked (Requires Proxy)";
+                textColor = "var(--red)";
+            } 
+            // Handle TikTok Error
+            else if (s.platform === "TikTok" && data.raw_scraped_data.tiktok.error) {
                 displayFollowers = "Blocked";
                 textColor = "var(--red)";
-            } else if (s.platform === "TikTok" && data.raw_scraped_data.tiktok.error) {
-                displayFollowers = "Blocked";
-                textColor = "var(--red)";
+            } 
+            // Success
+            else {
+                displayFollowers = displayFollowers + " followers";
             }
 
             return `
@@ -24,7 +30,7 @@
                     <div class="social-avatar" style="background: ${s.color};">${s.initials}</div>
                     <div>
                         <div style="font-weight: 700; font-size: 13px;">${s.name}</div>
-                        <div style="font-size: 10px; color: ${textColor};">${s.platform} • ${displayFollowers} followers</div>
+                        <div style="font-size: 10px; color: ${textColor};">${s.platform} • ${displayFollowers}</div>
                     </div>
                 </div>
                 <div style="text-align: right;">
