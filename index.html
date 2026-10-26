@@ -6,6 +6,7 @@
 <title>Vantix — Connect</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
     /* Checklist styles */
     .setup-step {
@@ -45,8 +46,28 @@
     .step-title { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
     .step-desc { font-size: 11px; color: var(--text-tertiary); }
 </style>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>`n</head>
-<body>`n<div class="header">
+</head>
+<body>
+
+<div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
+<div class="drawer" id="mobile-drawer">
+    <div class="drawer-header">
+        <div class="brand"><div>VANTI<span>X</span></div></div>
+        <button class="drawer-close" onclick="toggleMenu()">✕</button>
+    </div>
+    <a href="index.html" class="drawer-tab active">Connect</a>
+    <a href="overview.html" class="drawer-tab">Overview</a>
+    <a href="store.html" class="drawer-tab">My Store</a>
+    <a href="competitors.html" class="drawer-tab">Competitors</a>
+    <a href="terminal.html" class="drawer-tab">Terminal</a>
+    <a href="discovery.html" class="drawer-tab">Discovery</a>
+    <a href="alerts.html" class="drawer-tab">Alerts</a>
+    <a href="inventory.html" class="drawer-tab">Inventory</a>
+    <a href="social.html" class="drawer-tab">Social</a>
+    <a href="membership.html" class="drawer-tab">Membership</a>
+</div>
+
+<div class="header">
     <a href="index.html" class="brand">
         <div class="mark">
             <svg viewBox="0 0 32 32">
@@ -60,12 +81,14 @@
     
     <div class="tabs">
         <a href="index.html" class="tab active">Connect</a>
+        <a href="overview.html" class="tab">Overview</a>
         <a href="store.html" class="tab">My Store</a>
         <a href="competitors.html" class="tab">Competitors</a>
         <a href="terminal.html" class="tab">Terminal</a>
         <a href="discovery.html" class="tab">Discovery</a>
         <a href="alerts.html" class="tab">Alerts</a>
         <a href="inventory.html" class="tab">Inventory</a>
+        <a href="social.html" class="tab">Social</a>
         <a href="membership.html" class="tab">Membership</a>
     </div>
 
@@ -142,8 +165,5 @@
 
 <script src="js/app.js"></script>
 <script src="js/connect.js"></script>
-</body></html>
-
-
-
-
+</body>
+</html>
