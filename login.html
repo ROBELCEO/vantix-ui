@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vantix — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    .login-container { display: flex; justify-content: center; align-items: center; height: 100vh; background: var(--bg-base); }
+    .login-box { background: var(--bg-panel); padding: 40px; border-radius: var(--r-card); border: 1px solid var(--border); text-align: center; max-width: 400px; width: 100%; }
+    .login-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: var(--r-btn); font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-box">
+        <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+            <svg viewBox="0 0 32 32" width="48" height="48"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg>
+        </div>
+        <h1 style="font-size: 24px; font-weight: 900; margin-bottom: 8px;">Welcome to Vantix</h1>
+        <p style="color: var(--text-tertiary); font-size: 13px; margin-bottom: 30px;">Sign in to access your intelligence dashboard.</p>
+        <button class="login-btn" onclick="signInWithGoogle()">
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" height="20">
+            Sign in with Google
+        </button>
+    </div>
+</div>
+<script>
+    // REPLACE THESE WITH YOUR ACTUAL SUPABASE KEYS
+    const SUPABASE_URL = "https://odvusqxvhgyfoiyooktl.supabase.co";
+    const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE"; 
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function signInWithGoogle() {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo: window.location.origin + '/index.html' }
+        });
+        if (error) alert("Error: " + error.message);
+    }
+</script>
+</body>
+</html>
