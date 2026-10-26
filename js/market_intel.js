@@ -16,9 +16,14 @@
             // Render opportunities
             const oppsHtml = group.opportunities.map(opp => {
                 const margin = ((opp.retail - opp.wholesale) / opp.retail) * 100;
+                // Fallback image URL if loremflickr fails
+                const fallbackImg = `https://ui-avatars.com/api/?name=${encodeURIComponent(opp.name)}&background=141414&color=00E5FF&size=100&bold=true`;
+                
                 return `
                     <div class="opp-card">
-                        <img src="${opp.image}" class="opp-img">
+                        <!-- Added onerror handler to swap to fallback -->
+                        <img src="${opp.image}" class="opp-img" onerror="this.onerror=null; this.src='${fallbackImg}';">
+                        
                         <div style="flex: 1;">
                             <div style="display: flex; justify-content: space-between; align-items: start;">
                                 <div style="font-weight: 800; font-size: 15px; color: var(--text-primary);">${opp.name}</div>
