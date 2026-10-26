@@ -7,19 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <style>
-    /* Leaderboard Bars */
-    .lb-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 16px;
-    }
+    .lb-item { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
     .lb-rank { font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); width: 20px; font-weight: 700; }
-    .lb-logo {
-        width: 32px; height: 32px; border-radius: var(--r-btn);
-        display: flex; align-items: center; justify-content: center;
-        font-weight: 800; color: #000; font-size: 12px;
-    }
+    .lb-logo { width: 32px; height: 32px; border-radius: var(--r-btn); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #000; font-size: 12px; }
     .lb-info { width: 110px; }
     .lb-name { font-size: 12px; font-weight: 700; }
     .lb-growth { font-size: 9px; font-family: var(--font-mono); font-weight: 700; }
@@ -27,34 +17,17 @@
     .lb-bar { height: 100%; border-radius: 3px; }
     .lb-rev { font-family: var(--font-mono); font-size: 12px; font-weight: 800; width: 60px; text-align: right; }
 
-    /* Playbook */
-    .playbook-item {
-        display: flex; gap: 12px; padding: 12px;
-        background: var(--bg-surface); border-radius: var(--r-btn);
-        border-left: 3px solid var(--violet); margin-bottom: 10px;
-    }
+    .playbook-item { display: flex; gap: 12px; padding: 12px; background: var(--bg-surface); border-radius: var(--r-btn); border-left: 3px solid var(--violet); margin-bottom: 10px; }
     .playbook-icon { font-size: 18px; }
     .playbook-title { font-size: 12px; font-weight: 700; margin-bottom: 4px; color: var(--text-primary); }
     .playbook-desc { font-size: 11px; color: var(--text-secondary); line-height: 1.4; }
 
-    /* Telegram Briefing */
-    .tg-panel {
-        background: #17212b; border: 1px solid #2b5278;
-        border-radius: var(--r-card); padding: 16px; margin-top: 24px;
-    }
+    .tg-panel { background: #17212b; border: 1px solid #2b5278; border-radius: var(--r-card); padding: 16px; margin-top: 24px; }
     .tg-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .tg-avatar {
-        width: 32px; height: 32px; background: var(--accent); border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        color: #000; font-weight: 900;
-    }
+    .tg-avatar { width: 32px; height: 32px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; font-weight: 900; }
     .tg-name { font-weight: 800; font-size: 13px; color: #fff; }
     .tg-time { font-size: 10px; color: #7A7A7A; }
-    .tg-msg {
-        background: #182533; padding: 16px; border-radius: 8px;
-        font-size: 13px; line-height: 1.6; color: #e1e1e1;
-        border-left: 3px solid var(--accent);
-    }
+    .tg-msg { background: #182533; padding: 16px; border-radius: 8px; font-size: 13px; line-height: 1.6; color: #e1e1e1; border-left: 3px solid var(--accent); }
     .tg-msg b { color: #fff; }
 </style>
 </head>
@@ -114,7 +87,7 @@
     <div class="kpi-grid">
         <div class="kpi-card active">
             <div class="kpi-label">Your Revenue (30d)</div>
-            <div class="kpi-value" id="kpi-revenue">Loading...</div>
+            <div class="kpi-value" id="kpi-revenue">$0</div>
             <div class="kpi-label text-green" style="margin-top: 8px; font-size: 9px;">▲ 12.4% vs last month</div>
         </div>
         <div class="kpi-card" style="--accent: var(--violet);">
@@ -129,7 +102,7 @@
         </div>
         <div class="kpi-card warning">
             <div class="kpi-label">Your AOV</div>
-            <div class="kpi-value" id="kpi-aov">Loading...</div>
+            <div class="kpi-value" id="kpi-aov">$0.00</div>
             <div class="kpi-label text-tertiary" style="margin-top: 8px; font-size: 9px;">Competitor AOV: $54.00</div>
         </div>
     </div>

@@ -6,6 +6,7 @@
         if (storeData.kpis) {
             document.getElementById('kpi-revenue').innerText = '$' + storeData.kpis.total_revenue.toLocaleString();
             document.getElementById('kpi-aov').innerText = '$' + storeData.kpis.aov.toFixed(2);
+            document.getElementById('kpi-comp-revenue').innerText = '$' + (storeData.kpis.total_revenue * 3).toLocaleString(); // Estimate
         }
     } catch(e) { console.log("Store metrics asleep"); }
 
@@ -16,9 +17,9 @@
 
         // Render Leaderboard
         const lbContainer = document.getElementById('leaderboard-container');
+        // Find the highest revenue to make the bars relative
         const maxRev = Math.max(...aiData.leaderboard.map(l => l.rev));
-        const colors = ['var(--red)', 'var(--amber)', 'var(--green)', 'var(--violet)'];
-        const initials = ['SN', 'KI', 'YC', 'UR'];
+        const colors = ['var(--red)', 'var(--amber)', 'var(--green)', 'var(--violet)', 'var(--accent)'];
 
         lbContainer.innerHTML = aiData.leaderboard.map((l, i) => {
             const pct = (l.rev / maxRev) * 100;
@@ -27,10 +28,13 @@
             const growthSign = l.growth > 0 ? '▲' : '▼';
             const color = colors[i % colors.length];
             
+            // Get initials from name
+            const initials = l.name.substring(0, 2).toUpperCase();
+            
             return `
                 <div class="lb-item" ${isUser}>
                     <div class="lb-rank">#${i+1}</div>
-                    <div class="lb-logo" style="background: ${color};">${initials[i]}</div>
+                    <div class="lb-logo" style="background: ${color};">${initials}</div>
                     <div class="lb-info">
                         <div class="lb-name ${l.is_user ? 'text-green' : ''}">${l.name}</div>
                         <div class="lb-growth ${growthColor}">${growthSign} ${Math.abs(l.growth)}%</div>
