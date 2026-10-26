@@ -28,7 +28,6 @@
     </div>
 </div>
 <script>
-    // Initialize Supabase with your keys
     var supabaseUrl = "https://odvusqxvhgyfoiyooktl.supabase.co";
     var supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kdnVzcXh2aGd5Zm9peW9va3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5Mzk3NzAsImV4cCI6MjEwODUxNTc3MH0.5LlYHzs4iHz7gQMCLLBCDT7deMveYpx-8fabCH5AljU"; 
     
@@ -37,7 +36,8 @@
     document.getElementById('login-btn').addEventListener('click', async function() {
         var result = await sbClient.auth.signInWithOAuth({
             provider: 'google',
-            options: { redirectTo: window.location.origin + '/index.html' }
+            // FIX: Hardcode the exact GitHub Pages URL
+            options: { redirectTo: 'https://robelceo.github.io/vantix-ui/index.html' }
         });
         if (result.error) {
             alert("Error: " + result.error.message);
