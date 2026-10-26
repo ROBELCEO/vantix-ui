@@ -1,42 +1,28 @@
-﻿// --- TELEGRAM SECURITY GATEKEEPER ---
-// If we are not inside Telegram, hide the app and show a lock screen.
-document.addEventListener("DOMContentLoaded", () => {
-    if (!window.Telegram || !window.Telegram.WebApp || !window.Telegram.WebApp.initData) {
-        document.body.innerHTML = `
-            <div style="display:flex; justify-content:center; align-items:center; height:100vh; background:#000; color:#fff; text-align:center; font-family:'Inter',sans-serif;">
-                <div style="padding: 40px; border: 1px solid #262626; border-radius: 8px; background: #0A0A0A;">
-                    <h1 style="font-size: 24px; font-weight: 900; margin-bottom: 12px;">🔒 Access Restricted</h1>
-                    <p style="color: #8b949e; font-size: 14px; margin-bottom: 24px; max-width: 300px;">
-                        This application is a secure Mini App. Please open it directly through the Vantix Telegram Bot.
-                    </p>
-                    <a href="https://t.me/VANTIXSHOPIFYV1BOT" style="display: inline-block; background: #00E5FF; color: #000; padding: 12px 24px; text-decoration: none; font-weight: 800; border-radius: 6px;">
-                        Open Telegram Bot →
-                    </a>
-                </div>
-            </div>
-        `;
-        return; // Stop executing the rest of the script
+﻿// --- SUPABASE AUTH GATEKEEPER ---
+const SUPABASE_URL = "https://odvusqxvhgyfoiyooktl.supabase.co";
+const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE"; 
+
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+document.addEventListener("DOMContentLoaded", async () => {
+    if (window.location.pathname.includes('login.html')) return;
+
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    
+    if (!session) {
+        window.location.href = "login.html";
+        return;
     }
 
-    // If we ARE inside Telegram, expand the app to full screen
-    window.Telegram.WebApp.expand();
-});
-
-// --- TELEGRAM AUTH INTERCEPTOR ---
-// This wraps the native fetch() function so that EVERY request 
-// automatically includes the Telegram initData header.
-const originalFetch = window.fetch;
-window.fetch = async function() {
-    let [resource, config] = arguments;
-    
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+    const originalFetch = window.fetch;
+    window.fetch = async function() {
+        let [resource, config] = arguments;
         config = config || {};
         config.headers = config.headers || {};
-        config.headers['X-Telegram-Init-Data'] = window.Telegram.WebApp.initData;
-    }
-    
-    return originalFetch(resource, config);
-};
+        config.headers['Authorization'] = `Bearer ${session.access_token}`;
+        return originalFetch(resource, config);
+    };
+});
 
 function toggleMenu() {
     const drawer = document.getElementById('mobile-drawer');
