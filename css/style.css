@@ -75,7 +75,7 @@ body {
 .header {
     height: 56px;
     background-color: var(--bg-panel);
-    border-bottom: 1px solid var(--border);
+    border-bottom: none;
     display: flex;
     align-items: center;
     padding: 0 16px;
@@ -173,7 +173,7 @@ body {
     letter-spacing: 0.5px;
     margin-bottom: 16px;
     padding-bottom: 12px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: none;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -247,14 +247,14 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     padding: 12px;
-    border-bottom: 1px solid var(--border-strong);
+    border-bottom: none;
     background-color: var(--bg-surface);
 }
 
 .data-table td {
     padding: 14px 12px;
     font-size: 12px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: none;
     color: var(--text-secondary);
 }
 
@@ -450,3 +450,4 @@ body {
     .kpi-grid { grid-template-columns: 1fr; }
     .header { padding: 0 12px; }
 }
+
