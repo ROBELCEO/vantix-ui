@@ -16,12 +16,13 @@
                 const margin = ((opp.retail - opp.wholesale) / opp.retail) * 100;
                 const fallbackImg = `https://placehold.co/200x200/141414/00E5FF/png?text=Product`;
                 
-                // Badge color based on supplier source
                 let sourceBadge = '';
                 if (opp.supplier.includes('AliExpress')) sourceBadge = '<span class="badge badge-green" style="font-size:9px;">ALIEXPRESS</span>';
-                else if (opp.supplier === 'Alibaba') sourceBadge = '<span class="badge badge-amber" style="font-size:9px;">ALIBABA</span>';
                 else if (opp.supplier === 'Competitor') sourceBadge = '<span class="badge badge-accent" style="font-size:9px;">COMPETITOR</span>';
                 else sourceBadge = '<span class="badge" style="font-size:9px; background:var(--bg-elevated); color:var(--text-tertiary);">ESTIMATED</span>';
+
+                // SHOW THE ERROR IF IT EXISTS
+                const errorHtml = opp.debug_error ? `<div style="color: var(--red); font-size: 10px; margin-top: 8px;">API Error: ${opp.debug_error}</div>` : '';
 
                 return `
                     <div class="opp-card">
@@ -43,6 +44,7 @@
                             <div style="margin-top: 8px; font-size: 11px; color: var(--text-secondary); line-height: 1.4;">
                                 <b>Proof:</b> ${opp.reason}
                             </div>
+                            ${errorHtml}
                         </div>
                     </div>
                 `;
