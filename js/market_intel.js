@@ -10,23 +10,28 @@
         }
 
         container.innerHTML = data.market_intel.map(group => {
-            // Render trends
             const trendsHtml = group.trending_searches.map(t => `<span class="trend-pill">${t}</span>`).join('');
             
-            // Render opportunities
             const oppsHtml = group.opportunities.map(opp => {
                 const margin = ((opp.retail - opp.wholesale) / opp.retail) * 100;
-                // Fallback image URL if loremflickr fails
-                const fallbackImg = `https://ui-avatars.com/api/?name=${encodeURIComponent(opp.name)}&background=141414&color=00E5FF&size=100&bold=true`;
+                const fallbackImg = `https://placehold.co/200x200/141414/00E5FF/png?text=Product`;
                 
+                // Badge color based on supplier source
+                let sourceBadge = '';
+                if (opp.supplier.includes('AliExpress')) sourceBadge = '<span class="badge badge-green" style="font-size:9px;">ALIEXPRESS</span>';
+                else if (opp.supplier === 'Alibaba') sourceBadge = '<span class="badge badge-amber" style="font-size:9px;">ALIBABA</span>';
+                else if (opp.supplier === 'Competitor') sourceBadge = '<span class="badge badge-accent" style="font-size:9px;">COMPETITOR</span>';
+                else sourceBadge = '<span class="badge" style="font-size:9px; background:var(--bg-elevated); color:var(--text-tertiary);">ESTIMATED</span>';
+
                 return `
                     <div class="opp-card">
-                        <!-- Added onerror handler to swap to fallback -->
                         <img src="${opp.image}" class="opp-img" onerror="this.onerror=null; this.src='${fallbackImg}';">
                         
                         <div style="flex: 1;">
                             <div style="display: flex; justify-content: space-between; align-items: start;">
-                                <div style="font-weight: 800; font-size: 15px; color: var(--text-primary);">${opp.name}</div>
+                                <div style="font-weight: 800; font-size: 15px; color: var(--text-primary);">
+                                    ${opp.name} ${sourceBadge}
+                                </div>
                                 <div class="margin-badge">${margin.toFixed(0)}% Margin</div>
                             </div>
                             
@@ -48,12 +53,10 @@
                     <div class="panel-header" style="font-size: 14px; color: var(--accent); border-bottom-color: var(--border-strong);">
                         Category: ${group.category}
                     </div>
-                    
                     <div style="margin-top: 12px;">
                         <div class="text-tertiary" style="font-size: 10px; text-transform: uppercase; margin-bottom: 8px;">Real-Time Search Demand</div>
                         ${trendsHtml}
                     </div>
-
                     <div style="margin-top: 16px;">
                         <div class="text-tertiary" style="font-size: 10px; text-transform: uppercase; margin-bottom: 8px;">Winning Products to Source</div>
                         ${oppsHtml}
