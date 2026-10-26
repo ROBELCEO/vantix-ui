@@ -3,38 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Vantix — Discovery</title>
+<title>Vantix — Market Intel</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <style>
-    .product-card {
+    .category-group {
+        margin-bottom: 40px;
+        background: var(--bg-panel);
+        border: 1px solid var(--border);
+        border-radius: var(--r-card);
+        padding: 24px;
+    }
+    .trend-pill {
+        display: inline-block;
+        padding: 4px 10px;
+        background: rgba(0, 229, 255, 0.1);
+        color: var(--accent);
+        border: 1px solid rgba(0, 229, 255, 0.2);
+        border-radius: var(--r-btn);
+        font-size: 11px;
+        font-family: var(--font-mono);
+        margin-right: 8px;
+        margin-bottom: 8px;
+    }
+    .opp-card {
         display: flex;
         gap: 16px;
         background: var(--bg-surface);
         border: 1px solid var(--border);
-        border-radius: var(--r-card);
+        border-radius: var(--r-btn);
         padding: 16px;
-        margin-bottom: 12px;
+        margin-top: 12px;
     }
-    .product-img {
-        width: 64px; height: 64px;
+    .opp-img {
+        width: 80px; height: 80px;
         border-radius: var(--r-btn);
         object-fit: cover;
         border: 1px solid var(--border);
     }
-    .product-info { flex: 1; }
-    .product-title { font-weight: 700; font-size: 14px; color: var(--text-primary); }
-    .product-price { font-family: var(--font-mono); font-size: 13px; color: var(--green); font-weight: 700; margin-top: 4px; }
-    .new-launch {
-        display: inline-block;
-        padding: 2px 8px;
+    .margin-badge {
         background: rgba(0, 255, 136, 0.1);
         color: var(--green);
-        border: 1px solid rgba(0, 255, 136, 0.2);
-        border-radius: var(--r-btn);
-        font-size: 9px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: var(--font-mono);
+        font-size: 11px;
         font-weight: 700;
-        margin-left: 8px;
     }
 </style>
 </head>
@@ -87,13 +101,13 @@
 </div>
 
 <div class="screen">
-    <div class="screen-title" style="text-align: center;">Category Intelligence</div>
-    <div class="screen-sub" style="text-align: center;">Real-time market trends for your top category</div>
+    <div class="screen-title">Market Intelligence</div>
+    <div class="screen-sub">What you should sell next, backed by real demand and margin data.</div>
 
-    <div id="discovery-container" style="max-width: 900px; margin: 0 auto;">
+    <div id="intel-container" style="max-width: 900px; margin: 0 auto;">
         <div class="text-tertiary" style="text-align: center; padding: 40px;">
             <span style="display:inline-block; width:20px; height:20px; border:2px solid var(--accent); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite;"></span>
-            <div style="margin-top: 12px;">Analyzing your store's category...</div>
+            <div style="margin-top: 12px;">Analyzing your store categories and market demand...</div>
         </div>
     </div>
 </div>
@@ -103,6 +117,6 @@
 </style>
 
 <script src="js/app.js"></script>
-<script src="js/discovery.js"></script>
+<script src="js/market_intel.js"></script>
 </body>
 </html>
