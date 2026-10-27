@@ -49,8 +49,8 @@
 <div class="screen">
     <div style="max-width: 640px; margin: 0 auto; padding-top: 20px;">
         
-        <!-- STATE 1: UNCONNECTED -->
-        <div id="view-unconnected" style="display: none; text-align: center; padding-top: 40px;">
+        <!-- STATE 1: UNCONNECTED (NOW VISIBLE BY DEFAULT) -->
+        <div id="view-unconnected" style="display: block; text-align: center; padding-top: 40px;">
             <h1 style="font-size: 32px; font-weight: 900; letter-spacing: -1px; margin-bottom: 12px;">Welcome to Vantix</h1>
             <p style="color: var(--text-secondary); font-size: 15px; margin-bottom: 40px; line-height: 1.6;">
                 Connect your Shopify store to unlock AI-powered competitor intelligence and profit margins.
@@ -66,14 +66,9 @@
                 </button>
                 <div id="connect-error" style="color: var(--red); font-size: 12px; margin-top: 10px; display: none;"></div>
             </div>
-
-            <div style="display: flex; justify-content: center; gap: 24px; margin-top: 24px; font-size: 11px; color: var(--text-tertiary);">
-                <span>🔒 Read-only access</span>
-                <span>✅ SOC 2 compliant</span>
-            </div>
         </div>
 
-        <!-- STATE 2: CONNECTED -->
+        <!-- STATE 2: CONNECTED (HIDDEN BY DEFAULT) -->
         <div id="view-connected" style="display: none;">
             <div class="panel" style="background: linear-gradient(180deg, rgba(0, 255, 136, 0.05), var(--bg-panel)); border-color: rgba(0, 255, 136, 0.2); margin-bottom: 32px;">
                 <div style="display: flex; align-items: center; gap: 16px;">
@@ -84,26 +79,6 @@
                     </div>
                 </div>
             </div>
-
-            <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 16px;">Next Steps</h2>
-
-            <a href="competitors.html" class="setup-step">
-                <div class="step-icon step-pending">1</div>
-                <div class="step-content">
-                    <div class="step-title">Add your first competitor</div>
-                    <div class="step-desc">Scrape rival Shopify stores to track their pricing.</div>
-                </div>
-                <div style="color: var(--text-tertiary);">→</div>
-            </a>
-
-            <a href="terminal.html" class="setup-step">
-                <div class="step-icon step-pending">2</div>
-                <div class="step-content">
-                    <div class="step-title">Check the AI Terminal</div>
-                    <div class="step-desc">See how your prices compare and get AI advice.</div>
-                </div>
-                <div style="color: var(--text-tertiary);">→</div>
-            </a>
         </div>
 
     </div>

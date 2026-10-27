@@ -9,7 +9,9 @@
         const res = await fetch('https://vantix-my5f.onrender.com/api/shopify/status');
         
         if (res.status === 401) {
-            // Token invalid or missing, app.js should handle redirect to login
+            // If the token is rejected, forcefully send them to login
+            console.warn("Unauthorized. Redirecting to login...");
+            window.location.href = "login.html";
             return;
         }
 
@@ -22,39 +24,45 @@
         } else {
             unconnectedView.style.display = 'block';
             connectedView.style.display = 'none';
-            
-            const btn = document.getElementById('connect-btn');
-            if (btn) {
-                btn.onclick = async () => {
-                    let domain = document.getElementById('shopify-domain').value.trim();
-                    if(!domain) {
-                        errorDiv.style.display = 'block';
-                        errorDiv.innerText = "Please enter your Shopify domain.";
-                        return;
-                    }
-                    
-                    domain = domain.replace("https://", "").replace("http://", "").replace("www.", "").replace(/\/$/, "");
-                    if(!domain.includes(".myshopify.com")) {
-                        domain = domain + ".myshopify.com";
-                    }
-
-                    const { data: { session } } = await supabaseClient.auth.getSession();
-                    if (!session) {
-                        window.location.href = "login.html";
-                        return;
-                    }
-
-                    errorDiv.style.display = 'none';
-                    btn.innerText = "Redirecting to Shopify...";
-                    btn.disabled = true;
-
-                    window.location.href = `https://vantix-my5f.onrender.com/api/shopify/install?shop=${domain}&token=${session.access_token}`;
-                };
-            }
         }
     } catch(e) {
         console.error("Status check failed", e);
+        // Fallback: Always show the unconnected UI if the network fails
         unconnectedView.style.display = 'block';
         connectedView.style.display = 'none';
     }
 }
+
+// Setup the Connect Button Logic globally
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('connect-btn');
+    if (btn) {
+        btn.onclick = async () => {
+            const errorDiv = document.getElementById('connect-error');
+            let domain = document.getElementById('shopify-domain').value.trim();
+            
+            if(!domain) {
+                errorDiv.style.display = 'block';
+                errorDiv.innerText = "Please enter your Shopify domain.";
+                return;
+            }
+            
+            domain = domain.replace("https://", "").replace("http://", "").replace("www.", "").replace(/\/$/, "");
+            if(!domain.includes(".myshopify.com")) {
+                domain = domain + ".myshopify.com";
+            }
+
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            errorDiv.style.display = 'none';
+            btn.innerText = "Redirecting to Shopify...";
+            btn.disabled = true;
+
+            window.location.href = `https://vantix-my5f.onrender.com/api/shopify/install?shop=${domain}&token=${session.access_token}`;
+        };
+    }
+});
