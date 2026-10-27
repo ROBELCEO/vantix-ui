@@ -1,22 +1,41 @@
 ﻿async function loadOverview() {
     try {
-        // 1. Fetch basic counts
-        const [productsRes, competitorsRes, alertsRes] = await Promise.all([
+        // 1. Fetch basic counts independently so one failure doesn't break everything
+        const [productsRes, competitorsRes, alertsRes] = await Promise.allSettled([
             fetch('https://vantix-my5f.onrender.com/api/products'),
             fetch('https://vantix-my5f.onrender.com/api/competitors/list'),
             fetch('https://vantix-my5f.onrender.com/api/alerts/list')
         ]);
 
-        const productsData = await productsRes.json();
-        const competitorsData = await competitorsRes.json();
-        const alertsData = await alertsRes.json();
+        let productCount = 0;
+        if (productsRes.status === 'fulfilled' && productsRes.value.ok) {
+            const pData = await productsRes.value.json();
+            productCount = pData.products ? pData.products.length : 0;
+        }
 
-        document.getElementById('ov-products').innerText = productsData.products ? productsData.products.length : 0;
-        document.getElementById('ov-competitors').innerText = competitorsData.competitors ? competitorsData.competitors.length : 0;
-        document.getElementById('ov-alerts').innerText = alertsData.alerts ? alertsData.alerts.length : 0;
+        let competitorCount = 0;
+        if (competitorsRes.status === 'fulfilled' && competitorsRes.value.ok) {
+            const cData = await competitorsRes.value.json();
+            competitorCount = cData.competitors ? cData.competitors.length : 0;
+        }
+
+        let alertCount = 0;
+        if (alertsRes.status === 'fulfilled' && alertsRes.value.ok) {
+            const aData = await alertsRes.value.json();
+            alertCount = aData.alerts ? aData.alerts.length : 0;
+        }
+
+        document.getElementById('ov-products').innerText = productCount;
+        document.getElementById('ov-competitors').innerText = competitorCount;
+        document.getElementById('ov-alerts').innerText = alertCount;
 
         // 2. Fetch AI Summary and Health Score
         const summaryRes = await fetch('https://vantix-my5f.onrender.com/api/overview/summary');
+        
+        if (!summaryRes.ok) {
+            throw new Error("Failed to load summary");
+        }
+
         const summaryData = await summaryRes.json();
 
         const healthRing = document.getElementById('health-ring');
@@ -53,6 +72,10 @@
 
     } catch (e) {
         console.error("Failed to load overview data", e);
-        document.getElementById('ai-actions-container').innerHTML = '<div class="text-red" style="padding: 20px;">Failed to load AI data. Please refresh.</div>';
+        document.getElementById('ov-products').innerText = "-";
+        document.getElementById('ov-competitors').innerText = "-";
+        document.getElementById('ov-alerts').innerText = "-";
+        document.getElementById('ai-actions-container').innerHTML = '<div class="text-red" style="padding: 20px;">Failed to load AI summary. Please refresh.</div>';
+        document.getElementById('health-status').innerText = "ERROR";
     }
 }
