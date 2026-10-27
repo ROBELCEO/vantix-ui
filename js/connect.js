@@ -28,9 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('shopify-domain');
 
     if (btn) {
-        // Force a click event instead of using href="#" which causes the "frozen" feeling
-        btn.addEventListener('click', async (e) => {
-            e.preventDefault(); // Stop the page from jumping to the top
+        btn.addEventListener('click', (e) => {
+            e.preventDefault(); 
 
             try {
                 let domain = input.value.trim();
@@ -44,29 +43,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     domain = domain + ".myshopify.com";
                 }
 
-                // Check if Supabase is loaded
-                if (!window.supabaseClient) {
-                    alert("❌ Critical Error: Supabase client is not defined. Did app.js load?");
-                    return;
-                }
-
-                btn.innerText = "Checking session...";
-                
-                const { data: { session } } = await window.supabaseClient.auth.getSession();
-                
-                if (!session) {
-                    alert("⚠️ You are not logged in. Redirecting to login page.");
+                // Read from the global session securely (no localStorage, no deadlock)
+                if (!currentSession || !currentSession.access_token) {
+                    alert("⚠️ No login session found. Please log in again.");
                     window.location.href = "login.html";
                     return;
                 }
 
                 btn.innerText = "Redirecting to Shopify...";
                 
-                // Direct Redirect
-                window.location.href = `https://vantix-my5f.onrender.com/api/shopify/install?shop=${domain}&token=${session.access_token}`;
+                // Direct Redirect using the secure token
+                window.location.href = `https://vantix-my5f.onrender.com/api/shopify/install?shop=${domain}&token=${currentSession.access_token}`;
 
             } catch (err) {
-                alert("❌ JavaScript Error: " + err.message);
+                alert("❌ Error: " + err.message);
+                btn.innerText = "Connect Shopify Store";
             }
         });
     }
