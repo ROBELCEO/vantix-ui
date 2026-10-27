@@ -45,8 +45,6 @@
         <a href="membership.html" class="tab">Membership</a>
         <a href="settings.html" class="tab">Settings</a>
     </div>
-    
-    <!-- PROFILE UI (MUST BE VISIBLE) -->
     <div style="display: flex; align-items: center; gap: 12px;">
         <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">loading...</div>
         <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
@@ -66,7 +64,11 @@
                     <label class="form-label" style="text-align: left;">Shopify Store Domain</label>
                     <input type="text" id="shopify-domain" class="form-input" placeholder="your-store.myshopify.com">
                 </div>
-                <button id="connect-btn" class="btn btn-primary" style="width: 100%; padding: 14px;">Connect Shopify Store</button>
+                
+                <!-- THE PURE HTML LINK -->
+                <a id="direct-connect-link" href="#" class="btn btn-primary" style="width: 100%; padding: 14px; display: block; text-decoration: none; box-sizing: border-box;">
+                    Connect Shopify Store
+                </a>
                 <div id="connect-error" style="color: var(--red); font-size: 12px; margin-top: 10px; display: none;"></div>
             </div>
         </div>
@@ -86,10 +88,7 @@
     </div>
 </div>
 
-<!-- CACHE BUSTER v=99 -->
-<script src="js/app.js?v=99"></script>
-<script src="js/connect.js?v=99"></script>
+<script src="js/app.js"></script>
+<script src="js/connect.js?v=100"></script>
 </body>
 </html>
-
-

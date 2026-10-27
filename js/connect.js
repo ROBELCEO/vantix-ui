@@ -6,8 +6,6 @@
 
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/shopify/status');
-        
-        // If not logged in, app.js handles the redirect
         if (res.status === 401) return;
 
         const data = await res.json();
@@ -22,42 +20,47 @@
         }
     } catch(e) {
         console.error("Status check failed", e);
-        // Always show the form if the network fails
         unconnectedView.style.display = 'block';
         connectedView.style.display = 'none';
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('connect-btn');
-    if (btn) {
-        btn.onclick = async () => {
-            const errorDiv = document.getElementById('connect-error');
-            let domain = document.getElementById('shopify-domain').value.trim();
-            
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Check if connected
+    checkConnectionStatus();
+
+    // 2. Setup the direct link dynamically based on the input
+    const link = document.getElementById('direct-connect-link');
+    const input = document.getElementById('shopify-domain');
+    const errorDiv = document.getElementById('connect-error');
+
+    if (link && input) {
+        // Function to update the href
+        const updateLink = async () => {
+            let domain = input.value.trim();
             if(!domain) {
-                errorDiv.style.display = 'block';
-                errorDiv.innerText = "Please enter your Shopify domain.";
+                link.href = "#";
                 return;
             }
-            
+
             domain = domain.replace("https://", "").replace("http://", "").replace("www.", "").replace(/\/$/, "");
             if(!domain.includes(".myshopify.com")) {
                 domain = domain + ".myshopify.com";
             }
 
             const { data: { session } } = await window.supabaseClient.auth.getSession();
-            if (!session) {
-                window.location.href = "login.html";
-                return;
+            if (session) {
+                link.href = `https://vantix-my5f.onrender.com/api/shopify/install?shop=${domain}&token=${session.access_token}`;
+                errorDiv.style.display = 'none';
+            } else {
+                link.href = "login.html";
             }
-
-            errorDiv.style.display = 'none';
-            btn.innerText = "Redirecting to Shopify...";
-            btn.disabled = true;
-
-            // Redirect to backend OAuth flow
-            window.location.href = `https://vantix-my5f.onrender.com/api/shopify/install?shop=${domain}&token=${session.access_token}`;
         };
+
+        // Update when typing
+        input.addEventListener('input', updateLink);
+        
+        // Update on initial load
+        updateLink();
     }
 });
