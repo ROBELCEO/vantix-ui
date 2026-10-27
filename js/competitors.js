@@ -2,11 +2,16 @@
 
 async function fetchCompetitors() {
     const list = document.getElementById('comp-list');
+    if(!list) return;
+    
     try {
+        // The fetch interceptor in app.js automatically adds the JWT
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/list');
+        
         if(!res.ok) throw new Error("Network error");
         
         const data = await res.json();
+        
         planLimit = data.limit || 10;
         
         document.getElementById('plan-status').innerText = `You are on the ${(data.tier || 'trial').toUpperCase()} plan. You can track up to ${planLimit} competitors.`;
@@ -40,6 +45,7 @@ async function discoverCompetitors() {
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/discover');
         if(!res.ok) throw new Error("Network error");
+        
         const data = await res.json();
         
         if (!data.suggested_competitors || data.suggested_competitors.length === 0) {
