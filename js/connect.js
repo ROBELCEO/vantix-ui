@@ -87,3 +87,50 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Telegram Activation Logic
+async function checkTelegramStatus() {
+    const btn = document.getElementById('telegram-btn');
+    const statusText = document.getElementById('telegram-status-text');
+    if(!btn) return;
+
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/telegram/status');
+        if (!res.ok) return;
+        
+        const data = await res.json();
+        
+        if (data.linked) {
+            btn.innerText = "✅ Telegram Connected";
+            btn.className = "btn btn-secondary";
+            btn.disabled = true;
+            btn.style.borderColor = "var(--green)";
+            btn.style.color = "var(--green)";
+            statusText.innerHTML = "Your account is linked. You will receive daily briefings at 8:00 AM.";
+        } else {
+            btn.innerText = "Activate Telegram Alerts →";
+            btn.className = "btn btn-primary";
+            btn.disabled = false;
+            
+            // Generate deep link with user ID
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            if (session) {
+                // Deep link format: https://t.me/BOT_USERNAME?start=USER_ID
+                btn.onclick = () => {
+                    window.open(`https://t.me/VANTIXSHOPIFYV1BOT?start=${session.user.id}`, '_blank');
+                    statusText.innerHTML = "Waiting for Telegram confirmation... <br><span style='font-size:10px;'>Click 'START' in the Telegram app.</span>";
+                };
+            }
+        }
+    } catch(e) {
+        console.error("Telegram status error", e);
+    }
+}
+
+// Call this when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    // Only run if on the connect page and store is connected
+    if (document.getElementById('telegram-btn')) {
+        setTimeout(checkTelegramStatus, 1000); // Wait for app.js to load session
+    }
+});
