@@ -20,7 +20,9 @@
         container.innerHTML = data.market_intel.map(item => `
             <div class="panel" style="margin-bottom: 24px; padding: 20px;">
                 <div style="display: flex; gap: 20px; align-items: flex-start;">
-                    <div style="width: 120px; height: 120px; background: var(--bg-elevated); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--text-tertiary); font-size: 10px;">No Image</div>
+                    
+                    <!-- REAL SHOPIFY IMAGE -->
+                    <img src="${item.image}" style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); background: var(--bg-surface);">
                     
                     <div style="flex: 1;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
@@ -31,12 +33,18 @@
                             <div class="badge badge-green" style="font-size: 12px;">GLOBAL CATALOG</div>
                         </div>
 
+                        <!-- PRICE AND REAL STAR RATING -->
                         <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 16px;">
                             <div>
-                                <span style="font-family: var(--font-mono); font-size: 18px; font-weight: 800; color: var(--green);">$${item.price}</span>
+                                <span style="font-family: var(--font-mono); font-size: 18px; font-weight: 800; color: var(--green);">$${item.price.toFixed(2)}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <div style="color: var(--amber); font-size: 14px;">★★★★★</div>
+                                <div style="font-size: 12px; color: var(--text-tertiary);">${item.rating} (${item.review_count} reviews)</div>
                             </div>
                         </div>
 
+                        <!-- AI BULLET POINTS -->
                         <div style="background: var(--bg-surface); border-left: 3px solid var(--violet); padding: 12px; border-radius: 4px;">
                             <div style="font-size: 10px; font-weight: 800; color: var(--violet); margin-bottom: 8px; text-transform: uppercase;">⚡ AI Goldmine Signals</div>
                             <ul style="margin: 0; padding-left: 16px; font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
@@ -91,7 +99,7 @@ async function fetchData(category) {
         container.innerHTML = data.market_intel.map(item => `
             <div class="panel" style="margin-bottom: 24px; padding: 20px;">
                 <div style="display: flex; gap: 20px; align-items: flex-start;">
-                    <div style="width: 120px; height: 120px; background: var(--bg-elevated); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--text-tertiary); font-size: 10px;">No Image</div>
+                    <img src="${item.image}" style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); background: var(--bg-surface);">
                     
                     <div style="flex: 1;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
@@ -104,7 +112,11 @@ async function fetchData(category) {
 
                         <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 16px;">
                             <div>
-                                <span style="font-family: var(--font-mono); font-size: 18px; font-weight: 800; color: var(--green);">$${item.price}</span>
+                                <span style="font-family: var(--font-mono); font-size: 18px; font-weight: 800; color: var(--green);">$${item.price.toFixed(2)}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <div style="color: var(--amber); font-size: 14px;">★★★★★</div>
+                                <div style="font-size: 12px; color: var(--text-tertiary);">${item.rating} (${item.review_count} reviews)</div>
                             </div>
                         </div>
 
