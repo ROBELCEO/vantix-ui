@@ -48,16 +48,17 @@ function renderWatchlist() {
             diffClass = diff > 0 ? 'text-red' : (diff < 0 ? 'text-green' : 'text-tertiary');
         }
         
-        const fallbackImg = `https://ui-avatars.com/api/?name=${encodeURIComponent(c.my_product)}&background=141414&color=00E5FF`;
+        // Use the real image if it exists, otherwise use initials
+        const imageSrc = c.my_image ? c.my_image : `https://ui-avatars.com/api/?name=${encodeURIComponent(c.my_product)}&background=141414&color=00E5FF`;
 
         return `
             <div onclick="selectProduct(${index})" style="cursor: pointer; padding: 12px; background: ${bg}; border: 1px solid ${border}; border-radius: var(--r-btn); display: flex; align-items: center; gap: 12px; transition: 0.2s;">
-                <img src="${c.my_image || fallbackImg}" style="width: 36px; height: 36px; border-radius: 4px; object-fit: cover;">
+                <img src="${imageSrc}" style="width: 36px; height: 36px; border-radius: 4px; object-fit: cover;">
                 <div style="flex: 1; min-width: 0;">
                     <div style="font-weight: 700; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${c.my_product}</div>
-                    <div class="mono ${diffClass}" style="font-size: 10px;">${diff > 0 ? '+' : ''}$${diff.toFixed(2)} vs Comp</div>
+                    <div class="mono ${diffClass}" style="font-size: 10px;">${diff > 0 ? '+' : ''}${diff.toFixed(2)} vs Comp</div>
                 </div>
-                <div class="mono text-green" style="font-weight: 800; font-size: 13px;">$${c.my_price}</div>
+                <div class="mono text-green" style="font-weight: 800; font-size: 13px;">${c.my_price}</div>
             </div>
         `;
     }).join('');
@@ -240,3 +241,4 @@ async function fetchAIAdvice(productName) {
         div.innerHTML = `<div class="text-red" style="font-size: 12px; padding: 12px;">Backend asleep. Try again.</div>`;
     }
 }
+
