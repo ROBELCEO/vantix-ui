@@ -1,8 +1,4 @@
-﻿let currentCategory = '';
-
-async function switchCategory(category) {
-    currentCategory = category;
-    
+﻿async function switchCategory(category) {
     // Update Pills
     document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
     const pills = document.querySelectorAll('.pill');
@@ -19,6 +15,22 @@ async function switchCategory(category) {
     await loadDiscovery(category);
 }
 
+function handleSearch(event) {
+    if (event.key === 'Enter') {
+        triggerSearch();
+    }
+}
+
+function triggerSearch() {
+    const query = document.getElementById('search-input').value.trim();
+    if (!query) return;
+    
+    // Remove active state from pills since we are doing a custom search
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    
+    loadDiscovery(query);
+}
+
 async function loadDiscovery(category = '') {
     const container = document.getElementById('discovery-container');
     if(!container) return;
@@ -27,7 +39,7 @@ async function loadDiscovery(category = '') {
 
     try {
         const url = category 
-            ? `https://vantix-my5f.onrender.com/api/discovery/trends?category=${category}`
+            ? `https://vantix-my5f.onrender.com/api/discovery/trends?category=${encodeURIComponent(category)}`
             : 'https://vantix-my5f.onrender.com/api/discovery/trends';
             
         const res = await fetch(url);
@@ -82,7 +94,6 @@ async function loadDiscovery(category = '') {
 // Initial load
 window.addEventListener('load', () => {
     if (window.location.pathname.includes('discovery.html')) {
-        // Wait for app.js to set the token
         setTimeout(() => loadDiscovery(''), 500);
     }
 });
