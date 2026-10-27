@@ -91,3 +91,56 @@ async function addCompetitor(domain) {
         status.className = 'text-red'; status.innerText = "Error adding competitor."; 
     }
 }
+
+async function loadCompetitorIntel() {
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/opportunities');
+        const data = await res.json();
+
+        // Render Stock Outs
+        const stockList = document.getElementById('stockout-list');
+        if (data.stock_outs && data.stock_outs.length > 0) {
+            stockList.innerHTML = data.stock_outs.map(p => `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-btn); margin-bottom: 8px;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+                        <img src="${p.image || 'https://via.placeholder.com/32'}" style="width: 32px; height: 32px; border-radius: 4px;">
+                        <div style="min-width: 0;">
+                            <div style="font-weight: 700; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.title}</div>
+                            <div class="text-tertiary" style="font-size: 10px;">${p.store}</div>
+                        </div>
+                    </div>
+                    <div class="mono text-amber" style="font-weight: 800; font-size: 12px;">$${p.price.toFixed(2)}</div>
+                </div>
+            `).join('');
+        } else {
+            stockList.innerHTML = '<div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 12px;">No stock-outs detected right now.</div>';
+        }
+
+        // Render New Launches
+        const launchList = document.getElementById('launch-list');
+        if (data.new_launches && data.new_launches.length > 0) {
+            launchList.innerHTML = data.new_launches.map(p => `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-btn); margin-bottom: 8px;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+                        <img src="${p.image || 'https://via.placeholder.com/32'}" style="width: 32px; height: 32px; border-radius: 4px;">
+                        <div style="min-width: 0;">
+                            <div style="font-weight: 700; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.title}</div>
+                            <div class="text-tertiary" style="font-size: 10px;">${p.store} • ${p.date}</div>
+                        </div>
+                    </div>
+                    <div class="mono text-green" style="font-weight: 800; font-size: 12px;">$${p.price.toFixed(2)}</div>
+                </div>
+            `).join('');
+        } else {
+            launchList.innerHTML = '<div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 12px;">No new launches in the last 30 days.</div>';
+        }
+
+    } catch(e) {
+        console.error("Failed to load competitor intel", e);
+    }
+}
+
+// Trigger on load
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(loadCompetitorIntel, 500);
+});
