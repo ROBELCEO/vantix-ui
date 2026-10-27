@@ -8,31 +8,6 @@
 <link rel="stylesheet" href="css/style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-    .terminal-layout { display: grid; grid-template-columns: 280px 1fr 320px; gap: 16px; height: calc(100vh - 130px); }
-    .watchlist { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--r-card); display: flex; flex-direction: column; overflow-y: auto; }
-    .watchlist-header { padding: 12px 16px; font-size: 10px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; border-bottom: 1px solid var(--border); background: var(--bg-surface); }
-    .watch-item { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.15s; }
-    .watch-item:hover { background: var(--bg-hover); }
-    .watch-item.active { background: var(--bg-elevated); border-left: 3px solid var(--accent); }
-    .watch-item img { width: 36px; height: 36px; border-radius: var(--r-btn); object-fit: cover; }
-    .watch-info { flex: 1; min-width: 0; }
-    .watch-title { font-size: 12px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .watch-price { font-family: var(--font-mono); font-size: 12px; font-weight: 700; text-align: right; }
-    .chart-panel { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--r-card); display: flex; flex-direction: column; padding: 16px; }
-    .chart-wrap { flex: 1; position: relative; width: 100%; min-height: 300px; }
-    .ai-panel { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--r-card); display: flex; flex-direction: column; overflow-y: auto; }
-    .ai-header { padding: 16px; border-bottom: 1px solid var(--border); color: var(--violet); font-size: 11px; font-weight: 800; background: linear-gradient(180deg, rgba(139,127,255,0.05), transparent); }
-    .ai-content { padding: 16px; flex: 1; font-size: 13px; line-height: 1.6; }
-    .ai-box { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-btn); padding: 12px; margin-top: 16px; }
-    .ai-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 8px; }
-    .ai-row:last-child { margin-bottom: 0; padding-top: 8px; border-top: 1px solid var(--border); }
-    @media (max-width: 1024px) {
-        .terminal-layout { grid-template-columns: 1fr; height: auto; }
-        .watchlist { max-height: 300px; }
-        .chart-panel { min-height: 400px; }
-    }
-</style>
 </head>
 <body>
 
@@ -78,31 +53,68 @@
     </div>
 </div>
 
-<div class="screen" style="padding: 16px;">
-    <div class="terminal-layout">
-        <div class="watchlist">
-            <div class="watchlist-header">Watchlist</div>
-            <div id="watchlist-container">
-                <div class="text-tertiary" style="padding: 16px; font-size: 11px;">Loading...</div>
+<div class="screen">
+    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 300px 1fr; gap: 24px;">
+        
+        <!-- LEFT SIDEBAR: WATCHLIST -->
+        <div>
+            <div class="screen-title" style="font-size: 20px; margin-bottom: 16px;">Watchlist</div>
+            <div id="watchlist-container" style="display: flex; flex-direction: column; gap: 8px;">
+                <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 20px;">Loading products...</div>
             </div>
         </div>
 
-        <div class="chart-panel">
-            <div class="panel-header">Price History — <span id="chart-product-name">...</span></div>
-            <div class="chart-wrap"><canvas id="terminalChart"></canvas></div>
-        </div>
-
-        <div class="ai-panel">
-            <div class="ai-header">⚡ VANTIX AI ADVISOR</div>
-            <div class="ai-content" id="ai-advisor-content">
-                <div class="text-tertiary" style="font-size: 12px; text-align: center; padding-top: 40px;">Select a product to analyze.</div>
+        <!-- RIGHT MAIN AREA -->
+        <div>
+            <!-- PRICE HISTORY CHART -->
+            <div class="panel" style="margin-bottom: 24px;">
+                <div class="panel-header" style="display: flex; justify-content: space-between;">
+                    <div>Price History — <span id="chart-product-name" style="color: var(--accent);">SELECT A PRODUCT</span></div>
+                    <div class="badge badge-violet">30 Days</div>
+                </div>
+                <div style="height: 250px;">
+                    <canvas id="terminalChart"></canvas>
+                </div>
             </div>
+
+            <!-- TACTICAL GRID: SAFE FLOOR & SIMULATOR -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                
+                <!-- PRICE WAR SAFE FLOOR -->
+                <div class="panel" style="border-color: rgba(255, 170, 0, 0.4); background: linear-gradient(180deg, rgba(255,170,0,0.05), transparent);">
+                    <div class="panel-header" style="color: var(--amber);">⚔️ Price War Safe Floor</div>
+                    <div id="safe-floor-content">
+                        <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 20px;">Select a product to analyze margins.</div>
+                    </div>
+                </div>
+
+                <!-- PROFIT FORECAST SIMULATOR -->
+                <div class="panel" style="border-color: rgba(0, 229, 255, 0.4); background: linear-gradient(180deg, rgba(0,229,255,0.05), transparent);">
+                    <div class="panel-header" style="color: var(--accent);">🔮 Profit Forecast Simulator</div>
+                    <div id="simulator-content">
+                        <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 20px;">Select a product to simulate pricing.</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- AI MARGIN ADVISOR -->
+            <div class="panel" style="margin-top: 24px; border-color: rgba(139, 127, 255, 0.4);">
+                <div class="panel-header" style="color: var(--violet); display: flex; justify-content: space-between;">
+                    <div>🧠 AI Margin Advisor</div>
+                    <div class="badge badge-violet">Groq</div>
+                </div>
+                <div id="ai-advisor-content">
+                    <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 20px;">Select a product to generate AI strategy.</div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 
-<script src="js/app.js?v=1100"></script>
-<script src="js/terminal.js?v=2017"></script>
+<script src="js/app.js?v=2023"></script>
+<script src="js/terminal.js?v=2025"></script>
 </body>
 </html>
 

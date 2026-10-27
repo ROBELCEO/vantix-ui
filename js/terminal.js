@@ -145,7 +145,7 @@ function renderChart(product) {
     if (product.competitor_matches && product.competitor_matches.length > 0) {
         product.competitor_matches.slice(0, 3).forEach((match, i) => {
             const compPrice = parseFloat(match.comp_price);
-            const compData = [compPrice + 5, compPrice + 8, compPrice + 2, compPrice, compPrice + 4, compPrice];
+            const compData = [compPrice, compPrice, compPrice, compPrice, compPrice, compPrice];
             
             datasets.push({
                 label: match.competitor_name,
@@ -209,4 +209,5 @@ async function fetchAIAdvice(productName) {
 if (window.location.pathname.includes('terminal.html')) {
     loadTerminal();
 }
+
 
