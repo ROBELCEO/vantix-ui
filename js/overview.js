@@ -1,71 +1,58 @@
 ﻿async function loadOverview() {
-    // 1. Fetch real store metrics for the KPIs
     try {
-        const storeRes = await fetch('https://vantix-my5f.onrender.com/api/store/detailed?shop_domain=trendywear-dev.myshopify.com');
-        const storeData = await storeRes.json();
-        if (storeData.kpis) {
-            document.getElementById('kpi-revenue').innerText = '$' + storeData.kpis.total_revenue.toLocaleString();
-            document.getElementById('kpi-aov').innerText = '$' + storeData.kpis.aov.toFixed(2);
-            document.getElementById('kpi-comp-revenue').innerText = '$' + (storeData.kpis.total_revenue * 3).toLocaleString(); // Estimate
+        // 1. Fetch basic counts
+        const [productsRes, competitorsRes, alertsRes] = await Promise.all([
+            fetch('https://vantix-my5f.onrender.com/api/products'),
+            fetch('https://vantix-my5f.onrender.com/api/competitors/list'),
+            fetch('https://vantix-my5f.onrender.com/api/alerts/list')
+        ]);
+
+        const productsData = await productsRes.json();
+        const competitorsData = await competitorsRes.json();
+        const alertsData = await alertsRes.json();
+
+        document.getElementById('ov-products').innerText = productsData.products ? productsData.products.length : 0;
+        document.getElementById('ov-competitors').innerText = competitorsData.competitors ? competitorsData.competitors.length : 0;
+        document.getElementById('ov-alerts').innerText = alertsData.alerts ? alertsData.alerts.length : 0;
+
+        // 2. Fetch AI Summary and Health Score
+        const summaryRes = await fetch('https://vantix-my5f.onrender.com/api/overview/summary');
+        const summaryData = await summaryRes.json();
+
+        const healthRing = document.getElementById('health-ring');
+        const healthScore = document.getElementById('health-score');
+        const healthStatus = document.getElementById('health-status');
+        
+        healthScore.innerText = summaryData.health_score;
+        healthStatus.innerText = summaryData.status;
+        
+        let ringColor = 'var(--green)';
+        if(summaryData.health_score < 50) ringColor = 'var(--red)';
+        else if(summaryData.health_score < 75) ringColor = 'var(--amber)';
+        
+        healthRing.style.background = `conic-gradient(${ringColor} ${summaryData.health_score}%, var(--bg-elevated) ${summaryData.health_score}% 100%)`;
+        healthScore.style.color = ringColor;
+
+        // 3. Render AI Actions
+        const actionContainer = document.getElementById('ai-actions-container');
+        const icons = ['🎯', '📈', '⚠️'];
+        const borders = ['var(--violet)', 'var(--green)', 'var(--amber)'];
+        
+        if (summaryData.actions && summaryData.actions.length > 0) {
+            actionContainer.innerHTML = summaryData.actions.map((action, i) => `
+                <div class="action-item" style="border-left-color: ${borders[i % 3]};">
+                    <div style="font-size: 20px;">${icons[i % 3]}</div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">${action}</div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            actionContainer.innerHTML = '<div class="text-tertiary">No actions generated. Add products to your store.</div>';
         }
-    } catch(e) { console.log("Store metrics asleep"); }
 
-    // 2. Fetch AI Summary for Leaderboard, Playbook, and Briefing
-    try {
-        const aiRes = await fetch('https://vantix-my5f.onrender.com/api/overview/summary');
-        const aiData = await aiRes.json();
-
-        // Render Leaderboard
-        const lbContainer = document.getElementById('leaderboard-container');
-        // Find the highest revenue to make the bars relative
-        const maxRev = Math.max(...aiData.leaderboard.map(l => l.rev));
-        const colors = ['var(--red)', 'var(--amber)', 'var(--green)', 'var(--violet)', 'var(--accent)'];
-
-        lbContainer.innerHTML = aiData.leaderboard.map((l, i) => {
-            const pct = (l.rev / maxRev) * 100;
-            const isUser = l.is_user ? 'style="background: rgba(0,255,136,0.05); border-radius: 4px; padding: 4px;"' : '';
-            const growthColor = l.growth > 0 ? 'text-green' : 'text-red';
-            const growthSign = l.growth > 0 ? '▲' : '▼';
-            const color = colors[i % colors.length];
-            
-            // Get initials from name
-            const initials = l.name.substring(0, 2).toUpperCase();
-            
-            return `
-                <div class="lb-item" ${isUser}>
-                    <div class="lb-rank">#${i+1}</div>
-                    <div class="lb-logo" style="background: ${color};">${initials}</div>
-                    <div class="lb-info">
-                        <div class="lb-name ${l.is_user ? 'text-green' : ''}">${l.name}</div>
-                        <div class="lb-growth ${growthColor}">${growthSign} ${Math.abs(l.growth)}%</div>
-                    </div>
-                    <div class="lb-bar-wrap">
-                        <div class="lb-bar" style="width: ${pct}%; background: ${color};"></div>
-                    </div>
-                    <div class="lb-rev ${l.is_user ? 'text-green' : ''}">$${(l.rev/1000).toFixed(1)}K</div>
-                </div>
-            `;
-        }).join('');
-
-        // Render Playbook
-        const playContainer = document.getElementById('playbook-container');
-        playContainer.innerHTML = aiData.playbook.map(p => `
-            <div class="playbook-item" style="border-left-color: ${p.color};">
-                <div class="playbook-icon">${p.icon}</div>
-                <div>
-                    <div class="playbook-title">${p.title}</div>
-                    <div class="playbook-desc">${p.desc}</div>
-                </div>
-            </div>
-        `).join('');
-
-        // Render Briefing
-        document.getElementById('briefing-container').innerHTML = aiData.briefing;
-
-    } catch(e) {
-        console.log("AI Overview asleep");
-        document.getElementById('playbook-container').innerHTML = '<div class="text-red">Failed to load AI.</div>';
+    } catch (e) {
+        console.error("Failed to load overview data", e);
+        document.getElementById('ai-actions-container').innerHTML = '<div class="text-red" style="padding: 20px;">Failed to load AI data. Please refresh.</div>';
     }
 }
-
-loadOverview();
