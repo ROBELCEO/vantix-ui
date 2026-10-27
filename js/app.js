@@ -4,7 +4,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 window.supabaseClient = supabaseClient; 
 
-// IMMEDIATELY override fetch so no page can miss the token
+// Intercept fetch to ALWAYS add the Google JWT
 const originalFetch = window.fetch;
 window.fetch = async function() {
     let [resource, config] = arguments;
@@ -27,11 +27,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // Trigger page-specific fetches now that auth is 100% ready
+    // AUTOMATIC TELEGRAM LINKING
+    // If we are inside Telegram, grab the initData and link it to the Google account
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+        window.Telegram.WebApp.expand();
+        try {
+            await fetch('https://vantix-my5f.onrender.com/api/telegram/link-telegram', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }, // JWT is added by interceptor
+                body: JSON.stringify({ initData: window.Telegram.WebApp.initData })
+            });
+        } catch(e) { console.error("Telegram link failed", e); }
+    }
+
+    // Trigger page-specific fetches
     if (typeof checkConnectionStatus === 'function') checkConnectionStatus();
     if (typeof fetchCompetitors === 'function') fetchCompetitors();
     if (typeof loadInventory === 'function') loadInventory();
-    if (typeof loadTerminal === 'function') loadTerminal();
 });
 
 function toggleMenu() {
