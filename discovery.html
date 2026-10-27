@@ -8,16 +8,9 @@
 <link rel="stylesheet" href="css/style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-    .product-card {
-        display: flex; gap: 16px; background: var(--bg-surface);
-        border: 1px solid var(--border); border-radius: var(--r-card);
-        padding: 16px; margin-bottom: 12px;
-    }
-    .product-img { width: 64px; height: 64px; border-radius: var(--r-btn); object-fit: cover; border: 1px solid var(--border); }
-    .product-info { flex: 1; }
-    .product-title { font-weight: 700; font-size: 14px; color: var(--text-primary); }
-    .product-price { font-family: var(--font-mono); font-size: 13px; color: var(--green); font-weight: 700; margin-top: 4px; }
-    .new-launch { display: inline-block; padding: 2px 8px; background: rgba(0, 255, 136, 0.1); color: var(--green); border: 1px solid rgba(0, 255, 136, 0.2); border-radius: var(--r-btn); font-size: 9px; font-weight: 700; margin-left: 8px; }
+    .category-pills { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; }
+    .pill { padding: 8px 16px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 20px; font-size: 12px; font-weight: 700; color: var(--text-tertiary); cursor: pointer; white-space: nowrap; }
+    .pill.active { background: var(--accent); color: #000; border-color: var(--accent); }
 </style>
 </head>
 <body>
@@ -65,13 +58,24 @@
 </div>
 
 <div class="screen">
-    <div class="screen-title" style="text-align: center;">Category Intelligence</div>
-    <div class="screen-sub" style="text-align: center;">Real-time market trends for your top category</div>
+    <div style="max-width: 900px; margin: 0 auto;">
+        <div class="screen-title">Market Goldmines</div>
+        <div class="screen-sub">High-demand products dominating the global Shopify ecosystem.</div>
 
-    <div id="discovery-container" style="max-width: 900px; margin: 0 auto;">
-        <div class="text-tertiary" style="text-align: center; padding: 40px;">
-            <span style="display:inline-block; width:20px; height:20px; border:2px solid var(--accent); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite;"></span>
-            <div style="margin-top: 12px;">Analyzing your store's category...</div>
+        <div class="category-pills" id="category-pills">
+            <div class="pill active" onclick="switchCategory('')">Auto-Detect</div>
+            <div class="pill" onclick="switchCategory('jeans')">Jeans</div>
+            <div class="pill" onclick="switchCategory('shorts')">Shorts</div>
+            <div class="pill" onclick="switchCategory('activewear')">Activewear</div>
+            <div class="pill" onclick="switchCategory('shoes')">Shoes</div>
+            <div class="pill" onclick="switchCategory('bags')">Bags</div>
+        </div>
+
+        <div id="discovery-container">
+            <div class="text-tertiary" style="text-align: center; padding: 40px;">
+                <span style="display:inline-block; width:20px; height:20px; border:2px solid var(--accent); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite;"></span>
+                <div style="margin-top: 12px;">Scanning global Shopify market...</div>
+            </div>
         </div>
     </div>
 </div>
@@ -80,11 +84,7 @@
     @keyframes spin { 100% { transform: rotate(360deg); } }
 </style>
 
-<script src="js/app.js?v=1100"></script>
-<script src="js/discovery.js?v=1013"></script>
+<script src="js/app.js"></script>
+<script src="js/discovery.js?v=2000"></script>
 </body>
 </html>
-
-
-
-

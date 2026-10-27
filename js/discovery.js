@@ -1,10 +1,13 @@
-﻿async function loadDiscovery(category = '') {
-    // 1. Handle Pill Highlighting (No window.event needed)
+﻿let currentCategory = '';
+
+async function switchCategory(category) {
+    currentCategory = category;
+    
+    // Update Pills
     document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
     const pills = document.querySelectorAll('.pill');
-    
     if (category === '') {
-        if (pills[0]) pills[0].classList.add('active');
+        pills[0].classList.add('active');
     } else {
         pills.forEach(p => {
             if (p.innerText.toLowerCase().includes(category.toLowerCase())) {
@@ -13,12 +16,15 @@
         });
     }
 
-    // 2. Show Loading State
+    await loadDiscovery(category);
+}
+
+async function loadDiscovery(category = '') {
     const container = document.getElementById('discovery-container');
     if(!container) return;
+
     container.innerHTML = '<div class="text-tertiary" style="text-align: center; padding: 40px;"><span style="display:inline-block; width:20px; height:20px; border:2px solid var(--accent); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite;"></span><div style="margin-top:12px;">Searching global Shopify catalog...</div></div>';
 
-    // 3. Fetch Data
     try {
         const url = category 
             ? `https://vantix-my5f.onrender.com/api/discovery/trends?category=${category}`
@@ -32,7 +38,6 @@
             return;
         }
 
-        // 4. Render UI
         container.innerHTML = data.market_intel.map(item => `
             <div class="panel" style="margin-bottom: 24px; padding: 20px;">
                 <div style="display: flex; gap: 20px; align-items: flex-start;">
@@ -70,6 +75,14 @@
 
     } catch(e) {
         console.error("Discovery error:", e);
-        container.innerHTML = '<div class="text-red" style="text-align: center; padding: 40px;">Failed to load intelligence. Backend might be asleep.</div>';
+        container.innerHTML = '<div class="text-red" style="text-align: center; padding: 40px;">Failed to load intelligence.</div>';
     }
 }
+
+// Initial load
+window.addEventListener('load', () => {
+    if (window.location.pathname.includes('discovery.html')) {
+        // Wait for app.js to set the token
+        setTimeout(() => loadDiscovery(''), 500);
+    }
+});
