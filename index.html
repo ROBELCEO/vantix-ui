@@ -55,7 +55,8 @@
 <div class="screen">
     <div style="max-width: 640px; margin: 0 auto; padding-top: 20px;">
         
-        <div id="view-unconnected" style="display: block; text-align: center; padding-top: 40px;">
+        <!-- UNCONNECTED VIEW -->
+        <div id="view-unconnected" style="display: none; text-align: center; padding-top: 40px;">
             <h1 style="font-size: 32px; font-weight: 900; letter-spacing: -1px; margin-bottom: 12px;">Welcome to Vantix</h1>
             <p style="color: var(--text-secondary); font-size: 15px; margin-bottom: 40px; line-height: 1.6;">Connect your Shopify store to unlock AI-powered competitor intelligence.</p>
 
@@ -64,8 +65,6 @@
                     <label class="form-label" style="text-align: left;">Shopify Store Domain</label>
                     <input type="text" id="shopify-domain" class="form-input" placeholder="your-store.myshopify.com">
                 </div>
-                
-                <!-- THE PURE HTML LINK -->
                 <a id="direct-connect-link" href="#" class="btn btn-primary" style="width: 100%; padding: 14px; display: block; text-decoration: none; box-sizing: border-box;">
                     Connect Shopify Store
                 </a>
@@ -73,6 +72,7 @@
             </div>
         </div>
 
+        <!-- CONNECTED VIEW -->
         <div id="view-connected" style="display: none;">
             <div class="panel" style="background: rgba(0, 255, 136, 0.05); border-color: rgba(0, 255, 136, 0.2); margin-bottom: 32px;">
                 <div style="display: flex; align-items: center; gap: 16px;">
@@ -83,18 +83,40 @@
                     </div>
                 </div>
             </div>
+
+            <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 16px;">Next Steps</h2>
+
+            <a href="competitors.html" class="setup-step">
+                <div class="step-icon step-pending">1</div>
+                <div class="step-content">
+                    <div class="step-title">Add your first competitor</div>
+                    <div class="step-desc">Scrape rival Shopify stores to track their pricing.</div>
+                </div>
+                <div style="color: var(--text-tertiary);">→</div>
+            </a>
+
+            <a href="terminal.html" class="setup-step">
+                <div class="step-icon step-pending">2</div>
+                <div class="step-content">
+                    <div class="step-title">Check the AI Terminal</div>
+                    <div class="step-desc">See how your prices compare and get AI advice.</div>
+                </div>
+                <div style="color: var(--text-tertiary);">→</div>
+            </a>
+
+            <!-- NEW: BRIEFING BUTTON -->
+            <div style="margin-top: 32px; text-align: center; border-top: 1px solid var(--border); padding-top: 24px;">
+                <button id="briefing-btn" class="btn btn-secondary" style="padding: 12px 24px; font-size: 13px; border-color: var(--violet); color: var(--violet);">
+                    ☀️ Send Test Daily Briefing to Telegram
+                </button>
+                <div id="briefing-status" style="margin-top: 12px; font-size: 12px; color: var(--text-tertiary);"></div>
+            </div>
         </div>
 
     </div>
 </div>
 
-<script src="js/app.js?v=2002"></script>
-<script src="js/connect.js?v=2002"></script>
+<script src="js/app.js?v=2003"></script>
+<script src="js/connect.js?v=2003"></script>
 </body>
 </html>
-
-
-
-
-
-
