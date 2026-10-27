@@ -37,14 +37,45 @@
     }
 }
 
-function saveSettings() {
-    // In Phase 2, this will save to Supabase. For now, we use localStorage.
-    localStorage.setItem('vantix_profit_goal', document.getElementById('profit-goal').value);
-    localStorage.setItem('vantix_shipping', document.getElementById('shipping-cost').value);
-    localStorage.setItem('vantix_gateway', document.getElementById('gateway-fee').value);
+async function saveSettings() {
+    const goal = parseFloat(document.getElementById('profit-goal').value) || 0;
+    const shipping = parseFloat(document.getElementById('shipping-cost').value) || 0;
+    const gateway = parseFloat(document.getElementById('gateway-fee').value) || 0;
+
+    try {
+        await fetch('https://vantix-my5f.onrender.com/api/store/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ profit_goal: goal, avg_shipping_cost: shipping, gateway_fee: gateway })
+        });
+        console.log("Settings saved to DB");
+    } catch(e) { console.error("Failed to save settings", e); }
 }
 
-// Telegram Logic (Same as before)
+async function matchCompetitor(domain, btnElement) {
+    try {
+        btnElement.innerText = "Scraping...";
+        btnElement.disabled = true;
+
+        const res = await fetch(`https://vantix-my5f.onrender.com/api/competitors/add?domain=${domain}`);
+        const data = await res.json();
+        
+        if (res.ok) {
+            btnElement.innerText = "✅ Matched!";
+            btnElement.style.color = "var(--green)";
+            btnElement.style.borderColor = "var(--green)";
+        } else {
+            btnElement.innerText = "Failed";
+            btnElement.style.color = "var(--red)";
+            btnElement.disabled = false;
+        }
+    } catch (e) {
+        console.error(e);
+        btnElement.innerText = "Error";
+        btnElement.disabled = false;
+    }
+}
+
 async function checkTelegramStatus() {
     const btn = document.getElementById('telegram-btn');
     const statusText = document.getElementById('telegram-status-text');
@@ -141,29 +172,3 @@ document.addEventListener('DOMContentLoaded', () => {
         updateLink();
     }
 });
-
-async function matchCompetitor(domain) {
-    try {
-        // Change button state
-        const btn = event.target;
-        btn.innerText = "Scraping...";
-        btn.disabled = true;
-
-        const res = await fetch(`https://vantix-my5f.onrender.com/api/competitors/add?domain=${domain}`);
-        const data = await res.json();
-        
-        if (res.ok) {
-            btn.innerText = "✅ Matched!";
-            btn.style.color = "var(--green)";
-            btn.style.borderColor = "var(--green)";
-        } else {
-            btn.innerText = "Failed";
-            btn.style.color = "var(--red)";
-            btn.disabled = false;
-        }
-    } catch (e) {
-        console.error(e);
-        event.target.innerText = "Error";
-        event.target.disabled = false;
-    }
-}

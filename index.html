@@ -67,8 +67,8 @@
 <div class="screen">
     <div style="max-width: 720px; margin: 0 auto; padding-top: 20px;">
         
-        <!-- UNCONNECTED VIEW -->
-        <div id="view-unconnected" style="display: none; text-align: center; padding-top: 40px;">
+        <!-- UNCONNECTED VIEW (Visible by default) -->
+        <div id="view-unconnected" style="display: block; text-align: center; padding-top: 40px;">
             <h1 style="font-size: 32px; font-weight: 900; letter-spacing: -1px; margin-bottom: 12px;">Welcome to Vantix</h1>
             <p style="color: var(--text-secondary); font-size: 15px; margin-bottom: 40px; line-height: 1.6;">Connect your Shopify store to unlock AI-powered profit intelligence.</p>
 
@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <!-- CONNECTED VIEW (PROFIT ENGINE) -->
+        <!-- CONNECTED VIEW (Hidden by default) -->
         <div id="view-connected" style="display: none;">
             
             <div style="text-align: center; margin-bottom: 40px;">
@@ -136,21 +136,20 @@
                         <div class="step-title">3. Instant Competitor Match</div>
                         <div class="step-desc">Based on your catalog, we found these stores selling similar items. Add them to track their prices.</div>
                         
-                        <!-- Mocked UI for now -->
                         <div class="competitor-preview">
                             <img class="comp-avatar" src="https://ui-avatars.com/api/?name=Gymshark&background=000&color=fff">
                             <div style="flex: 1; font-weight: 700; font-size: 13px;">gymshark.com</div>
-                            <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 11px;" onclick="matchCompetitor\('gymshark.com'\)">+ Match</button>
+                            <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 11px;" onclick="matchCompetitor('gymshark.com', this)">+ Match</button>
                         </div>
                         <div class="competitor-preview">
                             <img class="comp-avatar" src="https://ui-avatars.com/api/?name=Allbirds&background=000&color=fff">
                             <div style="flex: 1; font-weight: 700; font-size: 13px;">allbirds.com</div>
-                            <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 11px;" onclick="matchCompetitor\('gymshark.com'\)">+ Match</button>
+                            <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 11px;" onclick="matchCompetitor('allbirds.com', this)">+ Match</button>
                         </div>
                         <div class="competitor-preview">
                             <img class="comp-avatar" src="https://ui-avatars.com/api/?name=FashionNova&background=000&color=fff">
                             <div style="flex: 1; font-weight: 700; font-size: 13px;">fashionnova.com</div>
-                            <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 11px;" onclick="matchCompetitor\('gymshark.com'\)">+ Match</button>
+                            <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 11px;" onclick="matchCompetitor('fashionnova.com', this)">+ Match</button>
                         </div>
                     </div>
                 </div>
@@ -173,8 +172,7 @@
     </div>
 </div>
 
-<script src="js/app.js?v=2007"></script>
-<script src="js/connect.js?v=2008"></script>
+<script src="js/app.js?v=2009"></script>
+<script src="js/connect.js?v=2009"></script>
 </body>
 </html>
-
