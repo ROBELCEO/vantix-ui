@@ -3,20 +3,24 @@ let custChartInstance = null;
 
 async function loadStoreData() {
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/store/detailed?shop_domain=trendywear-dev.myshopify.com');
-        const data = await res.json();
+        const res = await fetch('https://vantix-my5f.onrender.com/api/store/detailed');
         
-        if(data.error) {
-            console.error("API Error:", data.error);
-            return;
+        if (!res.ok) {
+            if (res.status === 404) {
+                document.getElementById('store-name').innerText = "Store Not Connected";
+                return;
+            }
+            throw new Error("API Error");
         }
+        
+        const data = await res.json();
 
         // 1. Update Store Banner
         document.getElementById('store-name').innerText = data.profile.name;
         document.getElementById('store-domain').innerText = data.profile.domain;
         document.getElementById('store-avatar').src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.profile.name) + '&background=00E5FF&color=000&size=64&bold=true';
 
-        // 2. Update KPIs
+        // 2. Update KPIs (Real Data)
         document.getElementById('kpi-revenue').innerText = '$' + data.kpis.total_revenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
         document.getElementById('kpi-orders').innerText = data.kpis.order_count;
         document.getElementById('kpi-aov').innerText = '$' + data.kpis.aov.toFixed(2);
@@ -35,11 +39,11 @@ async function loadStoreData() {
         // 6. Render Low Stock
         renderLowStock(data.low_stock);
 
-        // 7. Render Customer Donut
+        // 7. Render Customer Donut (Mocked ratio for now, based on standard Shopify data)
         renderCustomerChart();
 
     } catch(e) {
-        console.error("Failed to connect to backend", e);
+        console.error("Failed to load store data", e);
     }
 }
 
@@ -77,14 +81,8 @@ function renderRevenueChart(chartData) {
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                y: { 
-                    grid: { color: '#1F1F1F' }, 
-                    ticks: { color: '#8A8A94', font: { family: 'JetBrains Mono', size: 10 } } 
-                },
-                x: { 
-                    grid: { display: false }, 
-                    ticks: { color: '#8A8A94', font: { family: 'JetBrains Mono', size: 10 } } 
-                }
+                y: { grid: { color: '#1F1F1F' }, ticks: { color: '#8A8A94', font: { family: 'JetBrains Mono', size: 10 } } },
+                x: { grid: { display: false }, ticks: { color: '#8A8A94', font: { family: 'JetBrains Mono', size: 10 } } }
             }
         }
     });
@@ -101,7 +99,7 @@ function renderTopProducts(products) {
     products.forEach((p, i) => {
         html += `<div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
             <div class="mono text-tertiary" style="font-size: 11px; width: 15px;">#${i+1}</div>
-            <img src="${p.image || 'https://ui-avatars.com/api/?name=' + p.title + '&background=141414&color=fff'}" class="thumb">
+            <img src="${p.image || 'https://via.placeholder.com/40'}" class="thumb">
             <div style="flex: 1; min-width: 0;">
                 <div style="font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.title}</div>
                 <div class="mono text-tertiary" style="font-size: 10px;">${p.units} sold</div>
@@ -126,7 +124,7 @@ function renderCarts(carts) {
                 <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${c.item}</div>
                 <div class="text-tertiary" style="font-size: 9px;">${c.email}</div>
             </div>
-            <div class="mono text-amber" style="font-weight: 700;">$${c.value}</div>
+            <div class="mono text-amber" style="font-weight: 700;">$${c.value.toFixed(2)}</div>
         </div>`;
     });
     list.innerHTML = html;
@@ -142,7 +140,7 @@ function renderLowStock(stock) {
     let html = '';
     stock.forEach(s => {
         html += `<div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 11px;">
-            <img src="${s.image || 'https://ui-avatars.com/api/?name=' + s.title + '&background=141414&color=fff'}" class="thumb" style="width: 28px; height: 28px;">
+            <img src="${s.image || 'https://via.placeholder.com/30'}" class="thumb" style="width: 28px; height: 28px;">
             <div style="flex: 1; min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.title}</div>
             <div class="mono text-red" style="font-weight: 700;">${s.qty} left</div>
         </div>`;
@@ -159,19 +157,19 @@ function renderCustomerChart() {
         data: {
             labels: ['Returning', 'New'],
             datasets: [{
-                data: [38, 62],
+                data: [35, 65], // Realistic starting point, can be updated with real customer API later
                 backgroundColor: ['#00FF88', '#00E5FF'],
                 borderWidth: 0,
                 cutout: '75%'
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
     });
 }
 
-// Run on load
-loadStoreData();
+// Call this on load if we are on the store page
+if (window.location.pathname.includes('store.html')) {
+    document.addEventListener("DOMContentLoaded", () => {
+        loadStoreData();
+    });
+}
