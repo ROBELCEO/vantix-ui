@@ -1,8 +1,6 @@
 ﻿async function checkConnectionStatus() {
     try {
-        // The fetch interceptor in app.js automatically adds the Authorization header
         const res = await fetch('https://vantix-my5f.onrender.com/api/shopify/status');
-        
         if (!res.ok) throw new Error("Auth failed");
         
         const data = await res.json();
@@ -18,14 +16,25 @@
             unconnectedView.style.display = 'block';
             connectedView.style.display = 'none';
             
-            // Attach the session token to the Connect button
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                const connectBtn = document.querySelector('a[href*="/api/shopify/install"]');
-                if (connectBtn) {
-                    // Update the href to include the user's token
-                    connectBtn.href = `https://vantix-my5f.onrender.com/api/shopify/install?shop=trendywear-dev.myshopify.com&token=${session.access_token}`;
-                }
+            // Attach click listener to the connect button
+            const btn = document.getElementById('connect-btn');
+            if (btn) {
+                btn.onclick = async () => {
+                    let domain = document.getElementById('shopify-domain').value.trim();
+                    if(!domain) return alert("Please enter your Shopify domain.");
+                    
+                    // Clean the domain
+                    domain = domain.replace("https://", "").replace("http://", "").replace("www.", "").strip("/");
+                    if(!domain.includes(".myshopify.com")) {
+                        domain = domain + ".myshopify.com";
+                    }
+
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (!session) return alert("You are not logged in.");
+
+                    // Redirect to Shopify OAuth with the user's token
+                    window.location.href = `https://vantix-my5f.onrender.com/api/shopify/install?shop=${domain}&token=${session.access_token}`;
+                };
             }
         }
     } catch(e) {
