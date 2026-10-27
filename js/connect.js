@@ -15,14 +15,16 @@
             connectedView.style.display = 'block';
             document.getElementById('connected-domain').innerText = data.domain;
             
-            // Load saved settings from localStorage (Static behavior)
-            const savedGoal = localStorage.getItem('vantix_profit_goal');
-            const savedShipping = localStorage.getItem('vantix_shipping');
-            const savedGateway = localStorage.getItem('vantix_gateway');
-            
-            if(savedGoal) document.getElementById('profit-goal').value = savedGoal;
-            if(savedShipping) document.getElementById('shipping-cost').value = savedShipping;
-            if(savedGateway) document.getElementById('gateway-fee').value = savedGateway;
+            // Load saved settings from Database
+            try {
+                const settingsRes = await fetch('https://vantix-my5f.onrender.com/api/store/settings');
+                if (settingsRes.ok) {
+                    const settings = await settingsRes.json();
+                    document.getElementById('profit-goal').value = settings.profit_goal || '';
+                    document.getElementById('shipping-cost').value = settings.avg_shipping_cost || '';
+                    document.getElementById('gateway-fee').value = settings.gateway_fee || '';
+                }
+            } catch(e) { console.error("Failed to load settings", e); }
             
             checkTelegramStatus();
             
@@ -139,3 +141,29 @@ document.addEventListener('DOMContentLoaded', () => {
         updateLink();
     }
 });
+
+async function matchCompetitor(domain) {
+    try {
+        // Change button state
+        const btn = event.target;
+        btn.innerText = "Scraping...";
+        btn.disabled = true;
+
+        const res = await fetch(`https://vantix-my5f.onrender.com/api/competitors/add?domain=${domain}`);
+        const data = await res.json();
+        
+        if (res.ok) {
+            btn.innerText = "✅ Matched!";
+            btn.style.color = "var(--green)";
+            btn.style.borderColor = "var(--green)";
+        } else {
+            btn.innerText = "Failed";
+            btn.style.color = "var(--red)";
+            btn.disabled = false;
+        }
+    } catch (e) {
+        console.error(e);
+        event.target.innerText = "Error";
+        event.target.disabled = false;
+    }
+}
