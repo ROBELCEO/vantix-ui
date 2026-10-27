@@ -122,14 +122,21 @@ function renderTopProducts(products) {
 function renderCarts(carts) {
     const list = document.getElementById('carts-list');
     if(!list) return;
+    
     let html = '';
     carts.forEach(c => {
-        html += `<div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 11px;">
-            <div style="min-width: 0;">
-                <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${c.item}</div>
-                <div class="text-tertiary" style="font-size: 9px;">${c.email}</div>
+        // If a URL exists from Shopify, show the Recover button
+        const recoverBtn = c.url ? `<a href="${c.url}" target="_blank" class="btn btn-secondary" style="padding: 4px 10px; font-size: 10px; border-color: var(--amber); color: var(--amber); white-space: nowrap;">Recover →</a>` : '';
+        
+        html += `<div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-btn); margin-bottom: 8px;">
+            <div style="flex: 1; min-width: 0; margin-right: 12px;">
+                <div style="font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${c.item}</div>
+                <div class="text-tertiary" style="font-size: 10px; margin-top: 2px;">${c.email || 'Guest Customer'}</div>
             </div>
-            <div class="mono text-amber" style="font-weight: 700;">$${c.value.toFixed(2)}</div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="mono text-amber" style="font-weight: 800; font-size: 14px;">${c.value.toFixed(2)}</div>
+                ${recoverBtn}
+            </div>
         </div>`;
     });
     list.innerHTML = html;
@@ -168,3 +175,4 @@ function renderCustomerChart() {
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
     });
 }
+
