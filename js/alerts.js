@@ -54,6 +54,5 @@
     }
 }
 
-if (window.location.pathname.includes('alerts.html')) {
-    loadAlerts();
-}
+
+
