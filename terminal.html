@@ -69,7 +69,12 @@
             <!-- PRICE HISTORY CHART -->
             <div class="panel" style="margin-bottom: 24px;">
                 <div class="panel-header" style="display: flex; justify-content: space-between;">
-                    <div>Price History — <span id="chart-product-name" style="color: var(--accent);">SELECT A PRODUCT</span></div>
+                    <!-- THE IMAGE TAG IS GUARANTEED TO BE HERE NOW -->
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        Price History — 
+                        <img id="chart-product-img" src="" style="width: 28px; height: 28px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border); display: none;"> 
+                        <span id="chart-product-name" style="color: var(--accent);">SELECT A PRODUCT</span>
+                    </div>
                     <div class="badge badge-violet">30 Days</div>
                 </div>
                 <div style="height: 250px;">
@@ -113,9 +118,7 @@
     </div>
 </div>
 
-<script src="js/app.js?v=2023"></script>
-<script src="js/terminal.js?v=2026"></script>
+<script src="js/app.js?v=2027"></script>
+<script src="js/terminal.js?v=2027"></script>
 </body>
 </html>
-
-
