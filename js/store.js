@@ -50,6 +50,7 @@ async function loadStoreData() {
         }
 
         renderCustomerChart();
+        loadDeadStock();
 
     } catch(e) {
         console.error("Failed to load store data", e);
@@ -176,3 +177,39 @@ function renderCustomerChart() {
     });
 }
 
+
+async function loadDeadStock() {
+    const list = document.getElementById('dead-stock-list');
+    if (!list) return;
+
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/store/dead-stock');
+        const data = await res.json();
+
+        document.getElementById('dead-stock-total').innerText = '$' + data.total_cash_trapped.toFixed(2);
+
+        if (data.dead_items.length === 0) {
+            list.innerHTML = '<div class="text-green" style="font-size: 12px; text-align: center; padding: 12px;">✅ No dead stock! Your inventory is healthy.</div>';
+            return;
+        }
+
+        let html = '';
+        data.dead_items.forEach(item => {
+            html += `<div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-btn); margin-bottom: 8px;">
+                <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
+                    <img src="${item.image || 'https://via.placeholder.com/32'}" style="width: 32px; height: 32px; border-radius: 4px; object-fit: cover;">
+                    <div style="min-width: 0;">
+                        <div style="font-weight: 700; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.title}</div>
+                        <div class="text-tertiary" style="font-size: 10px;">${item.stock} units sitting for 60+ days</div>
+                    </div>
+                </div>
+                <div class="mono text-red" style="font-weight: 800; font-size: 14px;">$${item.cash_trapped.toFixed(2)}</div>
+            </div>`;
+        });
+        list.innerHTML = html;
+
+    } catch(e) {
+        console.error("Failed to load dead stock", e);
+        list.innerHTML = '<div class="text-red" style="font-size: 12px; text-align: center;">Failed to calculate dead stock.</div>';
+    }
+}
