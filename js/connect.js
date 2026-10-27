@@ -61,10 +61,16 @@ async function saveSettings() {
             setTimeout(() => status.style.display = 'none', 3000);
             btn.innerText = "Save Profit Settings";
             btn.disabled = false;
+        } else {
+            throw new Error("Server responded with " + res.status);
         }
     } catch(e) { 
+        console.error(e);
         btn.innerText = "Error - Try Again";
         btn.disabled = false;
+        status.style.color = "var(--red)";
+        status.innerText = "Failed to save. Check console.";
+        status.style.display = 'block';
     }
 }
 
@@ -181,3 +187,4 @@ document.addEventListener('DOMContentLoaded', () => {
         updateLink();
     }
 });
+
