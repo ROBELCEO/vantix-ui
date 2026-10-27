@@ -1,19 +1,19 @@
 ﻿async function checkConnectionStatus() {
+    const unconnectedView = document.getElementById('view-unconnected');
+    const connectedView = document.getElementById('view-connected');
+
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/shopify/status');
         
         if (!res.ok) {
-            if (res.status === 401) {
-                console.error("Auth failed: Token rejected by backend");
-                return; // Don't redirect here, app.js handles auth
-            }
-            throw new Error("Failed to fetch status");
+            // If it fails (e.g. 401), show the unconnected view by default
+            unconnectedView.style.display = 'block';
+            connectedView.style.display = 'none';
+            console.warn("Status check failed, defaulting to unconnected view.");
+            return;
         }
         
         const data = await res.json();
-        
-        const unconnectedView = document.getElementById('view-unconnected');
-        const connectedView = document.getElementById('view-connected');
         
         if(data.connected) {
             unconnectedView.style.display = 'none';
@@ -43,7 +43,8 @@
         }
     } catch(e) {
         console.error("Status check failed", e);
-        const unconnectedView = document.getElementById('view-unconnected');
-        if (unconnectedView) unconnectedView.style.display = 'block';
+        // Always show the unconnected view if the network request fails
+        unconnectedView.style.display = 'block';
+        connectedView.style.display = 'none';
     }
 }
