@@ -64,3 +64,41 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
+document.addEventListener('DOMContentLoaded', () => {
+    const briefingBtn = document.getElementById('briefing-btn');
+    if (briefingBtn) {
+        briefingBtn.addEventListener('click', async () => {
+            const statusDiv = document.getElementById('briefing-status');
+            briefingBtn.innerText = "Generating AI Briefing...";
+            briefingBtn.disabled = true;
+            statusDiv.innerText = "Asking Groq AI to analyze your store...";
+
+            try {
+                // 1. Get the user's Telegram Chat ID from the DB
+                // Wait, the backend needs to know WHO to send it to. 
+                // For the MVP, let's pass the chat_id that we linked earlier.
+                const res = await fetch('https://vantix-my5f.onrender.com/api/telegram/send-briefing', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: "5993737811" }) // Use your actual Chat ID here
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    briefingBtn.innerText = "✅ Briefing Sent!";
+                    statusDiv.innerText = "Check your Telegram app!";
+                    statusDiv.style.color = "var(--green)";
+                } else {
+                    throw new Error(data.detail || "Failed");
+                }
+            } catch (e) {
+                briefingBtn.innerText = "☀️ Send Test Daily Briefing to Telegram";
+                briefingBtn.disabled = false;
+                statusDiv.innerText = "Error: " + e.message;
+                statusDiv.style.color = "var(--red)";
+            }
+        });
+    }
+});
