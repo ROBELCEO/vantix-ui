@@ -70,6 +70,13 @@ function selectProduct(index) {
     
     renderWatchlist();
     document.getElementById('chart-product-name').innerText = product.my_product.toUpperCase();
+    const imgEl = document.getElementById('chart-product-img');
+    if (product.my_image) {
+        imgEl.src = product.my_image;
+        imgEl.style.display = 'block';
+    } else {
+        imgEl.style.display = 'none';
+    }
 
     renderChart(product);
     fetchAIAdvice(product.my_product);
@@ -209,5 +216,6 @@ async function fetchAIAdvice(productName) {
 if (window.location.pathname.includes('terminal.html')) {
     loadTerminal();
 }
+
 
 
