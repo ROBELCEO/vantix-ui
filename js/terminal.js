@@ -73,6 +73,54 @@ function selectProduct(index) {
 
     renderChart(product);
     fetchAIAdvice(product.my_product);
+    renderPriceWarPanel(product);
+}
+
+function renderPriceWarPanel(product) {
+    const container = document.getElementById('ai-advisor-content');
+    if (!container) return;
+    
+    // Find the best competitor match to evaluate the war
+    const match = product.competitor_matches[0];
+    if (!match) return;
+
+    let badgeColor = "var(--green)";
+    let statusText = "SAFE TO HOLD";
+    let advice = `Your cost is ${product.my_cost.toFixed(2)}. Your absolute safe floor is ${match.safe_floor.toFixed(2)}.`;
+
+    if (match.war_status === "DANGER") {
+        badgeColor = "var(--red)";
+        statusText = "DO NOT MATCH";
+        advice = `Competitor is at ${match.comp_price.toFixed(2)}, which is below your safe floor of ${match.safe_floor.toFixed(2)}. If you match, you lose money. Hold your price and offer a bundle instead.`;
+    } else if (match.war_status === "WARNING") {
+        badgeColor = "var(--amber)";
+        statusText = "PROCEED WITH CAUTION";
+        advice = `Competitor dropped to ${match.comp_price.toFixed(2)}. You can safely match them because your floor is ${match.safe_floor.toFixed(2)}.`;
+    }
+
+    container.innerHTML = `
+        <div style="background: var(--bg-surface); border: 1px solid ${badgeColor}; border-radius: 8px; padding: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="font-size: 16px; font-weight: 900; color: ${badgeColor};">${statusText}</div>
+                <div class="badge" style="background: ${badgeColor}; color: #000;">PRICE WAR</div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                <div>
+                    <div class="text-tertiary" style="font-size: 10px;">Your Cost (COGS)</div>
+                    <div class="mono" style="font-size: 14px; font-weight: 700;">${product.my_cost.toFixed(2)}</div>
+                </div>
+                <div>
+                    <div class="text-tertiary" style="font-size: 10px;">Safe Floor (15% Margin)</div>
+                    <div class="mono" style="font-size: 14px; font-weight: 700; color: ${badgeColor};">${match.safe_floor.toFixed(2)}</div>
+                </div>
+            </div>
+
+            <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 4px;">
+                ${advice}
+            </div>
+        </div>
+    `;
 }
 
 function renderChart(product) {
@@ -161,3 +209,4 @@ async function fetchAIAdvice(productName) {
 if (window.location.pathname.includes('terminal.html')) {
     loadTerminal();
 }
+
