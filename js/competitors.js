@@ -44,7 +44,13 @@ async function discoverCompetitors() {
 
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/discover');
-        if(!res.ok) throw new Error("Network error");
+        if(!res.ok) {
+            if (res.status === 403) {
+                const data = await res.json();
+                throw new Error(data.detail || "Upgrade required for AI Discovery.");
+            }
+            throw new Error("Network error");
+        }
         
         const data = await res.json();
         
@@ -59,7 +65,7 @@ async function discoverCompetitors() {
             `).join('');
         }
     } catch(e) {
-        results.innerHTML = '<div class="text-red" style="text-align: center; font-size: 12px;">Discovery failed. Try again.</div>';
+        results.innerHTML = `<div class="text-red" style="text-align: center; font-size: 12px;">${e.message}</div>`;
     }
     btn.innerText = "Find More Competitors →"; btn.disabled = false;
 }
@@ -73,13 +79,13 @@ async function addCompetitor(domain) {
         const res = await fetch(`https://vantix-my5f.onrender.com/api/competitors/add?domain=${domain}`);
         const data = await res.json();
         
-        if(data.status === "success") {
+        if(res.ok && data.status === "success") {
             status.className = 'text-green'; status.innerText = data.message;
             document.getElementById('comp-domain').value = "";
             document.getElementById('discovery-results').innerHTML = ""; 
             fetchCompetitors(); 
         } else { 
-            status.className = 'text-red'; status.innerText = data.detail || data.message; 
+            status.className = 'text-red'; status.innerText = data.detail || data.message || "Error adding."; 
         }
     } catch(e) { 
         status.className = 'text-red'; status.innerText = "Error adding competitor."; 
