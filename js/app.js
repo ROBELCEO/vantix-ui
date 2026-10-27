@@ -3,50 +3,49 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Store the session globally so we don't need to fetch it repeatedly
-let currentSession = null;
-
-// Listen for auth changes securely
-window.supabaseClient.auth.onAuthStateChange((event, session) => {
-    currentSession = session;
-});
-
-// Fetch Interceptor (ONLY intercepts our Render backend, avoiding the deadlock)
+// 1. Synchronous Fetch Interceptor (NO getSession inside fetch!)
 const originalFetch = window.fetch;
-window.fetch = async function(resource, config) {
+window.fetch = function(resource, config) {
     config = config || {};
     config.headers = config.headers || {};
     
-    // Only add the token if we are talking to our Vantix backend
-    if (typeof resource === 'string' && resource.includes('vantix-my5f.onrender.com')) {
-        if (currentSession?.access_token) {
-            config.headers['Authorization'] = `Bearer ${currentSession.access_token}`;
+    // Only add token if talking to our Render backend
+    if (window.currentSession && window.currentSession.access_token) {
+        if (typeof resource === 'string' && resource.includes('vantix-my5f.onrender.com')) {
+            config.headers['Authorization'] = `Bearer ${window.currentSession.access_token}`;
         }
     }
     return originalFetch(resource, config);
 };
 
+// 2. Global Auth Check
 window.addEventListener('load', async () => {
     if (window.location.pathname.includes('login.html')) return;
 
-    // Fetch the initial session ONCE on load
     const { data: { session } } = await window.supabaseClient.auth.getSession();
-    currentSession = session;
-
+    
     if (!session) {
         console.log("No session. Redirecting to login...");
         window.location.href = "login.html";
         return;
     }
 
-    // Update UI with user email
+    // Store session globally for the fetch interceptor
+    window.currentSession = session;
+
     const emailEl = document.getElementById('user-email');
     const logoutBtn = document.getElementById('logout-btn');
     if (emailEl) emailEl.innerText = session.user.email;
     if (logoutBtn) logoutBtn.style.display = 'block';
 
-    // Trigger page specific logic
-    if (typeof checkConnectionStatus === 'function') checkConnectionStatus();
+    // Small delay to ensure DOM and page scripts are ready
+    setTimeout(() => {
+        if (typeof checkConnectionStatus === 'function') checkConnectionStatus();
+        if (typeof fetchCompetitors === 'function') fetchCompetitors();
+        if (typeof loadInventory === 'function') loadInventory();
+        if (typeof loadStoreData === 'function') loadStoreData();
+        if (typeof loadOverview === 'function') loadOverview();
+    }, 100);
 });
 
 async function logOut() {
@@ -62,4 +61,3 @@ function toggleMenu() {
         overlay.style.display = drawer.classList.contains('open') ? 'block' : 'none';
     }
 }
-

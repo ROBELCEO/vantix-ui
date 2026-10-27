@@ -15,6 +15,44 @@ async function loadStoreData() {
         
         const data = await res.json();
 
+        document.getElementById('store-name').innerText = data.profile.name;
+        document.getElementById('store-domain').innerText = data.profile.domain;
+        document.getElementById('store-avatar').src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.profile.name) + '&background=00E5FF&color=000&size=64&bold=true';
+
+        document.getElementById('kpi-revenue').innerText = '$' + data.kpis.total_revenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('kpi-orders').innerText = data.kpis.order_count;
+        document.getElementById('kpi-aov').innerText = '$' + data.kpis.aov.toFixed(2);
+        document.getElementById('kpi-abandoned').innerText = '$' + data.kpis.abandoned_value.toFixed(2);
+        document.getElementById('abandoned-total').innerText = '$' + data.kpis.abandoned_value.toFixed(2);
+
+        renderRevenueChart(data.chart);
+        renderTopProducts(data.top_products);
+        renderCarts(data.carts);
+        renderLowStock(data.low_stock);
+        renderCustomerChart();
+
+    } catch(e) {
+        console.error("Failed to load store data", e);
+    }
+}
+
+// ... keep the rest of the render functions (renderRevenueChart, renderTopProducts, etc.) unchanged ...let revChartInstance = null;
+let custChartInstance = null;
+
+async function loadStoreData() {
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/store/detailed');
+        
+        if (!res.ok) {
+            if (res.status === 404) {
+                document.getElementById('store-name').innerText = "Store Not Connected";
+                return;
+            }
+            throw new Error("API Error");
+        }
+        
+        const data = await res.json();
+
         // 1. Update Store Banner
         document.getElementById('store-name').innerText = data.profile.name;
         document.getElementById('store-domain').innerText = data.profile.domain;
@@ -168,3 +206,4 @@ function renderCustomerChart() {
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
     });
 }
+
