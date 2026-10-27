@@ -67,7 +67,7 @@
 <div class="screen">
     <div style="max-width: 720px; margin: 0 auto; padding-top: 20px;">
         
-        <!-- UNCONNECTED VIEW (Visible by default) -->
+        <!-- UNCONNECTED VIEW -->
         <div id="view-unconnected" style="display: block; text-align: center; padding-top: 40px;">
             <h1 style="font-size: 32px; font-weight: 900; letter-spacing: -1px; margin-bottom: 12px;">Welcome to Vantix</h1>
             <p style="color: var(--text-secondary); font-size: 15px; margin-bottom: 40px; line-height: 1.6;">Connect your Shopify store to unlock AI-powered profit intelligence.</p>
@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <!-- CONNECTED VIEW (Hidden by default) -->
+        <!-- CONNECTED VIEW -->
         <div id="view-connected" style="display: none;">
             
             <div style="text-align: center; margin-bottom: 40px;">
@@ -97,59 +97,42 @@
 
             <div class="panel">
                 
-                <!-- STEP 1: PROFIT GOAL -->
+                <!-- STEP 1 & 2 -->
                 <div class="onboarding-step">
                     <div class="step-visual">🎯</div>
                     <div class="step-content">
-                        <div class="step-title">1. Set Your Monthly Profit Goal</div>
+                        <div class="step-title">1. Define Your Profit Goal</div>
                         <div class="step-desc">We will build your entire strategy around hitting this number.</div>
-                        <div class="input-group">
-                            <label class="input-label">Target Monthly Profit ($)</label>
-                            <input type="number" id="profit-goal" class="form-input" placeholder="e.g. 5000" onchange="saveSettings()">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- STEP 2: TRUE NET MARGIN SETUP -->
-                <div class="onboarding-step">
-                    <div class="step-visual">🧮</div>
-                    <div class="step-content">
-                        <div class="step-title">2. True Net Margin Setup</div>
-                        <div class="step-desc">Shopify hides the real costs. Tell us your averages so we can calculate <b>true</b> profit, not fake revenue.</div>
                         <div class="input-row">
                             <div class="input-group">
+                                <label class="input-label">Target Monthly Profit ($)</label>
+                                <input type="number" id="profit-goal" class="form-input" placeholder="e.g. 5000">
+                            </div>
+                            <div class="input-group">
                                 <label class="input-label">Avg Shipping Cost ($)</label>
-                                <input type="number" id="shipping-cost" class="form-input" placeholder="e.g. 5.00" onchange="saveSettings()">
+                                <input type="number" id="shipping-cost" class="form-input" placeholder="e.g. 5.00">
                             </div>
                             <div class="input-group">
                                 <label class="input-label">Gateway Fee (%)</label>
-                                <input type="number" id="gateway-fee" class="form-input" placeholder="e.g. 2.9" onchange="saveSettings()">
+                                <input type="number" id="gateway-fee" class="form-input" placeholder="e.g. 2.9">
                             </div>
                         </div>
+                        <button id="save-settings-btn" class="btn btn-primary" style="width: 100%; padding: 10px; margin-top: 8px;" onclick="saveSettings()">
+                            Save Profit Settings
+                        </button>
+                        <div id="settings-status" style="font-size: 11px; color: var(--green); margin-top: 8px; text-align: center; display: none;">Saved!</div>
                     </div>
                 </div>
 
-                <!-- STEP 3: INSTANT COMPETITOR MATCH -->
+                <!-- STEP 3: REAL COMPETITOR MATCH -->
                 <div class="onboarding-step" style="border-bottom: none;">
                     <div class="step-visual">🕵️</div>
                     <div class="step-content">
-                        <div class="step-title">3. Instant Competitor Match</div>
-                        <div class="step-desc">Based on your catalog, we found these stores selling similar items. Add them to track their prices.</div>
+                        <div class="step-title">2. Auto-Discover Competitors</div>
+                        <div class="step-desc">Our AI analyzes your catalog and finds the exact Shopify stores competing with you right now.</div>
                         
-                        <div class="competitor-preview">
-                            <img class="comp-avatar" src="https://ui-avatars.com/api/?name=Gymshark&background=000&color=fff">
-                            <div style="flex: 1; font-weight: 700; font-size: 13px;">gymshark.com</div>
-                            <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 11px;" onclick="matchCompetitor('gymshark.com', this)">+ Match</button>
-                        </div>
-                        <div class="competitor-preview">
-                            <img class="comp-avatar" src="https://ui-avatars.com/api/?name=Allbirds&background=000&color=fff">
-                            <div style="flex: 1; font-weight: 700; font-size: 13px;">allbirds.com</div>
-                            <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 11px;" onclick="matchCompetitor('allbirds.com', this)">+ Match</button>
-                        </div>
-                        <div class="competitor-preview">
-                            <img class="comp-avatar" src="https://ui-avatars.com/api/?name=FashionNova&background=000&color=fff">
-                            <div style="flex: 1; font-weight: 700; font-size: 13px;">fashionnova.com</div>
-                            <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 11px;" onclick="matchCompetitor('fashionnova.com', this)">+ Match</button>
+                        <div id="suggested-competitors-container">
+                            <div class="text-tertiary" style="font-size: 12px; padding: 10px 0;">Scanning market for competitors...</div>
                         </div>
                     </div>
                 </div>
@@ -172,7 +155,7 @@
     </div>
 </div>
 
-<script src="js/app.js?v=2009"></script>
-<script src="js/connect.js?v=2009"></script>
+<script src="js/app.js?v=2010"></script>
+<script src="js/connect.js?v=2010"></script>
 </body>
 </html>
