@@ -7,18 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-    .competitor-row {
-        display: flex; justify-content: space-between; align-items: center;
-        padding: 16px; background: var(--bg-surface); border: 1px solid var(--border);
-        border-radius: var(--r-card); margin-bottom: 12px;
-    }
-    .suggestion-row {
-        display: flex; justify-content: space-between; align-items: center;
-        padding: 12px 16px; background: rgba(0, 229, 255, 0.05); border: 1px solid rgba(0, 229, 255, 0.2);
-        border-radius: var(--r-card); margin-bottom: 8px;
-    }
-</style>
 </head>
 <body>
 
@@ -57,7 +45,6 @@
         <a href="membership.html" class="tab">Membership</a>
         <a href="settings.html" class="tab">Settings</a>
     </div>
-    
     <div style="display: flex; align-items: center; gap: 12px;">
         <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">loading...</div>
         <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
@@ -66,44 +53,78 @@
 </div>
 
 <div class="screen">
-    <div style="max-width: 800px; margin: 0 auto;">
+    <div style="max-width: 1100px; margin: 0 auto;">
+        
         <div class="screen-title">Competitors</div>
-        <div class="screen-sub" id="plan-status">Loading plan info...</div>
+        <div class="screen-sub" id="plan-sub">You are on the TRIAL plan. You can track up to 10 competitors.</div>
 
-        <!-- AUTO DISCOVERY -->
-        <div class="panel" style="border-color: var(--accent); background: linear-gradient(180deg, rgba(0,229,255,0.05), var(--panel));">
-            <div class="panel-header" style="color: var(--accent);">✨ Auto-Discover Competitors</div>
-            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
-                Let AI analyze your Shopify products and find the top competing stores in your exact niche.
-            </p>
-            <button onclick="discoverCompetitors()" id="discover-btn" class="btn btn-primary" style="width: 100%;">
-                Find My Competitors →
-            </button>
-            <div id="discovery-results" style="margin-top: 16px;"></div>
-        </div>
-
-        <!-- MANUAL ADD -->
-        <div class="panel">
-            <div class="panel-header">Add Manually <span>PUBLIC SHOPIFY STORE</span></div>
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="comp-domain" class="form-input" placeholder="competitor.com" style="flex: 1;">
-                <button onclick="addCompetitor(document.getElementById('comp-domain').value)" class="btn btn-secondary">Add</button>
+        <!-- TOP GRID: DISCOVER & ADD MANUALLY -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <div class="panel" style="border-color: rgba(0, 229, 255, 0.4); background: linear-gradient(180deg, rgba(0,229,255,0.05), transparent);">
+                <div class="panel-header" style="color: var(--accent);">✨ Auto-Discover Competitors</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">Let AI analyze your Shopify products and find the top competing stores in your exact niche.</div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="autoDiscover()">Find My Competitors →</button>
             </div>
-            <div id="comp-status" style="margin-top: 12px; font-size: 12px; text-align: center; display: none;"></div>
-        </div>
-
-        <!-- TRACKED LIST -->
-        <div class="panel">
-            <div class="panel-header">Tracked Competitors <span id="comp-count">0 / 0</span></div>
-            <div id="comp-list">
-                <div class="text-tertiary" style="padding: 20px 0; text-align: center;">Loading...</div>
+            
+            <div class="panel">
+                <div class="panel-header">Add Manually</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">Enter a public Shopify store domain.</div>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="comp-domain" class="form-input" placeholder="competitor.com" style="flex: 1;">
+                    <button class="btn btn-secondary" onclick="addCompetitor()">Add</button>
+                </div>
             </div>
         </div>
+
+        <!-- TRACKED COMPETITORS LIST -->
+        <div class="panel" style="margin-bottom: 24px;">
+            <div class="panel-header">Tracked Competitors</div>
+            <div id="competitors-list">
+                <div class="text-tertiary" style="font-size: 12px;">Loading...</div>
+            </div>
+        </div>
+
+        <!-- THE SPY NETWORK (4 FEATURES) -->
+        <div class="screen-title" style="font-size: 20px; margin-top: 40px; margin-bottom: 16px;">🕵️ Spy Network</div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <!-- STOCK OUT RADAR -->
+            <div class="panel" style="border-color: rgba(255, 170, 0, 0.4); background: linear-gradient(180deg, rgba(255,170,0,0.05), transparent);">
+                <div class="panel-header" style="color: var(--amber); display: flex; justify-content: space-between;">
+                    <div>🚨 Stock-Out Radar</div>
+                    <div class="badge badge-red">Opportunity</div>
+                </div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">Competitors who are out of stock. Run ads now.</div>
+                <div id="stockout-list"><div class="text-tertiary" style="font-size: 12px; text-align: center;">Scanning...</div></div>
+            </div>
+
+            <!-- NEW LAUNCH TRACKER -->
+            <div class="panel" style="border-color: rgba(0, 255, 136, 0.4); background: linear-gradient(180deg, rgba(0,255,136,0.05), transparent);">
+                <div class="panel-header" style="color: var(--green); display: flex; justify-content: space-between;">
+                    <div>🚀 New Launch Tracker</div>
+                    <div class="badge badge-green">Last 30 Days</div>
+                </div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">Products your competitors recently launched.</div>
+                <div id="launch-list"><div class="text-tertiary" style="font-size: 12px; text-align: center;">Scanning...</div></div>
+            </div>
+        </div>
+
+        <!-- CATALOG GAP ANALYZER -->
+        <div class="panel" style="border-color: rgba(139, 127, 255, 0.4); background: linear-gradient(180deg, rgba(139,127,255,0.05), transparent);">
+            <div class="panel-header" style="color: var(--violet); display: flex; justify-content: space-between;">
+                <div>🧩 Catalog Gap Analyzer</div>
+                <div class="badge badge-violet">Missed Revenue</div>
+            </div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">Items your competitors sell, but you don't.</div>
+            <div id="gap-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="text-tertiary" style="font-size: 12px; text-align: center;">Scanning catalogs...</div>
+            </div>
+        </div>
+
     </div>
 </div>
 
-<script src="js/app.js?v=1100"></script>
-<script src="js/competitors.js"></script>
+<script src="js/app.js?v=2022"></script>
+<script src="js/competitors.js?v=2022"></script>
 </body>
 </html>
-
