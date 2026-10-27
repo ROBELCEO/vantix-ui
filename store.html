@@ -87,7 +87,6 @@
 
         <!-- MAIN GRID -->
         <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px;">
-            <!-- LEFT COL -->
             <div>
                 <div class="panel" style="margin-bottom: 24px;">
                     <div class="panel-header">Revenue — Last 30 Days</div>
@@ -96,8 +95,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- RIGHT COL -->
             <div>
                 <div class="panel" style="margin-bottom: 24px;">
                     <div class="panel-header">Top Selling Products</div>
@@ -109,68 +106,73 @@
         </div>
 
         <!-- PROFIT ENGINE PANELS (FEATURES 1-4) -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-            
-            <!-- FEATURE 1: ABANDONED CART ROI -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
             <div class="panel" style="border-color: rgba(255, 170, 0, 0.4); background: linear-gradient(180deg, rgba(255,170,0,0.05), transparent);">
-                <div class="panel-header" style="color: var(--amber); display: flex; justify-content: space-between; align-items: center;">
-                    <div>💰 Abandoned Cart ROI</div>
-                </div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">
-                    Money sitting on the table. Send a recovery message.
-                </div>
-                <div id="carts-list">
-                    <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 12px;">Loading...</div>
-                </div>
+                <div class="panel-header" style="color: var(--amber);">💰 Abandoned Cart ROI</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">Money sitting on the table. Send a recovery message.</div>
+                <div id="carts-list"></div>
             </div>
 
-            <!-- FEATURE 2: DEAD STOCK CASH TRAP -->
             <div class="panel" style="border-color: rgba(255, 34, 102, 0.4); background: linear-gradient(180deg, rgba(255,34,102,0.05), transparent);">
-                <div class="panel-header" style="color: var(--red); display: flex; justify-content: space-between; align-items: center;">
-                    <div>🪤 Dead Stock Cash Trap</div>
-                </div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">
-                    Cash trapped in inventory that hasn't sold in 60 days.
-                </div>
-                <div id="dead-stock-list">
-                    <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 12px;">Loading...</div>
-                </div>
+                <div class="panel-header" style="color: var(--red);">🪤 Dead Stock Cash Trap</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">Cash trapped in inventory that hasn't sold in 60 days.</div>
+                <div id="dead-stock-list"></div>
             </div>
 
-            <!-- FEATURE 3: AOV BUNDLE SUGGESTER -->
             <div class="panel" style="border-color: rgba(139, 127, 255, 0.4); background: linear-gradient(180deg, rgba(139,127,255,0.05), transparent);">
-                <div class="panel-header" style="color: var(--violet); display: flex; justify-content: space-between; align-items: center;">
-                    <div>📦 AOV Bundle Suggester</div>
-                    <div class="badge badge-violet">AI</div>
+                <div class="panel-header" style="color: var(--violet); display: flex; justify-content: space-between;">
+                    <div>📦 AOV Bundle Suggester</div><div class="badge badge-violet">AI</div>
                 </div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">
-                    Bundle products customers already buy together.
-                </div>
-                <div id="bundle-container">
-                    <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 12px;">Analyzing...</div>
-                </div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">Bundle products customers already buy together.</div>
+                <div id="bundle-container"></div>
             </div>
 
-            <!-- FEATURE 4: CUSTOMER LTV PREDICTOR -->
             <div class="panel" style="border-color: rgba(0, 229, 255, 0.4); background: linear-gradient(180deg, rgba(0,229,255,0.05), transparent);">
-                <div class="panel-header" style="color: var(--accent); display: flex; justify-content: space-between; align-items: center;">
-                    <div>👑 VIP Customer LTV</div>
-                    <div class="badge badge-green">Top 10%</div>
+                <div class="panel-header" style="color: var(--accent); display: flex; justify-content: space-between;">
+                    <div>👑 VIP Customer LTV</div><div class="badge badge-green">Top 10%</div>
                 </div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">
-                    Your highest-spending customers. Target them with VIP offers.
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">Your highest-spending customers. Target them with VIP offers.</div>
+                <div id="ltv-list"></div>
+            </div>
+        </div>
+
+        <!-- BOTTOM GRID: LOW STOCK & CUSTOMER SEGMENTS -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div class="panel">
+                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>⚠️ Low Stock Alerts</div>
+                    <div class="badge badge-red">Restock Now</div>
                 </div>
-                <div id="ltv-list">
-                    <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 12px;">Loading...</div>
-                </div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">These items have less than 15 units left.</div>
+                <div id="low-stock-list"></div>
             </div>
 
+            <div class="panel">
+                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>👥 Customer Segments</div>
+                    <div class="badge badge-green">Shopify Customers</div>
+                </div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">Breakdown of your New vs Returning buyers.</div>
+                <div style="height: 180px; display: flex; justify-content: center; align-items: center; position: relative;">
+                    <canvas id="customerChart"></canvas>
+                </div>
+                <div style="display: flex; justify-content: center; gap: 24px; margin-top: 12px;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--green);"></div>
+                        <span style="font-size: 11px; color: var(--text-secondary);">Returning</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent);"></div>
+                        <span style="font-size: 11px; color: var(--text-secondary);">New</span>
+                    </div>
+                </div>
+            </div>
         </div>
+
     </div>
 </div>
 
-<script src="js/app.js?v=2015"></script>
-<script src="js/store.js?v=2018"></script>
+<script src="js/app.js?v=2020"></script>
+<script src="js/store.js?v=2020"></script>
 </body>
 </html>
-
