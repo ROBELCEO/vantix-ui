@@ -43,8 +43,8 @@ window.addEventListener('load', async () => {
         if (typeof checkConnectionStatus === 'function') checkConnectionStatus();
         if (typeof fetchCompetitors === 'function') fetchCompetitors();
         if (typeof loadInventory === 'function') loadInventory();
-        if (typeof loadStoreData === 'function') loadStoreData();
-        if (typeof loadOverview === 'function') loadOverview();
+        if (typeof loadStoreData === 'function') { loadStoreData(); } else { alert('DEBUG: loadStoreData function is MISSING!'); }
+        if (typeof loadOverview === 'function') { loadOverview(); } else { alert('DEBUG: loadOverview function is MISSING!'); }
     }, 100);
 });
 
@@ -61,3 +61,4 @@ function toggleMenu() {
         overlay.style.display = drawer.classList.contains('open') ? 'block' : 'none';
     }
 }
+
