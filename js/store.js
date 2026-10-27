@@ -44,6 +44,8 @@ async function loadStoreData() {
 
     } catch(e) {
         console.error("Failed to load store data", e);
+        const nameEl = document.getElementById('store-name');
+        if(nameEl) nameEl.innerText = "Error loading store";
     }
 }
 
@@ -99,7 +101,7 @@ function renderTopProducts(products) {
     products.forEach((p, i) => {
         html += `<div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
             <div class="mono text-tertiary" style="font-size: 11px; width: 15px;">#${i+1}</div>
-            <img src="${p.image || 'https://via.placeholder.com/40'}" class="thumb">
+            <img src="${p.image || 'https://via.placeholder.com/40'}" class="thumb" style="width:36px; height:36px; border-radius:4px;">
             <div style="flex: 1; min-width: 0;">
                 <div style="font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.title}</div>
                 <div class="mono text-tertiary" style="font-size: 10px;">${p.units} sold</div>
@@ -140,7 +142,7 @@ function renderLowStock(stock) {
     let html = '';
     stock.forEach(s => {
         html += `<div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 11px;">
-            <img src="${s.image || 'https://via.placeholder.com/30'}" class="thumb" style="width: 28px; height: 28px;">
+            <img src="${s.image || 'https://via.placeholder.com/30'}" class="thumb" style="width: 28px; height: 28px; border-radius:4px;">
             <div style="flex: 1; min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.title}</div>
             <div class="mono text-red" style="font-weight: 700;">${s.qty} left</div>
         </div>`;
@@ -157,19 +159,12 @@ function renderCustomerChart() {
         data: {
             labels: ['Returning', 'New'],
             datasets: [{
-                data: [35, 65], // Realistic starting point, can be updated with real customer API later
+                data: [35, 65],
                 backgroundColor: ['#00FF88', '#00E5FF'],
                 borderWidth: 0,
                 cutout: '75%'
             }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-    });
-}
-
-// Call this on load if we are on the store page
-if (window.location.pathname.includes('store.html')) {
-    document.addEventListener("DOMContentLoaded", () => {
-        loadStoreData();
     });
 }

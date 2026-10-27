@@ -4,143 +4,153 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — My Store</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script></head>
-<body><div class="header">
-    <a href="index.html" class="brand">
-        <div class="mark">
-            <svg viewBox="0 0 32 32">
-                <rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/>
-                <polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/>
-                <rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/>
-            </svg>
-        </div>
-        <div>VANTI<span>X</span></div>
-    </a>
-    
-            <div class="tabs">
-        <a href="index.html" class="tab ">Connect</a>
-        <a href="overview.html" class="tab ">Overview</a>
-        <a href="store.html" class="tab active">My Store</a>
-        <a href="competitors.html" class="tab ">Competitors</a>
-        <a href="terminal.html" class="tab ">Terminal</a>
-        <a href="discovery.html" class="tab ">Discovery</a>
-        <a href="alerts.html" class="tab ">Alerts</a>
-        <a href="inventory.html" class="tab ">Inventory</a>
-        <a href="membership.html" class="tab ">Membership</a>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
+<div class="drawer" id="mobile-drawer">
+    <div class="drawer-header">
+        <div class="brand"><div>VANTI<span>X</span></div></div>
+        <button class="drawer-close" onclick="toggleMenu()">✕</button>
     </div>
-
-
-
-    <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+    <a href="index.html" class="drawer-tab">Connect</a>
+    <a href="overview.html" class="drawer-tab">Overview</a>
+    <a href="store.html" class="drawer-tab active">My Store</a>
+    <a href="competitors.html" class="drawer-tab">Competitors</a>
+    <a href="terminal.html" class="drawer-tab">Terminal</a>
+    <a href="discovery.html" class="drawer-tab">Discovery</a>
+    <a href="alerts.html" class="drawer-tab">Alerts</a>
+    <a href="inventory.html" class="drawer-tab">Inventory</a>
+    <a href="membership.html" class="drawer-tab">Membership</a>
 </div>
 
-<!-- MAIN CONTENT -->
+<div class="header">
+    <a href="index.html" class="brand">
+        <div class="mark"><svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg></div>
+        <div>VANTI<span>X</span></div>
+    </a>
+    <div class="tabs">
+        <a href="index.html" class="tab">Connect</a>
+        <a href="overview.html" class="tab">Overview</a>
+        <a href="store.html" class="tab active">My Store</a>
+        <a href="competitors.html" class="tab">Competitors</a>
+        <a href="terminal.html" class="tab">Terminal</a>
+        <a href="discovery.html" class="tab">Discovery</a>
+        <a href="alerts.html" class="tab">Alerts</a>
+        <a href="inventory.html" class="tab">Inventory</a>
+        <a href="membership.html" class="tab">Membership</a>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">loading...</div>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
+        <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
+</div>
+
 <div class="screen">
-    
-    <div class="screen-title">My Store</div>
-    <div class="screen-sub">Real-time Shopify intelligence</div>
-
-    <!-- STORE BANNER -->
-    <div class="panel" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: linear-gradient(90deg, rgba(0, 229, 255, 0.05), transparent); border-color: var(--border-strong);">
-        <img id="store-avatar" src="https://ui-avatars.com/api/?name=Loading&background=141414&color=8A8A94&size=64" class="thumb" style="width: 48px; height: 48px;">
-        <div style="flex: 1;">
-            <div id="store-name" style="font-size: 16px; font-weight: 800; margin-bottom: 2px;">Loading Store...</div>
-            <div id="store-domain" class="mono text-tertiary" style="font-size: 11px;">fetching data...</div>
-        </div>
-        <div style="text-align: right;">
-            <span class="badge badge-accent">SHOPIFY API</span>
-        </div>
-    </div>
-
-    <!-- KPIS -->
-    <div class="kpi-grid">
-        <div class="kpi-card profit">
-            <div class="kpi-label">Revenue (30d)</div>
-            <div class="kpi-value" id="kpi-revenue">Loading...</div>
-        </div>
-        <div class="kpi-card active">
-            <div class="kpi-label">Orders (30d)</div>
-            <div class="kpi-value" id="kpi-orders">Loading...</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">Avg Order Value</div>
-            <div class="kpi-value" id="kpi-aov">Loading...</div>
-        </div>
-        <div class="kpi-card warning">
-            <div class="kpi-label">Abandoned Carts</div>
-            <div class="kpi-value text-amber" id="kpi-abandoned">Loading...</div>
-        </div>
-    </div>
-
-    <!-- CHARTS & TOP PRODUCTS -->
-    <div class="grid-2" style="display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 16px;">
+    <div style="max-width: 1000px; margin: 0 auto;">
         
-        <!-- Revenue Chart -->
-        <div class="panel" style="margin: 0; display: flex; flex-direction: column;">
-            <div class="panel-header">Revenue — Last 30 Days <span>SHOPIFY ORDERS</span></div>
-            <div style="flex: 1; min-height: 250px; position: relative;">
-                <canvas id="revenueChart"></canvas>
+        <!-- STORE BANNER -->
+        <div class="panel" style="display: flex; align-items: center; gap: 16px; padding: 16px; background: linear-gradient(90deg, rgba(0, 229, 255, 0.05), transparent); border-color: var(--border-strong);">
+            <img id="store-avatar" src="https://ui-avatars.com/api/?name=Loading&background=141414&color=8A8A94&size=64" class="thumb" style="width: 48px; height: 48px; border-radius: 8px;">
+            <div style="flex: 1;">
+                <div id="store-name" style="font-size: 16px; font-weight: 800; margin-bottom: 2px;">Loading Store...</div>
+                <div id="store-domain" class="mono text-tertiary" style="font-size: 11px;">fetching data...</div>
+            </div>
+            <div style="text-align: right;">
+                <span class="badge badge-accent">SHOPIFY API</span>
             </div>
         </div>
 
-        <!-- Top Products -->
-        <div class="panel" style="margin: 0;">
-            <div class="panel-header">Top Selling Products <span>30 DAYS</span></div>
-            <div id="top-products-list">
-                <div class="text-tertiary" style="padding: 20px 0; text-align: center;">Loading products...</div>
+        <!-- KPIS -->
+        <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <div class="kpi-card profit">
+                <div class="kpi-label">Revenue (30d)</div>
+                <div class="kpi-value" id="kpi-revenue">Loading...</div>
             </div>
-        </div>
-    </div>
-
-    <!-- SECONDARY GRIDS -->
-    <div class="grid-3" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
-        
-        <!-- Abandoned Carts -->
-        <div class="panel" style="margin: 0;">
-            <div class="panel-header">Abandoned Carts <span>RECOVERABLE</span></div>
-            <div style="text-align: center; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 12px;">
-                <div id="abandoned-total" class="mono text-amber" style="font-size: 24px; font-weight: 800;">$0.00</div>
+            <div class="kpi-card active">
+                <div class="kpi-label">Orders (30d)</div>
+                <div class="kpi-value" id="kpi-orders">Loading...</div>
             </div>
-            <div id="carts-list">
-                <div class="text-tertiary" style="padding: 10px 0; text-align: center;">Loading carts...</div>
+            <div class="kpi-card">
+                <div class="kpi-label">Avg Order Value</div>
+                <div class="kpi-value" id="kpi-aov">Loading...</div>
+            </div>
+            <div class="kpi-card warning">
+                <div class="kpi-label">Abandoned Carts</div>
+                <div class="kpi-value text-amber" id="kpi-abandoned">Loading...</div>
             </div>
         </div>
 
-        <!-- Low Stock -->
-        <div class="panel" style="margin: 0;">
-            <div class="panel-header">Low Stock Alerts <span>RESTOCK NOW</span></div>
-            <div id="low-stock-list">
-                <div class="text-tertiary" style="padding: 10px 0; text-align: center;">Loading stock...</div>
-            </div>
-        </div>
-
-        <!-- Customer Segments -->
-        <div class="panel" style="margin: 0;">
-            <div class="panel-header">Customer Segments <span>SHOPIFY CUSTOMERS</span></div>
-            <div style="display: flex; align-items: center; gap: 16px; margin-top: 10px;">
-                <div style="width: 100px; height: 100px; position: relative;">
-                    <canvas id="customerChart"></canvas>
+        <!-- CHARTS & TOP PRODUCTS -->
+        <div style="display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 16px;" class="grid-2">
+            <!-- Revenue Chart -->
+            <div class="panel" style="display: flex; flex-direction: column;">
+                <div class="panel-header">Revenue — Last 30 Days <span>SHOPIFY ORDERS</span></div>
+                <div style="flex: 1; min-height: 250px; position: relative;">
+                    <canvas id="revenueChart"></canvas>
                 </div>
-                <div style="flex: 1;">
-                    <div style="display: flex; justify-content: space-between; padding: 6px 0; font-size: 11px; border-bottom: 1px solid var(--border);">
-                        <span><span style="display:inline-block; width:8px; height:8px; background:var(--green); margin-right:6px;"></span>Returning</span>
-                        <b class="mono">38%</b>
+            </div>
+
+            <!-- Top Products -->
+            <div class="panel">
+                <div class="panel-header">Top Selling Products <span>30 DAYS</span></div>
+                <div id="top-products-list">
+                    <div class="text-tertiary" style="padding: 20px 0; text-align: center;">Loading products...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECONDARY GRIDS -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;" class="grid-3">
+            <!-- Abandoned Carts -->
+            <div class="panel">
+                <div class="panel-header">Abandoned Carts <span>RECOVERABLE</span></div>
+                <div style="text-align: center; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 12px;">
+                    <div id="abandoned-total" class="mono text-amber" style="font-size: 24px; font-weight: 800;">$0.00</div>
+                </div>
+                <div id="carts-list">
+                    <div class="text-tertiary" style="padding: 10px 0; text-align: center;">Loading carts...</div>
+                </div>
+            </div>
+
+            <!-- Low Stock -->
+            <div class="panel">
+                <div class="panel-header">Low Stock Alerts <span>RESTOCK NOW</span></div>
+                <div id="low-stock-list">
+                    <div class="text-tertiary" style="padding: 10px 0; text-align: center;">Loading stock...</div>
+                </div>
+            </div>
+
+            <!-- Customer Segments -->
+            <div class="panel">
+                <div class="panel-header">Customer Segments <span>SHOPIFY CUSTOMERS</span></div>
+                <div style="display: flex; align-items: center; gap: 16px; margin-top: 10px;">
+                    <div style="width: 100px; height: 100px; position: relative;">
+                        <canvas id="customerChart"></canvas>
                     </div>
-                    <div style="display: flex; justify-content: space-between; padding: 6px 0; font-size: 11px;">
-                        <span><span style="display:inline-block; width:8px; height:8px; background:var(--accent); margin-right:6px;"></span>New</span>
-                        <b class="mono">62%</b>
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0; font-size: 11px; border-bottom: 1px solid var(--border);">
+                            <span><span style="display:inline-block; width:8px; height:8px; background:var(--green); margin-right:6px;"></span>Returning</span>
+                            <b class="mono">35%</b>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0; font-size: 11px;">
+                            <span><span style="display:inline-block; width:8px; height:8px; background:var(--accent); margin-right:6px;"></span>New</span>
+                            <b class="mono">65%</b>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
     </div>
-
 </div>
 
 <script src="js/app.js"></script>
 <script src="js/store.js"></script>
-</body></html>
+</body>
+</html>
