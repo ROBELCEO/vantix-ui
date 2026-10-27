@@ -51,6 +51,7 @@ async function loadStoreData() {
 
         renderCustomerChart();
         loadDeadStock();
+        loadBundleSuggestion();
 
     } catch(e) {
         console.error("Failed to load store data", e);
@@ -211,5 +212,47 @@ async function loadDeadStock() {
     } catch(e) {
         console.error("Failed to load dead stock", e);
         list.innerHTML = '<div class="text-red" style="font-size: 12px; text-align: center;">Failed to calculate dead stock.</div>';
+    }
+}
+
+async function loadBundleSuggestion() {
+    const container = document.getElementById('bundle-container');
+    if (!container) return;
+
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/store/bundles');
+        const data = await res.json();
+
+        if (data.error) {
+            container.innerHTML = `<div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 12px;">${data.error}</div>`;
+            return;
+        }
+
+        const ai = data.ai;
+
+        container.innerHTML = `
+            <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-card); padding: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 900; color: var(--violet); margin-bottom: 4px;">${ai.bundle_name}</div>
+                        <div style="font-size: 11px; color: var(--text-tertiary);">Bought together ${data.frequency} times recently</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 11px; text-decoration: line-through; color: var(--text-tertiary);">$${data.original_total.toFixed(2)}</div>
+                        <div style="font-size: 18px; font-weight: 900; color: var(--green);">$${ai.suggested_price.toFixed(2)}</div>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(139, 127, 255, 0.1); border-left: 3px solid var(--violet); padding: 12px; border-radius: 4px; margin-top: 12px;">
+                    <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+                        <b>AI Pitch:</b> ${ai.pitch}
+                    </div>
+                </div>
+            </div>
+        `;
+
+    } catch(e) {
+        console.error("Failed to load bundle", e);
+        container.innerHTML = '<div class="text-red" style="font-size: 12px; text-align: center;">Failed to analyze bundles.</div>';
     }
 }
