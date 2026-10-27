@@ -2,23 +2,27 @@
 let custChartInstance = null;
 
 async function loadStoreData() {
+    const nameEl = document.getElementById('store-name');
+    const domainEl = document.getElementById('store-domain');
+    const avatarEl = document.getElementById('store-avatar');
+    
+    if(!nameEl) return;
+
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/store/detailed');
         
-        if (!res.ok) {
-            if (res.status === 404) {
-                document.getElementById('store-name').innerText = "Store Not Connected";
-                return;
-            }
-            throw new Error("API Error");
-        }
+        if (!res.ok) throw new Error("HTTP Error: " + res.status);
         
         const data = await res.json();
 
-        document.getElementById('store-name').innerText = data.profile.name;
-        document.getElementById('store-domain').innerText = data.profile.domain;
-        document.getElementById('store-avatar').src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.profile.name) + '&background=00E5FF&color=000&size=64&bold=true';
+        // Backend guarantees profile exists
+        nameEl.innerText = data.profile.name;
+        domainEl.innerText = data.profile.domain;
+        if(avatarEl) {
+            avatarEl.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.profile.name) + '&background=00E5FF&color=000&size=64&bold=true';
+        }
 
+        // Backend guarantees numbers
         document.getElementById('kpi-revenue').innerText = '$' + data.kpis.total_revenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
         document.getElementById('kpi-orders').innerText = data.kpis.order_count;
         document.getElementById('kpi-aov').innerText = '$' + data.kpis.aov.toFixed(2);
@@ -26,71 +30,40 @@ async function loadStoreData() {
         document.getElementById('abandoned-total').innerText = '$' + data.kpis.abandoned_value.toFixed(2);
 
         renderRevenueChart(data.chart);
-        renderTopProducts(data.top_products);
-        renderCarts(data.carts);
-        renderLowStock(data.low_stock);
-        renderCustomerChart();
 
-    } catch(e) {
-        console.error("Failed to load store data", e);
-    }
-}
-
-// ... keep the rest of the render functions (renderRevenueChart, renderTopProducts, etc.) unchanged ...let revChartInstance = null;
-let custChartInstance = null;
-
-async function loadStoreData() {
-    try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/store/detailed');
-        
-        if (!res.ok) {
-            if (res.status === 404) {
-                document.getElementById('store-name').innerText = "Store Not Connected";
-                return;
-            }
-            throw new Error("API Error");
+        if (data.top_products.length === 0) {
+            document.getElementById('top-products-list').innerHTML = '<div class="text-tertiary" style="padding: 20px 0; text-align: center;">No sales data yet.</div>';
+        } else {
+            renderTopProducts(data.top_products);
         }
-        
-        const data = await res.json();
 
-        // 1. Update Store Banner
-        document.getElementById('store-name').innerText = data.profile.name;
-        document.getElementById('store-domain').innerText = data.profile.domain;
-        document.getElementById('store-avatar').src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.profile.name) + '&background=00E5FF&color=000&size=64&bold=true';
+        if (data.carts.length === 0) {
+            document.getElementById('carts-list').innerHTML = '<div class="text-tertiary" style="padding: 10px 0; text-align: center; font-size: 11px;">No abandoned carts.</div>';
+        } else {
+            renderCarts(data.carts);
+        }
 
-        // 2. Update KPIs (Real Data)
-        document.getElementById('kpi-revenue').innerText = '$' + data.kpis.total_revenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-        document.getElementById('kpi-orders').innerText = data.kpis.order_count;
-        document.getElementById('kpi-aov').innerText = '$' + data.kpis.aov.toFixed(2);
-        document.getElementById('kpi-abandoned').innerText = '$' + data.kpis.abandoned_value.toFixed(2);
-        document.getElementById('abandoned-total').innerText = '$' + data.kpis.abandoned_value.toFixed(2);
+        if (data.low_stock.length === 0) {
+            document.getElementById('low-stock-list').innerHTML = '<div class="text-tertiary" style="padding: 10px 0; text-align: center; font-size: 11px;">Stock is healthy.</div>';
+        } else {
+            renderLowStock(data.low_stock);
+        }
 
-        // 3. Render Revenue Chart
-        renderRevenueChart(data.chart);
-
-        // 4. Render Top Products
-        renderTopProducts(data.top_products);
-
-        // 5. Render Abandoned Carts
-        renderCarts(data.carts);
-
-        // 6. Render Low Stock
-        renderLowStock(data.low_stock);
-
-        // 7. Render Customer Donut (Mocked ratio for now, based on standard Shopify data)
         renderCustomerChart();
 
     } catch(e) {
         console.error("Failed to load store data", e);
-        const nameEl = document.getElementById('store-name');
-        if(nameEl) nameEl.innerText = "Error loading store";
+        nameEl.innerText = "Error Loading Store";
+        domainEl.innerText = e.message;
     }
 }
 
 function renderRevenueChart(chartData) {
     if(revChartInstance) revChartInstance.destroy();
-    const ctx = document.getElementById('revenueChart').getContext('2d');
+    const canvas = document.getElementById('revenueChart');
+    if(!canvas) return;
     
+    const ctx = canvas.getContext('2d');
     let gradient = ctx.createLinearGradient(0, 0, 0, 300);
     gradient.addColorStop(0, 'rgba(0, 229, 255, 0.15)');
     gradient.addColorStop(1, 'rgba(0, 229, 255, 0)');
@@ -130,11 +103,7 @@ function renderRevenueChart(chartData) {
 
 function renderTopProducts(products) {
     const list = document.getElementById('top-products-list');
-    if(!products.length) {
-        list.innerHTML = '<div class="text-tertiary" style="padding: 20px 0; text-align: center;">No sales data yet.</div>';
-        return;
-    }
-    
+    if(!list) return;
     let html = '';
     products.forEach((p, i) => {
         html += `<div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border);">
@@ -152,11 +121,7 @@ function renderTopProducts(products) {
 
 function renderCarts(carts) {
     const list = document.getElementById('carts-list');
-    if(!carts.length) {
-        list.innerHTML = '<div class="text-tertiary" style="padding: 10px 0; text-align: center; font-size: 11px;">No abandoned carts.</div>';
-        return;
-    }
-    
+    if(!list) return;
     let html = '';
     carts.forEach(c => {
         html += `<div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 11px;">
@@ -172,11 +137,7 @@ function renderCarts(carts) {
 
 function renderLowStock(stock) {
     const list = document.getElementById('low-stock-list');
-    if(!stock.length) {
-        list.innerHTML = '<div class="text-tertiary" style="padding: 10px 0; text-align: center; font-size: 11px;">Stock is healthy.</div>';
-        return;
-    }
-    
+    if(!list) return;
     let html = '';
     stock.forEach(s => {
         html += `<div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 11px;">
@@ -190,8 +151,9 @@ function renderLowStock(stock) {
 
 function renderCustomerChart() {
     if(custChartInstance) custChartInstance.destroy();
-    const ctx2 = document.getElementById('customerChart').getContext('2d');
-    
+    const canvas = document.getElementById('customerChart');
+    if(!canvas) return;
+    const ctx2 = canvas.getContext('2d');
     custChartInstance = new Chart(ctx2, {
         type: 'doughnut',
         data: {
@@ -206,4 +168,3 @@ function renderCustomerChart() {
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
     });
 }
-
