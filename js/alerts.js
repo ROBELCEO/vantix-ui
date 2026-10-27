@@ -6,7 +6,7 @@
         const res = await fetch('https://vantix-my5f.onrender.com/api/alerts/list');
         
         if (!res.ok) {
-            container.innerHTML = '<div class="text-red" style="text-align: center; padding: 40px;">Failed to load alerts. Please refresh.</div>';
+            container.innerHTML = '<div class="text-red" style="text-align: center; padding: 40px;">Failed to load alerts. Server returned ' + res.status + '</div>';
             return;
         }
 
@@ -50,7 +50,7 @@
         
     } catch(e) {
         console.error("Alerts error:", e);
-        container.innerHTML = '<div class="text-red" style="text-align: center; padding: 40px;">Backend asleep or network error. Try again in 30s.</div>';
+        container.innerHTML = '<div class="text-red" style="text-align: center; padding: 40px;">Network error. Backend might be asleep.</div>';
     }
 }
 
