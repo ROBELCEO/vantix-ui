@@ -45,6 +45,7 @@ async function loadStoreData() {
 
         // Render Feature Panels
         renderCarts(data.carts);
+        renderLowStock(data.low_stock);
         loadDeadStock();
         loadBundleSuggestion();
         loadCustomerLTV();
@@ -192,4 +193,25 @@ async function loadCustomerLTV() {
             </div>
         `).join('');
     } catch(e) { list.innerHTML = '<div class="text-red" style="text-align: center;">Failed to load VIPs.</div>'; }
+}
+
+function renderLowStock(stock) {
+    const list = document.getElementById('low-stock-list');
+    if(!list) return;
+    
+    if (stock.length === 0) {
+        list.innerHTML = '<div class="text-green" style="font-size: 12px; padding: 12px;">✅ Stock is healthy. No low-stock items.</div>';
+        return;
+    }
+
+    list.innerHTML = stock.map(s => `
+        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-btn);">
+            <img src="${s.image || 'https://via.placeholder.com/40'}" class="thumb" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">
+            <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.title}</div>
+                <div class="text-tertiary" style="font-size: 11px;">Running out soon</div>
+            </div>
+            <div class="mono text-red" style="font-weight: 800; font-size: 14px;">${s.qty} left</div>
+        </div>
+    `).join('');
 }
