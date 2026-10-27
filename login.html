@@ -28,20 +28,16 @@
     </div>
 </div>
 <script>
-    var supabaseUrl = "https://odvusqxvhgyfoiyooktl.supabase.co";
-    var supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kdnVzcXh2aGd5Zm9peW9va3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5Mzk3NzAsImV4cCI6MjEwODUxNTc3MH0.5LlYHzs4iHz7gQMCLLBCDT7deMveYpx-8fabCH5AljU"; 
-    
-    var sbClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+    const SUPABASE_URL = "https://odvusqxvhgyfoiyooktl.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kdnVzcXh2aGd5Zm9peW9va3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5Mzk3NzAsImV4cCI6MjEwODUxNTc3MH0.5LlYHzs4iHz7gQMCLLBCDT7deMveYpx-8fabCH5AljU"; 
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    document.getElementById('login-btn').addEventListener('click', async function() {
-        var result = await sbClient.auth.signInWithOAuth({
+    document.getElementById('login-btn').addEventListener('click', async () => {
+        const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
-            // FIX: Hardcode the exact GitHub Pages URL
             options: { redirectTo: 'https://robelceo.github.io/vantix-ui/index.html' }
         });
-        if (result.error) {
-            alert("Error: " + result.error.message);
-        }
+        if (error) alert(error.message);
     });
 </script>
 </body>

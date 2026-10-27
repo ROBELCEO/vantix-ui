@@ -13,7 +13,7 @@
 <div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
 <div class="drawer" id="mobile-drawer">
     <div class="drawer-header">
-        <div class="brand"><div>VANTI<span>X</span> <small style="font-size:8px; color:var(--accent);">V3</small></div></div>
+        <div class="brand"><div>VANTI<span>X</span></div></div>
         <button class="drawer-close" onclick="toggleMenu()">✕</button>
     </div>
     <a href="index.html" class="drawer-tab active">Connect</a>
@@ -30,7 +30,7 @@
 <div class="header">
     <a href="index.html" class="brand">
         <div class="mark"><svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg></div>
-        <div>VANTI<span>X</span> <small style="font-size:8px; color:var(--accent);">V3</small></div>
+        <div>VANTI<span>X</span></div>
     </a>
     <div class="tabs">
         <a href="index.html" class="tab active">Connect</a>
@@ -44,10 +44,10 @@
         <a href="membership.html" class="tab">Membership</a>
     </div>
     
-    <!-- NEW USER PROFILE & LOGOUT -->
+    <!-- PROFILE UI -->
     <div style="display: flex; align-items: center; gap: 12px;">
-        <div id="user-email-display" style="font-size: 11px; color: var(--text-tertiary); display: none;"></div>
-        <button onclick="logOut()" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;" id="logout-btn">Log Out</button>
+        <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);"></div>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
         <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
     </div>
 </div>
@@ -55,28 +55,24 @@
 <div class="screen">
     <div style="max-width: 640px; margin: 0 auto; padding-top: 20px;">
         
-        <!-- STATE 1: UNCONNECTED -->
+        <!-- UNCONNECTED VIEW (Visible by default) -->
         <div id="view-unconnected" style="display: block; text-align: center; padding-top: 40px;">
             <h1 style="font-size: 32px; font-weight: 900; letter-spacing: -1px; margin-bottom: 12px;">Welcome to Vantix</h1>
-            <p style="color: var(--text-secondary); font-size: 15px; margin-bottom: 40px; line-height: 1.6;">
-                Connect your Shopify store to unlock AI-powered competitor intelligence and profit margins.
-            </p>
+            <p style="color: var(--text-secondary); font-size: 15px; margin-bottom: 40px; line-height: 1.6;">Connect your Shopify store to unlock AI-powered competitor intelligence.</p>
 
             <div class="panel" style="max-width: 400px; margin: 0 auto;">
                 <div class="form-group">
                     <label class="form-label" style="text-align: left;">Shopify Store Domain</label>
                     <input type="text" id="shopify-domain" class="form-input" placeholder="your-store.myshopify.com">
                 </div>
-                <button id="connect-btn" class="btn btn-primary" style="width: 100%; padding: 14px;">
-                    Connect Shopify Store
-                </button>
+                <button id="connect-btn" class="btn btn-primary" style="width: 100%; padding: 14px;">Connect Shopify Store</button>
                 <div id="connect-error" style="color: var(--red); font-size: 12px; margin-top: 10px; display: none;"></div>
             </div>
         </div>
 
-        <!-- STATE 2: CONNECTED -->
+        <!-- CONNECTED VIEW (Hidden by default) -->
         <div id="view-connected" style="display: none;">
-            <div class="panel" style="background: linear-gradient(180deg, rgba(0, 255, 136, 0.05), var(--bg-panel)); border-color: rgba(0, 255, 136, 0.2); margin-bottom: 32px;">
+            <div class="panel" style="background: rgba(0, 255, 136, 0.05); border-color: rgba(0, 255, 136, 0.2); margin-bottom: 32px;">
                 <div style="display: flex; align-items: center; gap: 16px;">
                     <div style="width: 48px; height: 48px; background: rgba(0, 255, 136, 0.1); border: 2px solid var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--green);">✓</div>
                     <div>
@@ -94,4 +90,3 @@
 <script src="js/connect.js"></script>
 </body>
 </html>
-

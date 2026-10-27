@@ -8,12 +8,7 @@
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/shopify/status');
         
-        if (res.status === 401) {
-            // If the token is rejected, forcefully send them to login
-            console.warn("Unauthorized. Redirecting to login...");
-            window.location.href = "login.html";
-            return;
-        }
+        if (res.status === 401) return; // app.js handles redirect
 
         const data = await res.json();
         
@@ -27,13 +22,12 @@
         }
     } catch(e) {
         console.error("Status check failed", e);
-        // Fallback: Always show the unconnected UI if the network fails
         unconnectedView.style.display = 'block';
         connectedView.style.display = 'none';
     }
 }
 
-// Setup the Connect Button Logic globally
+// Setup Connect Button
 document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('connect-btn');
     if (btn) {
@@ -53,10 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const { data: { session } } = await window.supabaseClient.auth.getSession();
-            if (!session) {
-                window.location.href = "login.html";
-                return;
-            }
+            if (!session) return window.location.href = "login.html";
 
             errorDiv.style.display = 'none';
             btn.innerText = "Redirecting to Shopify...";
