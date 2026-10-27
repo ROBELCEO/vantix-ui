@@ -1,14 +1,12 @@
 ﻿async function checkConnectionStatus() {
     const unconnectedView = document.getElementById('view-unconnected');
     const connectedView = document.getElementById('view-connected');
-    const errorDiv = document.getElementById('connect-error');
 
     if (!unconnectedView || !connectedView) return;
 
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/shopify/status');
-        
-        if (res.status === 401) return; // app.js handles redirect
+        if (res.status === 401) return;
 
         const data = await res.json();
         
@@ -22,12 +20,9 @@
         }
     } catch(e) {
         console.error("Status check failed", e);
-        unconnectedView.style.display = 'block';
-        connectedView.style.display = 'none';
     }
 }
 
-// Setup Connect Button
 document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('connect-btn');
     if (btn) {
