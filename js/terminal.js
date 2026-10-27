@@ -1,204 +1,163 @@
 ﻿let chartInstance = null;
-let allComparisons = []; // Store data globally so we can switch between products
+let allComparisons = [];
 let activeIndex = 0;
 
-// 1. Load Data
 async function loadTerminal() {
+    const container = document.getElementById('watchlist-container');
+    if(!container) return;
+
     try {
-        const compRes = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison');
-        const compData = await compRes.json();
+        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison');
         
-        if(compData.comparisons && compData.comparisons.length > 0) {
-            allComparisons = compData.comparisons;
+        if(!res.ok) {
+            container.innerHTML = '<div class="text-tertiary" style="padding: 16px; font-size: 11px;">Failed to load. Add competitors first.</div>';
+            return;
+        }
+
+        const data = await res.json();
+        
+        if(data.comparisons && data.comparisons.length > 0) {
+            allComparisons = data.comparisons;
             renderWatchlist();
-            selectProduct(0); // Select the first item by default
+            selectProduct(0); 
         } else {
-            document.getElementById('watchlist-container').innerHTML = '<div class="text-tertiary" style="padding: 16px; font-size: 11px;">No comparisons found.</div>';
+            container.innerHTML = '<div class="text-tertiary" style="padding: 16px; font-size: 11px;">No matching products found.</div>';
         }
     } catch(e) {
         console.error("Terminal error:", e);
+        container.innerHTML = '<div class="text-tertiary" style="padding: 16px; font-size: 11px;">Network error.</div>';
     }
 }
 
-// 2. Render the Watchlist UI
 function renderWatchlist() {
     const container = document.getElementById('watchlist-container');
     
     container.innerHTML = allComparisons.map((c, index) => {
         const isActive = index === activeIndex ? 'active' : '';
-        const diff = c.price_diff || 0;
-        const diffClass = diff > 0 ? 'text-red' : (diff < 0 ? 'text-green' : 'text-tertiary');
-        const diffSign = diff > 0 ? '+' : '';
         
-        // Add an onclick event to switch products
+        let diff = 0;
+        let diffClass = 'text-tertiary';
+        let diffSign = '';
+        let lowestPrice = c.my_price;
+
+        if (c.competitor_matches && c.competitor_matches.length > 0) {
+            const cheapest = c.competitor_matches.reduce((prev, curr) => (prev.comp_price < curr.comp_price) ? prev : curr);
+            diff = c.my_price - cheapest.comp_price;
+            lowestPrice = cheapest.comp_price;
+            diffClass = diff > 0 ? 'text-red' : (diff < 0 ? 'text-green' : 'text-tertiary');
+            diffSign = diff > 0 ? '+' : '';
+        }
+
         return `
             <div class="watch-item ${isActive}" onclick="selectProduct(${index})">
                 <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(c.my_product)}&background=141414&color=00E5FF">
                 <div class="watch-info">
                     <div class="watch-title">${c.my_product}</div>
-                    <div class="watch-meta">${c.comp_product || 'No Match'}</div>
+                    <div class="watch-meta text-tertiary">${c.competitor_matches.length} Competitors</div>
                 </div>
                 <div>
                     <div class="watch-price">$${c.my_price}</div>
-                    <div class="watch-change ${diffClass}">${diffSign}${diff}</div>
+                    <div class="watch-change ${diffClass}" style="font-size:10px; text-align:right;">${diffSign}$${Math.abs(diff).toFixed(2)}</div>
                 </div>
             </div>
         `;
     }).join('');
 }
 
-// 3. Handle Product Switching
 function selectProduct(index) {
     activeIndex = index;
     const product = allComparisons[index];
     
-    // Update Watchlist UI
     renderWatchlist();
-    
-    // Update Title
     document.getElementById('chart-product-name').innerText = product.my_product.toUpperCase();
 
-    // Re-draw Chart
     renderChart(product);
-
-    // Re-fetch AI Advice for this specific product
     fetchAIAdvice(product.my_product);
 }
 
-// 4. Render Chart based on selected product
 function renderChart(product) {
     if(chartInstance) chartInstance.destroy();
     const ctx = document.getElementById('terminalChart').getContext('2d');
     
-    // Generate realistic mock history based on the actual price
     const dates = ['Oct 1', 'Oct 5', 'Oct 10', 'Oct 15', 'Oct 20', 'Oct 25'];
     const myPrice = parseFloat(product.my_price);
-    const compPrice = parseFloat(product.comp_price) || myPrice;
-
-    // Flat line for your price
     const myPriceData = [myPrice, myPrice, myPrice, myPrice, myPrice, myPrice];
-    
-    // Wavy line for competitor ending at their exact current price
-    const compPriceData = [
-        compPrice + 10, 
-        compPrice + 12, 
-        compPrice + 5, 
-        compPrice + 2, 
-        compPrice + 8, 
-        compPrice
-    ];
 
-    let gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(255, 34, 102, 0.2)');
-    gradient.addColorStop(1, 'rgba(255, 34, 102, 0)');
+    let datasets = [{
+        label: 'Your Price',
+        data: myPriceData,
+        borderColor: '#00FF88',
+        borderWidth: 2,
+        tension: 0,
+        pointRadius: 0
+    }];
+
+    const colors = ['#FF2266', '#FFAA00', '#8B7FFF'];
+
+    if (product.competitor_matches && product.competitor_matches.length > 0) {
+        product.competitor_matches.slice(0, 3).forEach((match, i) => {
+            const compPrice = parseFloat(match.comp_price);
+            const compData = [compPrice + 5, compPrice + 8, compPrice + 2, compPrice, compPrice + 4, compPrice];
+            
+            datasets.push({
+                label: match.competitor_name,
+                data: compData,
+                borderColor: colors[i % colors.length],
+                borderWidth: 2,
+                tension: 0.4,
+                pointRadius: 3,
+                pointBackgroundColor: '#000',
+                pointBorderColor: colors[i % colors.length],
+                pointBorderWidth: 2
+            });
+        });
+    }
 
     chartInstance = new Chart(ctx, {
         type: 'line',
-        data: {
-            labels: dates,
-            datasets: [
-                {
-                    label: 'Your Price',
-                    data: myPriceData,
-                    borderColor: '#00FF88',
-                    borderWidth: 2,
-                    tension: 0,
-                    pointRadius: 0
-                },
-                {
-                    label: 'Competitor',
-                    data: compPriceData,
-                    borderColor: '#FF2266',
-                    backgroundColor: gradient,
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: '#000',
-                    pointBorderColor: '#FF2266',
-                    pointBorderWidth: 2,
-                    pointRadius: 4
-                }
-            ]
-        },
+        data: { labels: dates, datasets: datasets },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: '#1E1E1E',
-                    borderColor: '#2A2A2A',
-                    borderWidth: 1,
-                    titleColor: '#fff',
-                    bodyColor: '#C8C8D0'
-                }
-            },
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: true, labels: { color: '#BDBDBD', font: { family: 'JetBrains Mono', size: 10 } } } },
             scales: {
-                y: {
-                    grid: { color: '#1F1F1F' },
-                    ticks: { 
-                        color: '#8A8A94', 
-                        font: { family: 'JetBrains Mono', size: 10 },
-                        callback: function(value) { return '$' + value; }
-                    }
-                },
-                x: {
-                    grid: { display: false },
-                    ticks: { color: '#8A8A94', font: { family: 'JetBrains Mono', size: 10 } }
-                }
+                y: { grid: { color: '#1F1F1F' }, ticks: { color: '#8A8A94', font: { family: 'JetBrains Mono', size: 10 } } },
+                x: { grid: { display: false }, ticks: { color: '#8A8A94', font: { family: 'JetBrains Mono', size: 10 } } }
             }
         }
     });
 }
 
-// 5. Fetch AI Advice for a specific product
 async function fetchAIAdvice(productName) {
     const div = document.getElementById('ai-advisor-content');
-    div.innerHTML = '<div class="text-tertiary" style="font-size: 12px; text-align: center; padding-top: 40px;">Analyzing new data...</div>';
+    div.innerHTML = '<div class="text-tertiary" style="font-size: 12px; text-align: center; padding-top: 40px;"><span style="display:inline-block; width:12px; height:12px; border:2px solid var(--violet); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite;"></span> Analyzing...</div>';
     
     try {
-        // Pass the product name to the backend
         const res = await fetch(`https://vantix-my5f.onrender.com/api/ai/advisor?product_name=${encodeURIComponent(productName)}`);
         const data = await res.json();
         
-        if(data.status === "success") {
+        if(res.ok && data.status === "success") {
             div.innerHTML = `
-                <div class="ai-text">
-                    <b>${data.product.split(' ')[0]}</b> is currently priced at <b class="text-red">$${data.competitor_price}</b> at the competitor.
+                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom: 12px;">
+                    <div style="font-weight: 800; color: var(--text-primary);">${data.product}</div>
                 </div>
-                
-                <div class="ai-data-box">
-                    <div class="ai-row">
-                        <span class="ai-label">Your Price:</span>
-                        <span class="ai-val">$${parseFloat(data.my_price).toFixed(2)}</span>
-                    </div>
-                    <div class="ai-row">
-                        <span class="ai-label">Competitor:</span>
-                        <span class="ai-val text-red">$${parseFloat(data.competitor_price).toFixed(2)}</span>
-                    </div>
-                    <div class="ai-row">
-                        <span class="ai-label">Safe Floor:</span>
-                        <span class="ai-val text-amber">$${(data.my_price * 0.6).toFixed(2)}</span>
-                    </div>
-                    <div class="ai-row">
-                        <span class="ai-label">RECOMMEND:</span>
-                        <span class="ai-val text-green">HOLD</span>
-                    </div>
+                <div class="ai-box">
+                    <div class="ai-row"><span class="text-tertiary">Your Price:</span><span class="mono text-green">$${data.my_price}</span></div>
+                    <div class="ai-row"><span class="text-tertiary">Competitor:</span><span class="mono text-red">$${data.competitor_price}</span></div>
+                    <div class="ai-row"><span class="text-tertiary">RECOMMEND:</span><span class="mono text-accent" style="font-weight:800;">HOLD</span></div>
                 </div>
-
-                <div class="ai-why">
-                    <b style="color: var(--text-secondary);">Why?</b> ${data.advice}
+                <div style="margin-top: 16px; font-size: 12px; line-height: 1.6; color: var(--text-secondary);">
+                    <b style="color: var(--violet);">AI Strategy:</b><br>${data.advice}
                 </div>
             `;
         } else {
-            div.innerHTML = `<div class="text-red">${data.detail || 'AI failed.'}</div>`;
+            div.innerHTML = `<div class="text-red" style="font-size: 12px;">${data.detail || 'AI failed.'}</div>`;
         }
     } catch(e) {
-        div.innerHTML = `<div class="text-red">Backend asleep. AI unavailable.</div>`;
+        div.innerHTML = `<div class="text-red" style="font-size: 12px;">Backend asleep.</div>`;
     }
 }
 
-// Run on page load
-loadTerminal();
+// Run on load
+if (window.location.pathname.includes('terminal.html')) {
+    loadTerminal();
+}
