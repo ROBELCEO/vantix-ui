@@ -43,13 +43,19 @@
         <a href="inventory.html" class="tab">Inventory</a>
         <a href="membership.html" class="tab">Membership</a>
     </div>
-    <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+    
+    <!-- NEW USER PROFILE & LOGOUT -->
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div id="user-email-display" style="font-size: 11px; color: var(--text-tertiary); display: none;"></div>
+        <button onclick="logOut()" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;" id="logout-btn">Log Out</button>
+        <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
 </div>
 
 <div class="screen">
     <div style="max-width: 640px; margin: 0 auto; padding-top: 20px;">
         
-        <!-- STATE 1: UNCONNECTED (NOW VISIBLE BY DEFAULT) -->
+        <!-- STATE 1: UNCONNECTED -->
         <div id="view-unconnected" style="display: block; text-align: center; padding-top: 40px;">
             <h1 style="font-size: 32px; font-weight: 900; letter-spacing: -1px; margin-bottom: 12px;">Welcome to Vantix</h1>
             <p style="color: var(--text-secondary); font-size: 15px; margin-bottom: 40px; line-height: 1.6;">
@@ -68,7 +74,7 @@
             </div>
         </div>
 
-        <!-- STATE 2: CONNECTED (HIDDEN BY DEFAULT) -->
+        <!-- STATE 2: CONNECTED -->
         <div id="view-connected" style="display: none;">
             <div class="panel" style="background: linear-gradient(180deg, rgba(0, 255, 136, 0.05), var(--bg-panel)); border-color: rgba(0, 255, 136, 0.2); margin-bottom: 32px;">
                 <div style="display: flex; align-items: center; gap: 16px;">

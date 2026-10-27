@@ -4,7 +4,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 window.supabaseClient = supabaseClient; 
 
-// Intercept fetch to ALWAYS add the Google JWT
+// Global Auth Check & Fetch Interceptor
 const originalFetch = window.fetch;
 window.fetch = async function() {
     let [resource, config] = arguments;
@@ -22,19 +22,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (window.location.pathname.includes('login.html')) return;
 
     const { data: { session } } = await supabaseClient.auth.getSession();
+    
+    // If NO SESSION -> FORCE REDIRECT TO GOOGLE LOGIN
     if (!session) {
         window.location.href = "login.html";
         return;
     }
 
-    // AUTOMATIC TELEGRAM LINKING
-    // If we are inside Telegram, grab the initData and link it to the Google account
+    // If session exists, show the user's email in the header
+    const emailDisplay = document.getElementById('user-email-display');
+    const logoutBtn = document.getElementById('logout-btn');
+    if (emailDisplay && logoutBtn) {
+        emailDisplay.innerText = session.user.email;
+        emailDisplay.style.display = 'block';
+        logoutBtn.style.display = 'block';
+    }
+
+    // Telegram Auto-Linking (if inside Telegram)
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
         window.Telegram.WebApp.expand();
         try {
             await fetch('https://vantix-my5f.onrender.com/api/telegram/link-telegram', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' }, // JWT is added by interceptor
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ initData: window.Telegram.WebApp.initData })
             });
         } catch(e) { console.error("Telegram link failed", e); }
@@ -45,6 +55,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (typeof fetchCompetitors === 'function') fetchCompetitors();
     if (typeof loadInventory === 'function') loadInventory();
 });
+
+async function logOut() {
+    await supabaseClient.auth.signOut();
+    window.location.href = "login.html";
+}
 
 function toggleMenu() {
     const drawer = document.getElementById('mobile-drawer');
