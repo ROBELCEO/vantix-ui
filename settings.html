@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vantix — Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
+<div class="drawer" id="mobile-drawer">
+    <div class="drawer-header">
+        <div class="brand"><div>VANTI<span>X</span></div></div>
+        <button class="drawer-close" onclick="toggleMenu()">✕</button>
+    </div>
+    <a href="index.html" class="drawer-tab">Connect</a>
+    <a href="overview.html" class="drawer-tab">Overview</a>
+    <a href="store.html" class="drawer-tab">My Store</a>
+    <a href="competitors.html" class="drawer-tab">Competitors</a>
+    <a href="terminal.html" class="drawer-tab">Terminal</a>
+    <a href="discovery.html" class="drawer-tab">Discovery</a>
+    <a href="alerts.html" class="drawer-tab">Alerts</a>
+    <a href="inventory.html" class="drawer-tab">Inventory</a>
+    <a href="membership.html" class="drawer-tab">Membership</a>
+    <a href="settings.html" class="drawer-tab active">Settings</a>
+</div>
+
+<div class="header">
+    <a href="index.html" class="brand">
+        <div class="mark"><svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg></div>
+        <div>VANTI<span>X</span></div>
+    </a>
+    <div class="tabs">
+        <a href="index.html" class="tab">Connect</a>
+        <a href="overview.html" class="tab">Overview</a>
+        <a href="store.html" class="tab">My Store</a>
+        <a href="competitors.html" class="tab">Competitors</a>
+        <a href="terminal.html" class="tab">Terminal</a>
+        <a href="discovery.html" class="tab">Discovery</a>
+        <a href="alerts.html" class="tab">Alerts</a>
+        <a href="inventory.html" class="tab">Inventory</a>
+        <a href="membership.html" class="tab">Membership</a>
+        <a href="settings.html" class="tab active">Settings</a>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">loading...</div>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
+        <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
+</div>
+
+<div class="screen">
+    <div style="max-width: 600px; margin: 0 auto;">
+        <div class="screen-title">Account Settings</div>
+        <div class="screen-sub">Manage your Vantix account</div>
+
+        <!-- PROFILE -->
+        <div class="panel">
+            <div class="panel-header">Profile Information</div>
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="text" id="settings-email" class="form-input" disabled style="opacity: 0.7;">
+            </div>
+            <button onclick="logOut()" class="btn btn-secondary" style="width: 100%;">Sign Out</button>
+        </div>
+
+        <!-- DANGER ZONE -->
+        <div class="panel" style="border-color: rgba(255, 34, 102, 0.4); background: linear-gradient(180deg, rgba(255, 34, 102, 0.05), var(--panel));">
+            <div class="panel-header" style="color: var(--red);">Danger Zone</div>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">
+                Once you delete your account, there is no going back. All your connected stores, competitors, alerts, and data will be permanently erased.
+            </p>
+            <button onclick="confirmDelete()" class="btn" style="width: 100%; background: var(--red); color: #fff;" id="delete-btn">
+                Delete Account Permanently
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/settings.js"></script>
+</body>
+</html>
