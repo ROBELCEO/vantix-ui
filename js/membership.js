@@ -49,6 +49,5 @@
     }
 }
 
-if (window.location.pathname.includes('membership.html')) {
-    checkSubscription();
-}
+
+
