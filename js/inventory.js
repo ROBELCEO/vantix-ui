@@ -1,18 +1,21 @@
-﻿let inventoryData = []; // Store data globally
-
-async function loadInventory() {
+﻿async function loadInventory() {
     const tbody = document.getElementById('inventory-body');
-    
+    if(!tbody) return;
+
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/products');
-        const data = await res.json();
         
-        if(!data.products || data.products.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" class="text-tertiary" style="text-align: center; padding: 40px;">No products found.</td></tr>';
+        if (!res.ok) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-red" style="text-align: center; padding: 40px;">Failed to load inventory.</td></tr>';
             return;
         }
 
-        inventoryData = data.products;
+        const data = await res.json();
+        
+        if(!data.products || data.products.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-tertiary" style="text-align: center; padding: 40px;">No products found. Sync your Shopify store to import products.</td></tr>';
+            return;
+        }
 
         let html = '';
         data.products.forEach((p, index) => {
@@ -25,10 +28,9 @@ async function loadInventory() {
             if(stock === 0) statusBadge = '<span class="badge badge-red">OUT OF STOCK</span>';
             else if(stock < 10) statusBadge = '<span class="badge badge-amber">LOW STOCK</span>';
 
-            // Check if it has variants to determine if we show the expander icon
             const hasVariants = p.variants_data && p.variants_data.length > 0;
             const cursorStyle = hasVariants ? 'cursor: pointer;' : '';
-            const expandIcon = hasVariants ? '<span style="color:var(--accent); margin-right:8px; font-size:10px;">▼</span>' : '';
+            const expandIcon = hasVariants ? '<span class="expand-icon">▼</span>' : '';
 
             // Main Row
             html += `
@@ -37,9 +39,9 @@ async function loadInventory() {
                         <div class="product-cell">
                             ${expandIcon}
                             <img src="${p.image_url || 'https://via.placeholder.com/40'}" class="product-img">
-                            <div class="product-info">
-                                <span class="product-title">${p.title}</span>
-                                <span class="product-variants">${hasVariants ? p.variants_data.length + ' Variants' : '1 Variant'}</span>
+                            <div>
+                                <div class="product-title">${p.title}</div>
+                                <div class="product-variants">${hasVariants ? p.variants_data.length + ' Variants' : '1 Variant'}</div>
                             </div>
                         </div>
                     </td>
@@ -47,8 +49,6 @@ async function loadInventory() {
                     <td class="mono text-tertiary">$${cost.toFixed(2)}</td>
                     <td class="mono">$${price.toFixed(2)}</td>
                     <td class="mono text-green" style="font-weight:700;">${margin.toFixed(1)}%</td>
-                    <td><div class="stars">★★★★★</div></td>
-                    <td><div class="velocity-label text-green">SELLING FAST</div></td>
                     <td>${statusBadge}</td>
                 </tr>
             `;
@@ -81,7 +81,7 @@ async function loadInventory() {
 
                 html += `
                     <tr class="variant-row" id="variant-row-${index}">
-                        <td colspan="8">${variantHtml}</td>
+                        <td colspan="6">${variantHtml}</td>
                     </tr>
                 `;
             }
@@ -90,7 +90,8 @@ async function loadInventory() {
         tbody.innerHTML = html;
 
     } catch(e) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-red" style="text-align: center; padding: 40px;">Failed to load inventory.</td></tr>';
+        console.error("Inventory error:", e);
+        tbody.innerHTML = '<tr><td colspan="6" class="text-red" style="text-align: center; padding: 40px;">Network error. Please refresh.</td></tr>';
     }
 }
 
@@ -101,4 +102,6 @@ function toggleVariants(index) {
     }
 }
 
-loadInventory();
+if (window.location.pathname.includes('inventory.html')) {
+    loadInventory();
+}
