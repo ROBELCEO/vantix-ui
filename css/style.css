@@ -3161,3 +3161,65 @@ html, body {
     color: #FFFFFF !important;
     font-weight: 800 !important;
 }
+
+/* ==========================================
+   REMOVE GIANT TITLES & COMPACT UI
+   ========================================== */
+
+/* 1. Hide the massive intro titles on all pages EXCEPT Connect */
+.ov-eyebrow, .ov-title, .ov-sub,
+.st-eyebrow, .st-title, .st-sub,
+.cmp-eyebrow, .cmp-title, .cmp-sub,
+.trm-eyebrow, .trm-title, .trm-sub,
+.dsc-eyebrow, .dsc-title, .dsc-sub,
+.inv-eyebrow, .inv-title, .inv-sub,
+.mem-eyebrow, .mem-title, .mem-sub,
+.set-eyebrow, .set-title, .set-sub {
+    display: none !important;
+}
+
+/* 2. Push the status chips to the right to save vertical space */
+.ov-row-a, .st-row-a, .cmp-row-a, .trm-row-a, .dsc-row-a, .inv-row-a, .set-row-a {
+    justify-content: flex-end !important;
+    margin-bottom: 12px !important;
+    padding: 0 !important;
+}
+.mem-row-a {
+    display: flex !important;
+    justify-content: flex-end !important;
+    margin-bottom: 12px !important;
+    padding: 0 !important;
+}
+
+/* 3. High Contrast Dark Grey & Sharp Borders */
+:root, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
+    --ov-bg: #000000;
+    --ov-panel: #050505; /* Very dark grey, almost black */
+    --ov-card: #0A0A0A;
+    --ov-elev: #141414;
+    --ov-border: #333333; /* Crisp, highly visible border */
+    --ov-text: #FFFFFF;
+    --ov-text2: #A1A1AA;
+}
+
+/* 4. Razor Sharp Edges (0px radius) */
+.ov-panel, .ov-kpi, .st-panel, .st-kpi, .cmp-panel, .trm-panel, .trm-sidebar, .dsc-card, .inv-panel, .inv-kpi, .mem-card, .set-panel, .cnx-panel,
+.cnx-input, .cnx-btn-primary, .cnx-btn-secondary, .dsc-search-input, .dsc-search-btn, .dsc-push-btn, .mem-btn-primary, .mem-btn-secondary, .btn, .trm-input, .form-input, .dsc-pill, .cmp-pill {
+    border-radius: 0px !important; 
+}
+
+/* 5. Compact Buttons (Smaller height) */
+.cnx-btn-primary, .cnx-btn-secondary, .dsc-search-btn, .dsc-push-btn, .mem-btn-primary, .mem-btn-secondary, .btn, .set-btn-secondary, .set-btn-danger {
+    height: 32px !important;
+    padding: 0 16px !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* 6. Tighter Top Padding */
+.ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
+    padding-top: 12px !important;
+}
