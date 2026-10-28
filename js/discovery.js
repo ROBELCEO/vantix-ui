@@ -72,15 +72,15 @@ async function loadDiscovery(category = '') {
                         </div>
                         <div class="dsc-price-group" style="text-align: right;">
                             <div class="dsc-price-label">Rating</div>
-                            <div class="dsc-price-val" style="color: var(--ov-amber); font-size: 12px;">
-                                ★ ${rating.toFixed(1)} <span style="color: var(--ov-muted); font-size: 10px;">(${reviewCount})</span>
+                            <div class="dsc-price-val" style="color: #D97706; font-size: 12px;">
+                                ★ ${rating.toFixed(1)} <span style="color: #9CA3AF; font-size: 10px;">(${reviewCount})</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="dsc-card-reason">
                         <div class="dsc-reason-label">⚡ AI Goldmine Signals</div>
-                        <ul style="margin: 0; padding-left: 16px; font-size: 11px; color: var(--ov-text2); line-height: 1.4;">
+                        <ul style="margin: 0; padding-left: 16px; font-size: 11px; color: #4B5563; line-height: 1.4;">
                             ${bullets.map(b => `<li>${dscEsc(b)}</li>`).join('')}
                         </ul>
                     </div>
@@ -143,22 +143,23 @@ async function pushToShopify(index, btn) {
 
         if (res.ok) {
             btn.innerText = "✅ Pushed to Shopify!";
-            btn.style.background = "var(--ov-green)";
-            btn.style.color = "#000";
+            btn.style.background = "#059669";
+            btn.style.color = "#FFFFFF";
         } else {
             throw new Error(data.detail || "Unknown error");
         }
     } catch(e) {
         console.error("Push error:", e);
         btn.innerText = "❌ Error";
-        btn.style.background = "var(--ov-red)";
-        btn.style.color = "#fff";
+        btn.style.background = "#E11D48";
+        btn.style.color = "#FFFFFF";
 
         setTimeout(() => {
             btn.innerText = "🚀 Push to Shopify";
-            btn.style.background = "var(--ov-cyan)";
-            btn.style.color = "#000";
+            btn.style.background = "#0284C7";
+            btn.style.color = "#FFFFFF";
             btn.disabled = false;
         }, 3000);
     }
 }
+
