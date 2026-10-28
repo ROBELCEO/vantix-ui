@@ -72,7 +72,7 @@ async function refreshCompetitor(domain, btn) {
     btn.innerText = "…";
     btn.disabled = true;
     try {
-        const res = await fetch(`https://vantix-my5f.onrender.com/api/competitors/add?domain=${encodeURIComponent(domain)}`);
+        const res = await fetch(https://vantix-my5f.onrender.com/api/competitors/add?domain=${encodeURIComponent(domain)}, { method: 'POST' });
         const data = await res.json();
         if (res.ok && data.status === "success") {
             fetchCompetitors();
@@ -133,7 +133,7 @@ async function addCompetitor(domain) {
     status.innerText = "Scraping competitor products (takes 5-10s)…";
 
     try {
-        const res = await fetch(`https://vantix-my5f.onrender.com/api/competitors/add?domain=${encodeURIComponent(domain)}`);
+        const res = await fetch(https://vantix-my5f.onrender.com/api/competitors/add?domain=${encodeURIComponent(domain)}, { method: 'POST' });
         const data = await res.json();
 
         if (res.ok && data.status === "success") {
@@ -221,3 +221,4 @@ async function loadCatalogGaps() {
         list.innerHTML = '<div class="cmp-empty cmp-text-red" style="grid-column: span 2;">Failed to load gaps.</div>';
     }
 }
+
