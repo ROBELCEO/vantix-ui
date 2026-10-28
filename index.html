@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Connect</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2093">
+<link rel="stylesheet" href="css/style.css?v=2108">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -63,7 +63,15 @@
                 <p class="cnx-sub" style="color: #6B7280 !important;">Link your Shopify store to unlock profit intelligence, competitor tracking, and AI strategies.</p>
             </div>
             <div class="cnx-status-group">
-                <div class="cnx-chip" id="cnx-status">Checking…</div>
+                <div class="cnx-chip" id="cnx-status">Checking status…</div>
+            </div>
+        </div>
+
+        <!-- SKELETON LOADER (Prevents page flashing) -->
+        <div id="view-loading" style="display: block;">
+            <div class="cnx-panel" style="padding: 48px; text-align: center;">
+                <div class="dsc-spinner" style="width: 32px; height: 32px; margin-bottom: 16px;"></div>
+                <div style="color: #6B7280; font-weight: 600;">Verifying Shopify connection...</div>
             </div>
         </div>
 
@@ -80,20 +88,24 @@
                 <button id="direct-connect-link" class="cnx-btn-primary" style="max-width: 400px; margin: 0 auto;">
                     Connect Shopify Store →
                 </button>
-                <div id="connect-error" class="cnx-error" style="display: none; margin-top: 12px;"></div>
             </div>
         </div>
 
         <!-- CONNECTED VIEW -->
         <div id="view-connected" style="display: none;">
             
-            <div class="cnx-panel cnx-panel-success" style="margin-bottom: 24px;">
-                <div style="display: flex; align-items: center; gap: 16px;">
-                    <div class="cnx-success-icon" style="background: #DCFCE7; border-color: #22C55E; color: #16A34A;">✓</div>
-                    <div>
-                        <div class="cnx-panel-title" style="color: #059669 !important;">Store Connected</div>
-                        <div class="cnx-panel-sub" id="connected-domain" style="color: #047857 !important;">loading...</div>
+            <div class="cnx-panel cnx-panel-success" style="margin-bottom: 24px; background: #F0FDF4; border-color: #BBF7D0;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <div class="cnx-success-icon" style="background: #DCFCE7; border-color: #22C55E; color: #16A34A;">✓</div>
+                        <div>
+                            <div class="cnx-panel-title" style="color: #059669 !important;">Store Connected</div>
+                            <div class="cnx-panel-sub" id="connected-domain" style="color: #047857 !important;">loading...</div>
+                        </div>
                     </div>
+                    <button onclick="triggerSync(this)" class="cnx-btn-secondary" style="background: #FFF; border-color: #22C55E; color: #16A34A;">
+                        Sync Data Now
+                    </button>
                 </div>
             </div>
 
@@ -119,10 +131,10 @@
                         <label class="cnx-label">Payment Gateway Fee (%)</label>
                         <input type="number" id="gateway-fee" class="cnx-input" placeholder="e.g. 2.9">
                     </div>
-                    <button id="save-settings-btn" class="cnx-btn-secondary" onclick="saveSettings()" style="width: 100%; margin-top: 8px;">
+                    <button id="save-settings-btn" class="cnx-btn-primary" onclick="saveSettings(this)" style="width: 100%; margin-top: 8px;">
                         Save Profit Settings
                     </button>
-                    <div id="settings-status" class="cnx-success-text" style="display: none; color: #059669;">✅ Settings saved successfully!</div>
+                    <div id="settings-status" class="cnx-success-text" style="display: none; color: #059669; margin-top: 12px; text-align: center; font-weight: 600;">✅ Settings saved successfully!</div>
                 </div>
 
                 <!-- STEP 2: TELEGRAM ALERTS -->
@@ -134,7 +146,7 @@
                     <div class="cnx-panel-sub" style="margin-bottom: 16px;">Get instant price drop alerts and daily AI briefings sent to your phone.</div>
                     
                     <div id="telegram-status-text" class="cnx-panel-sub" style="margin-bottom: 16px; font-weight: 600;">
-                        Loading connection status…
+                        Checking Telegram status...
                     </div>
                     
                     <button id="telegram-btn" class="cnx-btn-primary" style="width: 100%;">
@@ -143,28 +155,13 @@
                 </div>
 
             </div>
-
-            <!-- AUTO-DISCOVER COMPETITORS -->
-            <div class="cnx-panel" style="margin-top: 24px;">
-                <div class="cnx-panel-head">
-                    <div class="cnx-panel-title" style="color: #111827 !important;">3. Auto-Discover Competitors</div>
-                    <div class="cnx-badge" style="background: #F3E8FF; color: #6D28D9 !important; border-color: #E9D5FF;">AI POWERED</div>
-                </div>
-                <div class="cnx-panel-sub" style="margin-bottom: 16px;">Based on your catalog, we found these stores selling similar items. Add them to track their prices.</div>
-                <div id="suggested-competitors-container" class="cnx-list">
-                    <div class="cnx-empty" style="color: #6B7280;">Scanning market for competitors…</div>
-                </div>
-            </div>
-
         </div>
 
     </div>
 </div>
 
-<script src="js/app.js?v=2093"></script>
-<script src="js/connect.js?v=2083"></script>
+<script src="js/app.js?v=2108"></script>
+<script src="js/connect.js?v=2108"></script>
 </body>
 </html>
-
-
 

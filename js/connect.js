@@ -1,15 +1,15 @@
-﻿function cnxEsc(str) {
-    return String(str ?? "").replace(/[&<>"']/g, s => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[s]));
-}
+﻿let isChecking = false;
 
 async function checkConnectionStatus() {
+    if (isChecking) return;
+    isChecking = true;
+
+    const loadingView = document.getElementById('view-loading');
     const unconnectedView = document.getElementById('view-unconnected');
     const connectedView = document.getElementById('view-connected');
     const statusEl = document.getElementById('cnx-status');
 
-    if (!unconnectedView || !connectedView) return;
+    if (!loadingView || !unconnectedView || !connectedView) return;
 
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/shopify/status');
@@ -20,13 +20,16 @@ async function checkConnectionStatus() {
 
         const data = await res.json();
         
+        // Hide skeleton, show real view
+        loadingView.style.display = 'none';
+
         if (data.connected) {
             unconnectedView.style.display = 'none';
             connectedView.style.display = 'block';
             if (statusEl) statusEl.innerText = "Connected";
             document.getElementById('connected-domain').innerText = data.domain;
             
-            // Load saved settings
+            // Load saved settings without flashing
             try {
                 const settingsRes = await fetch('https://vantix-my5f.onrender.com/api/store/settings');
                 if (settingsRes.ok) {
@@ -37,7 +40,6 @@ async function checkConnectionStatus() {
                 }
             } catch(e) { console.error("Settings load error", e); }
             
-            discoverRealCompetitors();
             checkTelegramStatus();
             
         } else {
@@ -47,21 +49,24 @@ async function checkConnectionStatus() {
         }
     } catch(e) {
         console.error("Status check failed", e);
+        loadingView.style.display = 'none';
         unconnectedView.style.display = 'block';
-        connectedView.style.display = 'none';
         if (statusEl) statusEl.innerText = "Offline";
+    } finally {
+        isChecking = false;
     }
 }
 
-async function saveSettings() {
+async function saveSettings(btn) {
     const goal = parseFloat(document.getElementById('profit-goal').value) || 0;
     const shipping = parseFloat(document.getElementById('shipping-cost').value) || 0;
     const gateway = parseFloat(document.getElementById('gateway-fee').value) || 0;
-    const btn = document.getElementById('save-settings-btn');
     const status = document.getElementById('settings-status');
 
+    const originalText = btn.innerText;
     btn.innerText = "Saving...";
     btn.disabled = true;
+    status.style.display = 'none';
 
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/store/settings', {
@@ -71,60 +76,48 @@ async function saveSettings() {
         });
         
         if (res.ok) {
+            btn.innerText = "✅ Saved";
             status.style.display = 'block';
-            setTimeout(() => status.style.display = 'none', 3000);
+            setTimeout(() => { status.style.display = 'none'; }, 3000);
         } else {
             throw new Error("Failed to save");
         }
     } catch(e) { 
         alert("Error saving settings. Check your connection.");
     } finally {
-        btn.innerText = "Save Profit Settings";
-        btn.disabled = false;
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }, 1000);
     }
 }
 
-async function discoverRealCompetitors() {
-    const container = document.getElementById('suggested-competitors-container');
-    if (!container) return;
-    
-    try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/discover');
-        const data = await res.json();
-        
-        if (data.suggested_competitors && data.suggested_competitors.length > 0) {
-            container.innerHTML = data.suggested_competitors.map(domain => `
-                <div class="cnx-product-row">
-                    <div class="cnx-product-title">${cnxEsc(domain)}</div>
-                    <button class="cnx-btn-small" onclick="matchCompetitor('${cnxEsc(domain)}', this)">+ Match</button>
-                </div>
-            `).join('');
-        } else {
-            container.innerHTML = '<div class="cnx-empty">No competitors found. Try adding manually on the Competitors page.</div>';
-        }
-    } catch(e) {
-        container.innerHTML = '<div class="cnx-empty cnx-error">Failed to scan market.</div>';
-    }
-}
-
-async function matchCompetitor(domain, btn) {
-    btn.innerText = "Scraping...";
+async function triggerSync(btn) {
+    const originalText = btn.innerText;
+    btn.innerText = "Syncing...";
     btn.disabled = true;
 
     try {
-        const res = await fetch(`https://vantix-my5f.onrender.com/api/competitors/add?domain=${encodeURIComponent(domain)}`);
+        const res = await fetch('https://vantix-my5f.onrender.com/api/shopify/sync');
         const data = await res.json();
         
         if (res.ok) {
-            btn.innerText = "✅ Matched";
-            btn.style.color = "var(--ov-green)";
-            btn.style.borderColor = "var(--ov-green)";
+            btn.innerText = "✅ Sync Complete";
+            btn.style.background = "#DCFCE7";
+            btn.style.color = "#16A34A";
         } else {
-            throw new Error(data.detail || "Failed");
+            throw new Error(data.message || "Sync failed");
         }
     } catch(e) {
-        btn.innerText = "Error";
-        btn.disabled = false;
+        alert("Sync failed: " + e.message);
+        btn.innerText = "❌ Error";
+    } finally {
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.background = "#FFF";
+            btn.style.color = "#16A34A";
+            btn.disabled = false;
+        }, 3000);
     }
 }
 
@@ -142,13 +135,15 @@ async function checkTelegramStatus() {
             btn.innerText = "✅ Telegram Connected";
             btn.className = "cnx-btn-secondary";
             btn.disabled = true;
-            btn.style.borderColor = "var(--ov-green)";
-            btn.style.color = "var(--ov-green)";
+            btn.style.borderColor = "#22C55E";
+            btn.style.color = "#16A34A";
+            btn.style.background = "#F0FDF4";
             statusText.innerHTML = "Your account is linked. You will receive daily briefings at 8:00 AM.";
         } else {
             btn.innerText = "Activate Telegram →";
             btn.className = "cnx-btn-primary";
             btn.disabled = false;
+            statusText.innerHTML = "Click to link your Telegram account.";
             
             const { data: { session } } = await window.supabaseClient.auth.getSession();
             if (session) {
@@ -164,10 +159,10 @@ async function checkTelegramStatus() {
     }
 }
 
+// Add the direct connect link logic
 document.addEventListener('DOMContentLoaded', () => {
     const link = document.getElementById('direct-connect-link');
     const input = document.getElementById('shopify-domain');
-    const errorDiv = document.getElementById('connect-error');
 
     if (link && input) {
         const updateLink = async () => {
@@ -186,7 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 link.onclick = () => {
                     window.location.href = `https://vantix-my5f.onrender.com/api/shopify/install?shop=${domain}&token=${session.access_token}`;
                 };
-                if(errorDiv) errorDiv.style.display = 'none';
             }
         };
         input.addEventListener('input', updateLink);
