@@ -5,31 +5,31 @@
         const data = await res.json();
 
         document.getElementById('settings-email').innerText = data.email;
-        
+
         const planBadge = document.getElementById('settings-plan');
         planBadge.innerText = data.plan.toUpperCase();
-        if (data.plan === 'pro') planBadge.className = "badge badge-green";
-        else if (data.plan === 'scale') planBadge.className = "badge badge-violet";
-        else planBadge.className = "badge badge-amber";
+        planBadge.className = "set-badge";
+        if (data.plan === 'pro') planBadge.classList.add('set-badge-green');
+        else if (data.plan === 'scale') planBadge.classList.add('set-badge-violet');
+        else planBadge.classList.add('set-badge-amber');
 
         const shopEl = document.getElementById('settings-shopify');
         if (data.shopify_connected) {
             shopEl.innerText = data.shopify_domain;
-            shopEl.style.color = "var(--green)";
+            shopEl.style.color = "var(--ov-green)";
         } else {
             shopEl.innerText = "Not Connected";
-            shopEl.style.color = "var(--red)";
+            shopEl.style.color = "var(--ov-red)";
         }
 
         const teleEl = document.getElementById('settings-telegram');
         if (data.telegram_linked) {
             teleEl.innerText = "Connected & Active";
-            teleEl.style.color = "var(--green)";
+            teleEl.style.color = "var(--ov-green)";
         } else {
             teleEl.innerText = "Not Linked";
-            teleEl.style.color = "var(--red)";
+            teleEl.style.color = "var(--ov-red)";
         }
-
     } catch(e) {
         console.error("Failed to load profile", e);
     }
@@ -37,7 +37,7 @@
 
 async function confirmDelete() {
     const confirmation = prompt("WARNING: This will permanently delete your account and all data.\n\nType 'DELETE' to confirm.");
-    
+
     if (confirmation !== 'DELETE') {
         return;
     }

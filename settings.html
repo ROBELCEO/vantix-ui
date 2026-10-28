@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Settings</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2063">
+<link rel="stylesheet" href="css/style.css?v=2071">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -16,17 +16,16 @@
         <div class="brand"><div>VANTI<span>X</span></div></div>
         <button class="drawer-close" onclick="toggleMenu()">✕</button>
     </div>
-    <a href="index.html" class="drawer-tab ">Connect</a>
-    <a href="overview.html" class="drawer-tab ">Overview</a>
-    <a href="store.html" class="drawer-tab ">My Store</a>
-    <a href="competitors.html" class="drawer-tab ">Competitors</a>
-    <a href="terminal.html" class="drawer-tab ">Terminal</a>
-    <a href="discovery.html" class="drawer-tab ">Discovery</a>
-    <a href="alerts.html" class="drawer-tab ">Alerts</a>
-    <a href="inventory.html" class="drawer-tab ">Inventory</a>
-    <a href="membership.html" class="drawer-tab ">Membership</a>
+    <a href="index.html" class="drawer-tab">Connect</a>
+    <a href="overview.html" class="drawer-tab">Overview</a>
+    <a href="store.html" class="drawer-tab">My Store</a>
+    <a href="competitors.html" class="drawer-tab">Competitors</a>
+    <a href="terminal.html" class="drawer-tab">Terminal</a>
+    <a href="discovery.html" class="drawer-tab">Discovery</a>
+    <a href="alerts.html" class="drawer-tab">Alerts</a>
+    <a href="inventory.html" class="drawer-tab">Inventory</a>
+    <a href="membership.html" class="drawer-tab">Membership</a>
     <a href="settings.html" class="drawer-tab active">Settings</a>
-    
 </div>
 
 <div class="header">
@@ -35,17 +34,16 @@
         <div>VANTI<span>X</span></div>
     </a>
     <div class="tabs">
-        <a href="index.html" class="tab ">Connect</a>
-        <a href="overview.html" class="tab ">Overview</a>
-        <a href="store.html" class="tab ">My Store</a>
-        <a href="competitors.html" class="tab ">Competitors</a>
-        <a href="terminal.html" class="tab ">Terminal</a>
-        <a href="discovery.html" class="tab ">Discovery</a>
-        <a href="alerts.html" class="tab ">Alerts</a>
-        <a href="inventory.html" class="tab ">Inventory</a>
-        <a href="membership.html" class="tab ">Membership</a>
+        <a href="index.html" class="tab">Connect</a>
+        <a href="overview.html" class="tab">Overview</a>
+        <a href="store.html" class="tab">My Store</a>
+        <a href="competitors.html" class="tab">Competitors</a>
+        <a href="terminal.html" class="tab">Terminal</a>
+        <a href="discovery.html" class="tab">Discovery</a>
+        <a href="alerts.html" class="tab">Alerts</a>
+        <a href="inventory.html" class="tab">Inventory</a>
+        <a href="membership.html" class="tab">Membership</a>
         <a href="settings.html" class="tab active">Settings</a>
-        
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
         <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">loading...</div>
@@ -54,54 +52,72 @@
     </div>
 </div>
 
-<div class="screen">
-    <div style="max-width: 1100px; margin: 0 auto; padding-top: 20px;">
-        <div class="screen-title">Account Settings</div>
-        <div class="screen-sub">Manage your profile, integrations, and preferences.</div>
-
-        <!-- PROFILE -->
-        <div class="panel" style="margin-bottom: 24px;">
-            <div class="panel-header">👤 Profile Information</div>
-            <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border);">
-                <div style="font-size: 13px; color: var(--text-secondary);">Email</div>
-                <div class="mono" id="settings-email" style="font-size: 13px;">Loading...</div>
+<div class="screen set-screen">
+    <div class="set-wrap">
+        
+        <!-- ROW A -->
+        <div class="set-row-a">
+            <div>
+                <div class="set-eyebrow">ACCOUNT</div>
+                <h1 class="set-title">Settings</h1>
+                <p class="set-sub">Manage your profile, integrations, and account preferences.</p>
             </div>
-            <div style="display: flex; justify-content: space-between; padding: 12px 0;">
-                <div style="font-size: 13px; color: var(--text-secondary);">Current Plan</div>
-                <div class="badge badge-violet" id="settings-plan">...</div>
+            <div class="set-status-group">
+                <div class="set-chip" id="set-status">Ready</div>
             </div>
         </div>
 
-        <!-- INTEGRATIONS -->
-        <div class="panel" style="margin-bottom: 24px;">
-            <div class="panel-header">🔗 Integrations</div>
-            
-            <!-- Shopify Status -->
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);">
-                <div>
-                    <div style="font-size: 14px; font-weight: 700;">Shopify Store</div>
-                    <div class="text-tertiary" style="font-size: 11px;" id="settings-shopify">Checking...</div>
+        <div class="set-grid-2">
+            <!-- PROFILE -->
+            <div class="set-panel">
+                <div class="set-panel-head">
+                    <div class="set-panel-title">Profile</div>
                 </div>
-                <a href="index.html" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;">Manage</a>
+                <div class="set-list">
+                    <div class="set-row">
+                        <div class="set-label">Email</div>
+                        <div class="set-value" id="settings-email">Loading…</div>
+                    </div>
+                    <div class="set-row">
+                        <div class="set-label">Current Plan</div>
+                        <div class="set-badge" id="settings-plan">...</div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Telegram Status -->
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
-                <div>
-                    <div style="font-size: 14px; font-weight: 700;">Telegram Bot</div>
-                    <div class="text-tertiary" style="font-size: 11px;" id="settings-telegram">Checking...</div>
+            <!-- INTEGRATIONS -->
+            <div class="set-panel">
+                <div class="set-panel-head">
+                    <div class="set-panel-title">Integrations</div>
                 </div>
-                <a href="index.html" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;">Manage</a>
+                <div class="set-list">
+                    <div class="set-row">
+                        <div>
+                            <div class="set-label">Shopify Store</div>
+                            <div class="set-value" id="settings-shopify">Checking…</div>
+                        </div>
+                        <a href="index.html" class="set-btn-secondary">Manage</a>
+                    </div>
+                    <div class="set-row">
+                        <div>
+                            <div class="set-label">Telegram Bot</div>
+                            <div class="set-value" id="settings-telegram">Checking…</div>
+                        </div>
+                        <a href="index.html" class="set-btn-secondary">Manage</a>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- DANGER ZONE -->
-        <div class="panel" style="border-color: rgba(255, 34, 102, 0.4); background: linear-gradient(180deg, rgba(255,34,102,0.05), transparent);">
-            <div class="panel-header" style="color: var(--red);">⚠️ Danger Zone</div>
-            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">
+        <div class="set-panel set-panel-danger">
+            <div class="set-panel-head">
+                <div class="set-panel-title" style="color: var(--ov-red);">Danger Zone</div>
+            </div>
+            <div class="set-panel-sub" style="margin-bottom: 16px;">
                 Once you delete your account, there is no going back. All your connected stores, competitors, alerts, and data will be permanently erased.
-            </p>
-            <button id="delete-btn" class="btn" style="width: 100%; background: var(--red); color: #fff;" onclick="confirmDelete()">
+            </div>
+            <button id="delete-btn" class="set-btn-danger" onclick="confirmDelete()">
                 Delete Account Permanently
             </button>
         </div>
@@ -109,9 +125,7 @@
     </div>
 </div>
 
-<script src="js/app.js?v=2050"></script>
-<script src="js/settings.js?v=2044"></script>
+<script src="js/app.js?v=2071"></script>
+<script src="js/settings.js?v=2071"></script>
 </body>
 </html>
-
-
