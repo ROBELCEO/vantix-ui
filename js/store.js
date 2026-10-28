@@ -67,10 +67,29 @@ async function loadStoreData() {
         const abandoned = Number(kpis.abandoned_value ?? NaN);
 
         stSet("kpi-revenue", Number.isFinite(rev) ? stMoney(rev) : "—");
-        stSet("kpi-net-profit", Number.isFinite(net) ? stMoney(net) : "—");
         stSet("kpi-orders", Number.isFinite(orders) ? stNum(orders) : "—");
         stSet("kpi-aov", Number.isFinite(aov) ? stMoney(aov) : "—");
         stSet("kpi-abandoned", Number.isFinite(abandoned) ? stMoney(abandoned) : "—");
+
+        // Handle Net Profit Setup Link
+        const netEl = document.getElementById("kpi-net-profit");
+        const metaEl = document.getElementById("kpi-net-profit-meta");
+        const setupEl = document.getElementById("kpi-net-profit-setup");
+
+        if (kpis.profit_status === "MISSING_COGS") {
+            if (netEl) { netEl.innerText = "MISSING"; netEl.style.color = "#E11D48"; netEl.style.fontSize = "16px"; }
+            if (metaEl) metaEl.innerText = "COGS not set in Shopify";
+            if (setupEl) setupEl.style.display = "none";
+        } else if (kpis.profit_status === "MISSING_FEES") {
+            if (netEl) { netEl.innerText = "—"; netEl.style.color = "#9CA3AF"; netEl.style.fontSize = "24px"; }
+            if (metaEl) metaEl.innerText = "Fees not configured";
+            if (setupEl) setupEl.style.display = "block";
+        } else {
+            if (netEl) { netEl.style.fontSize = "24px"; netEl.style.color = "#059669"; }
+            if (metaEl) metaEl.innerText = "Revenue − COGS";
+            if (setupEl) setupEl.style.display = "none";
+            stSet("kpi-net-profit", Number.isFinite(net) ? stMoney(net) : "—");
+        }
 
         renderRevenueChart(data.chart || { labels: [], data: [] });
         renderTopProducts(Array.isArray(data.top_products) ? data.top_products : []);
@@ -302,4 +321,5 @@ async function loadCustomerLTV() {
         if (snapEl) snapEl.innerHTML = '<div class="st-empty">Failed to summarize customers.</div>';
     }
 }
+
 
