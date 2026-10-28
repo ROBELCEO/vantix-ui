@@ -3082,3 +3082,82 @@ html, body {
 .ov-kpi-label, .st-kpi-label, .inv-kpi-label {
     font-size: 11px !important;
 }
+
+/* ==========================================
+   AGGRESSIVE OVERRIDE — SHARP, DARK, COMPACT
+   ========================================== */
+
+/* 1. High Contrast Dark Colors */
+:root, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
+    --ov-bg: #000000;
+    --ov-panel: #0A0A0A; /* Solid dark grey, not black */
+    --ov-card: #141414;  /* Slightly lighter for nested cards */
+    --ov-elev: #1A1A1A;  /* Inputs and hover states */
+    --ov-border: #222222; /* Solid crisp border */
+    --ov-text: #FFFFFF;  /* Pure white for contrast */
+    --ov-text2: #A1A1AA;
+    --ov-muted: #71717A;
+    --ov-cyan: #00E5FF;
+    --ov-green: #00FF88;
+    --ov-red: #FF2266;
+    --ov-amber: #FFAA00;
+    --ov-violet: #8B7FFF;
+}
+
+/* 2. Kill all rounded corners (Sharp Edges) */
+.ov-panel, .ov-kpi, .st-panel, .st-kpi, .cmp-panel, .trm-panel, .trm-sidebar, .dsc-card, .inv-panel, .inv-kpi, .mem-card, .set-panel, .cnx-panel,
+.cnx-input, .cnx-btn-primary, .cnx-btn-secondary, .dsc-search-input, .dsc-search-btn, .dsc-push-btn, .mem-btn-primary, .mem-btn-secondary, .btn, .trm-input, .form-input {
+    border-radius: 2px !important;
+}
+
+/* 3. Compact Spacing */
+.ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
+    padding: 12px 16px 32px !important; /* Reduced from 24px */
+}
+.ov-panel, .st-panel, .cmp-panel, .trm-panel, .dsc-card, .inv-panel, .mem-card, .set-panel, .cnx-panel {
+    padding: 12px !important; /* Reduced from 16px/20px */
+}
+.ov-kpi, .st-kpi, .inv-kpi {
+    padding: 12px !important;
+}
+.ov-grid-3, .st-grid-2-1, .st-grid-2-2, .cnx-grid-2, .set-grid-2, .dsc-grid {
+    gap: 12px !important;
+    margin-bottom: 12px !important;
+}
+.ov-row-a, .st-row-a, .cmp-row-a, .trm-row-a, .dsc-row-a, .inv-row-a, .cnx-row-a, .set-row-a {
+    margin-bottom: 12px !important;
+}
+
+/* 4. Fix Giant Buttons */
+.cnx-btn-primary, .cnx-btn-secondary, .dsc-search-btn, .dsc-push-btn, .mem-btn-primary, .mem-btn-secondary, .btn, .set-btn-secondary, .set-btn-danger {
+    height: 36px !important;
+    padding: 0 16px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+/* Force full width only on specific form buttons */
+.cnx-btn-primary, .cnx-btn-secondary, .dsc-push-btn, .mem-btn-primary, .mem-btn-secondary, .set-btn-danger {
+    width: 100% !important;
+}
+.dsc-search-btn, .btn, .set-btn-secondary {
+    width: auto !important;
+}
+/* Fix input heights */
+.cnx-input, .dsc-search-input, .trm-input, .form-input {
+    height: 36px !important;
+    padding: 0 12px !important;
+    font-size: 13px !important;
+}
+
+/* 5. Increase Font Contrast */
+.ov-title, .st-title, .cmp-title, .trm-title, .dsc-title, .inv-title, .cnx-title, .set-title {
+    color: #FFFFFF !important;
+    font-weight: 900 !important;
+}
+.ov-panel-title, .st-panel-title, .cmp-panel-title, .trm-panel-title, .dsc-card-title, .cnx-panel-title, .set-panel-title {
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+}
