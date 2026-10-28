@@ -479,8 +479,8 @@ body {
    ========================================== */
 .ov-screen {
     --ov-bg: #000000;
-    --ov-panel: #16181A;
-    --ov-card: #1C1F22;
+    --ov-panel: #1A1A1A;
+    --ov-card: #222222;
     --ov-elev: #111519;
     --ov-border: rgba(255,255,255,0.04);
     --ov-text: #F4F7FA;
@@ -814,7 +814,7 @@ body {
 }
 .ov-ai-panel {
     border-color: rgba(0,217,245,0.25);
-    background: linear-gradient(180deg, rgba(0,217,245,0.04), var(--ov-panel));
+    background: var(--ov-panel);
 }
 .ov-ai-copy {
     font-size: 12px;
@@ -862,8 +862,8 @@ body {
    ========================================== */
 .st-screen {
     --ov-bg: #000000;
-    --ov-panel: #16181A;
-    --ov-card: #1C1F22;
+    --ov-panel: #1A1A1A;
+    --ov-card: #222222;
     --ov-elev: #111519;
     --ov-border: rgba(255,255,255,0.04);
     --ov-text: #F4F7FA;
@@ -1015,10 +1015,10 @@ body {
     display: flex;
     flex-direction: column;
 }
-.st-panel-amber { border-color: rgba(255,180,84,0.1); background: linear-gradient(180deg, rgba(255,180,84,0.04), var(--ov-panel)); }
-.st-panel-red { border-color: rgba(255,66,103,0.1); background: linear-gradient(180deg, rgba(255,66,103,0.04), var(--ov-panel)); }
-.st-panel-violet { border-color: rgba(167,139,250,0.1); background: linear-gradient(180deg, rgba(167,139,250,0.04), var(--ov-panel)); }
-.st-panel-cyan { border-color: rgba(0,217,245,0.1); background: linear-gradient(180deg, rgba(0,217,245,0.04), var(--ov-panel)); }
+.st-panel-amber { border-color: rgba(255,180,84,0.1); background: var(--ov-panel); }
+.st-panel-red { border-color: rgba(255,66,103,0.1); background: var(--ov-panel); }
+.st-panel-violet { border-color: rgba(167,139,250,0.1); background: var(--ov-panel); }
+.st-panel-cyan { border-color: rgba(0,217,245,0.1); background: var(--ov-panel); }
 .st-panel-head {
     display: flex;
     justify-content: space-between;
@@ -1262,8 +1262,8 @@ html, body {
    ========================================== */
 .cmp-screen {
     --ov-bg: #000000;
-    --ov-panel: #16181A;
-    --ov-card: #1C1F22;
+    --ov-panel: #1A1A1A;
+    --ov-card: #222222;
     --ov-elev: #111519;
     --ov-border: rgba(255,255,255,0.04);
     --ov-text: #F4F7FA;
@@ -1337,10 +1337,10 @@ html, body {
     display: flex;
     flex-direction: column;
 }
-.cmp-panel-cyan { background: linear-gradient(180deg, rgba(0,217,245,0.04), var(--ov-panel)); border-color: rgba(0,217,245,0.1); }
-.cmp-panel-amber { background: linear-gradient(180deg, rgba(255,180,84,0.04), var(--ov-panel)); border-color: rgba(255,180,84,0.1); }
-.cmp-panel-green { background: linear-gradient(180deg, rgba(0,217,160,0.04), var(--ov-panel)); border-color: rgba(0,217,160,0.1); }
-.cmp-panel-violet { background: linear-gradient(180deg, rgba(167,139,250,0.04), var(--ov-panel)); border-color: rgba(167,139,250,0.1); }
+.cmp-panel-cyan { background: var(--ov-panel); border-color: rgba(0,217,245,0.1); }
+.cmp-panel-amber { background: var(--ov-panel); border-color: rgba(255,180,84,0.1); }
+.cmp-panel-green { background: var(--ov-panel); border-color: rgba(0,217,160,0.1); }
+.cmp-panel-violet { background: var(--ov-panel); border-color: rgba(167,139,250,0.1); }
 .cmp-panel-head {
     display: flex;
     justify-content: space-between;
@@ -1491,8 +1491,8 @@ html, body {
    ========================================== */
 .cmp-screen {
     --ov-bg: #000000;
-    --ov-panel: #16181A;
-    --ov-card: #1C1F22;
+    --ov-panel: #1A1A1A;
+    --ov-card: #222222;
     --ov-elev: #111519;
     --ov-border: rgba(255,255,255,0.04);
     --ov-text: #F4F7FA;
@@ -1566,10 +1566,10 @@ html, body {
     display: flex;
     flex-direction: column;
 }
-.cmp-panel-cyan { background: linear-gradient(180deg, rgba(0,217,245,0.04), var(--ov-panel)); border-color: rgba(0,217,245,0.1); }
-.cmp-panel-amber { background: linear-gradient(180deg, rgba(255,180,84,0.04), var(--ov-panel)); border-color: rgba(255,180,84,0.1); }
-.cmp-panel-green { background: linear-gradient(180deg, rgba(0,217,160,0.04), var(--ov-panel)); border-color: rgba(0,217,160,0.1); }
-.cmp-panel-violet { background: linear-gradient(180deg, rgba(167,139,250,0.04), var(--ov-panel)); border-color: rgba(167,139,250,0.1); }
+.cmp-panel-cyan { background: var(--ov-panel); border-color: rgba(0,217,245,0.1); }
+.cmp-panel-amber { background: var(--ov-panel); border-color: rgba(255,180,84,0.1); }
+.cmp-panel-green { background: var(--ov-panel); border-color: rgba(0,217,160,0.1); }
+.cmp-panel-violet { background: var(--ov-panel); border-color: rgba(167,139,250,0.1); }
 .cmp-panel-head {
     display: flex;
     justify-content: space-between;
@@ -1720,8 +1720,8 @@ html, body {
    ========================================== */
 .trm-screen {
     --ov-bg: #000000;
-    --ov-panel: #16181A;
-    --ov-card: #1C1F22;
+    --ov-panel: #1A1A1A;
+    --ov-card: #222222;
     --ov-elev: #111519;
     --ov-border: rgba(255,255,255,0.04);
     --ov-text: #F4F7FA;
@@ -1805,9 +1805,9 @@ html, body {
     flex-direction: column;
 }
 .trm-panel-chart { min-height: 320px; }
-.trm-panel-amber { border-color: rgba(255,180,84,0.1); background: linear-gradient(180deg, rgba(255,180,84,0.04), var(--ov-panel)); }
-.trm-panel-cyan { border-color: rgba(0,217,245,0.1); background: linear-gradient(180deg, rgba(0,217,245,0.04), var(--ov-panel)); }
-.trm-panel-violet { border-color: rgba(167,139,250,0.1); background: linear-gradient(180deg, rgba(167,139,250,0.04), var(--ov-panel)); }
+.trm-panel-amber { border-color: rgba(255,180,84,0.1); background: var(--ov-panel); }
+.trm-panel-cyan { border-color: rgba(0,217,245,0.1); background: var(--ov-panel); }
+.trm-panel-violet { border-color: rgba(167,139,250,0.1); background: var(--ov-panel); }
 .trm-grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1973,8 +1973,8 @@ html, body {
    ========================================== */
 .dsc-screen {
     --ov-bg: #000000;
-    --ov-panel: #16181A;
-    --ov-card: #1C1F22;
+    --ov-panel: #1A1A1A;
+    --ov-card: #222222;
     --ov-elev: #111519;
     --ov-border: rgba(255,255,255,0.04);
     --ov-text: #F4F7FA;
@@ -2201,3 +2201,4 @@ html, body {
     .dsc-row-a { flex-direction: column; }
     .dsc-grid { grid-template-columns: 1fr; }
 }
+
