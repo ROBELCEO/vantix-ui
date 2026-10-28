@@ -1,41 +1,23 @@
-﻿async function switchCategory(category) {
-    // Update Pills
-    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-    const pills = document.querySelectorAll('.pill');
-    if (category === '') {
-        pills[0].classList.add('active');
-    } else {
-        pills.forEach(p => {
-            if (p.innerText.toLowerCase().includes(category.toLowerCase())) {
-                p.classList.add('active');
-            }
-        });
-    }
+﻿let currentDiscoveryItems = [];
 
-    await loadDiscovery(category);
-}
-
-function handleSearch(event) {
-    if (event.key === 'Enter') {
-        triggerSearch();
-    }
-}
-
-function triggerSearch() {
-    const query = document.getElementById('search-input').value.trim();
-    if (!query) return;
-    
-    // Remove active state from pills since we are doing a custom search
-    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-    
-    loadDiscovery(query);
+function dscEsc(str) {
+    return String(str ?? "").replace(/[&<>"']/g, s => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[s]));
 }
 
 async function loadDiscovery(category = '') {
     const container = document.getElementById('discovery-container');
-    if(!container) return;
+    const statusEl = document.getElementById('dsc-status');
+    if (!container) return;
 
-    container.innerHTML = '<div class="text-tertiary" style="text-align: center; padding: 40px;"><span style="display:inline-block; width:20px; height:20px; border:2px solid var(--accent); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite;"></span><div style="margin-top:12px;">Searching global Shopify catalog...</div></div>';
+    container.innerHTML = `
+        <div class="dsc-empty" style="grid-column: 1 / -1;">
+            <div class="dsc-spinner"></div>
+            Searching global Shopify catalog for <b>${dscEsc(category) || 'your niche'}</b>…
+        </div>
+    `;
+    if (statusEl) statusEl.innerText = "Scanning…";
 
     try {
         const url = category 
@@ -46,66 +28,112 @@ async function loadDiscovery(category = '') {
         const data = await res.json();
 
         if (data.error) {
-            container.innerHTML = `<div class="text-red" style="text-align: center; padding: 40px;">${data.error}</div>`;
+            container.innerHTML = `<div class="dsc-empty dsc-text-red" style="grid-column: 1 / -1;">${dscEsc(data.error)}</div>`;
+            if (statusEl) statusEl.innerText = "Error";
             return;
         }
 
-        container.innerHTML = data.market_intel.map((item, index) => {
-            // Calculate estimated profit (Assume wholesale is 35% of retail)
-            const estWholesale = item.price * 0.35;
-            const estProfit = item.price - estWholesale;
-            const margin = ((estProfit / item.price) * 100).toFixed(0);
+        if (!data.market_intel || data.market_intel.length === 0) {
+            container.innerHTML = '<div class="dsc-empty" style="grid-column: 1 / -1;">No opportunities found for this category. Try searching another niche.</div>';
+            if (statusEl) statusEl.innerText = "0 Results";
+            return;
+        }
 
+        if (statusEl) statusEl.innerText = "Global Data";
+
+        // Flatten the opportunities from all returned categories
+        let allOpps = [];
+        data.market_intel.forEach(group => {
+            if (group.opportunities) {
+                allOpps = allOpps.concat(group.opportunities);
+            }
+        });
+
+        if (allOpps.length === 0) {
+            container.innerHTML = '<div class="dsc-empty" style="grid-column: 1 / -1;">No product data returned. Try again.</div>';
+            return;
+        }
+
+        currentDiscoveryItems = allOpps;
+
+        container.innerHTML = allOpps.map((opp, index) => {
+            // Use real data from backend
+            const margin = opp.retail > 0 ? ((opp.retail - opp.wholesale) / opp.retail) * 100 : 0;
+            const sourceClass = opp.supplier && opp.supplier.includes('AliExpress') ? 'dsc-badge-green' : 'dsc-badge-cyan';
+            const bullets = Array.isArray(opp.bullets) ? opp.bullets : [opp.reason || "High demand signal detected."];
+            
             return `
-            <div class="panel" style="margin-bottom: 24px; padding: 20px;">
-                <div style="display: flex; gap: 20px; align-items: flex-start;">
-                    <img src="${item.image}" style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); background: var(--bg-surface);">
-                    
-                    <div style="flex: 1;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                            <div>
-                                <div style="font-weight: 900; font-size: 18px; color: var(--text-primary);">${item.name}</div>
-                                <div style="font-size: 12px; color: var(--text-tertiary);">Found on: <b>${item.store}</b></div>
-                            </div>
-                            <div class="badge badge-green" style="font-size: 12px;">GLOBAL CATALOG</div>
-                        </div>
-
-                        <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 16px;">
-                            <div>
-                                <span style="font-family: var(--font-mono); font-size: 18px; font-weight: 800; color: var(--text-primary);">${item.price.toFixed(2)}</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <div style="color: var(--amber); font-size: 14px;">★★★★★</div>
-                                <div style="font-size: 12px; color: var(--text-tertiary);">${item.rating} (${item.review_count} reviews)</div>
-                            </div>
-                            <div>
-                                <span class="badge badge-violet" style="font-size: 11px;">Est. Margin: ${margin}%</span>
+                <div class="dsc-card">
+                    <div class="dsc-card-top">
+                        <img class="dsc-card-img" src="${dscEsc(opp.image || '')}" onerror="this.src='https://via.placeholder.com/100?text=No+Image'">
+                        <div class="dsc-card-info">
+                            <div class="dsc-card-title">${dscEsc(opp.name)}</div>
+                            <div class="dsc-card-source">
+                                <span class="dsc-badge ${sourceClass}">${dscEsc(opp.supplier || 'Estimated')}</span>
                             </div>
                         </div>
-
-                        <div style="background: var(--bg-surface); border-left: 3px solid var(--violet); padding: 12px; border-radius: 4px; margin-bottom: 16px;">
-                            <div style="font-size: 10px; font-weight: 800; color: var(--violet); margin-bottom: 8px; text-transform: uppercase;">⚡ AI Goldmine Signals</div>
-                            <ul style="margin: 0; padding-left: 16px; font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
-                                ${item.bullets.map(b => `<li>${b}</li>`).join('')}
-                            </ul>
-                        </div>
-
-                        <!-- THE 1-CLICK PUSH BUTTON -->
-                        <button onclick="pushToShopify('${item.name.replace(/'/g, "\\'")}', ${item.price}, '${item.image}', this)" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 13px;">
-                            🚀 Push to Shopify as Draft
-                        </button>
                     </div>
+                    
+                    <div class="dsc-card-pricing">
+                        <div class="dsc-price-group">
+                            <div class="dsc-price-label">Wholesale</div>
+                            <div class="dsc-price-val">$${Number(opp.wholesale).toFixed(2)}</div>
+                        </div>
+                        <div class="dsc-price-group">
+                            <div class="dsc-price-label">Retail</div>
+                            <div class="dsc-price-val dsc-text-green">$${Number(opp.retail).toFixed(2)}</div>
+                        </div>
+                        <div class="dsc-price-group" style="text-align: right;">
+                            <div class="dsc-price-label">Margin</div>
+                            <div class="dsc-badge dsc-badge-violet">${margin.toFixed(0)}%</div>
+                        </div>
+                    </div>
+
+                    <div class="dsc-card-reason">
+                        <div class="dsc-reason-label">⚡ AI Goldmine Signals</div>
+                        <ul style="margin: 0; padding-left: 16px; font-size: 12px; color: var(--ov-text2); line-height: 1.5;">
+                            ${bullets.map(b => `<li>${dscEsc(b)}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <button onclick="pushToShopify(${index}, this)" class="dsc-push-btn">
+                        🚀 Push to Shopify
+                    </button>
                 </div>
-            </div>
-        `}).join('');
+            `;
+        }).join('');
 
     } catch(e) {
-        console.error("Discovery error:", e);
-        container.innerHTML = `<div class="text-red" style="text-align: center; padding: 40px;">Failed: ${e.message}</div>`;
+        console.error(e);
+        container.innerHTML = '<div class="dsc-empty dsc-text-red" style="grid-column: 1 / -1;">Network error. Failed to fetch discovery data.</div>';
+        if (statusEl) statusEl.innerText = "Offline";
     }
 }
 
-async function pushToShopify(title, price, imageUrl, btn) {
+function switchCategory(category, pillEl) {
+    document.querySelectorAll('.dsc-pill').forEach(p => p.classList.remove('active'));
+    if (pillEl) pillEl.classList.add('active');
+    loadDiscovery(category);
+}
+
+function triggerSearch() {
+    const input = document.getElementById('dsc-search-input');
+    if (!input) return;
+    const query = input.value.trim();
+    if (!query) return;
+    
+    document.querySelectorAll('.dsc-pill').forEach(p => p.classList.remove('active'));
+    loadDiscovery(query);
+}
+
+function handleSearch(e) {
+    if (e.key === 'Enter') triggerSearch();
+}
+
+async function pushToShopify(index, btn) {
+    const item = currentDiscoveryItems[index];
+    if (!item) return;
+
     btn.innerText = "Pushing to Shopify...";
     btn.disabled = true;
 
@@ -113,42 +141,35 @@ async function pushToShopify(title, price, imageUrl, btn) {
         const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/push-draft', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: title, price: price, image_url: imageUrl })
+            body: JSON.stringify({
+                title: item.name,
+                price: item.retail,
+                image_url: item.image,
+                description: item.reason,
+                product_type: "Apparel" // Basic fallback
+            })
         });
-        
+
         const data = await res.json();
 
         if (res.ok) {
             btn.innerText = "✅ Pushed to Shopify Drafts!";
-            btn.style.background = "var(--green)";
+            btn.style.background = "var(--ov-green)";
             btn.style.color = "#000";
         } else {
-            // Show the EXACT error from Shopify
             throw new Error(data.detail || "Unknown error");
         }
     } catch(e) {
         console.error("Push error:", e);
-        // Print the error on the button so you can read it
         btn.innerText = "❌ " + e.message;
-        btn.style.background = "var(--red)";
+        btn.style.background = "var(--ov-red)";
         btn.style.color = "#fff";
-        
-        // Reset after 5 seconds
+
         setTimeout(() => {
-            btn.innerText = "🚀 Push to Shopify as Draft";
-            btn.style.background = "var(--accent)";
+            btn.innerText = "🚀 Push to Shopify";
+            btn.style.background = "var(--ov-cyan)";
             btn.style.color = "#000";
             btn.disabled = false;
         }, 5000);
     }
 }
-
-// Initial load
-window.addEventListener('load', () => {
-    if (window.location.pathname.includes('discovery.html')) {
-        setTimeout(() => loadDiscovery(''), 500);
-    }
-});
-
-
-
