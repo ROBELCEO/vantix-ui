@@ -492,8 +492,6 @@ body {
     --ov-red: #FF4267;
     --ov-violet: #A78BFA;
     background: var(--ov-bg);
-    overflow-y: auto;
-    height: calc(100vh - 56px);
 }
 .ov-wrap {
     max-width: 1400px;
@@ -877,8 +875,6 @@ body {
     --ov-red: #FF4267;
     --ov-violet: #A78BFA;
     background: var(--ov-bg);
-    overflow-y: auto;
-    height: calc(100vh - 56px);
 }
 .st-wrap {
     max-width: 1400px;
@@ -1224,3 +1220,16 @@ body {
     .st-kpi-grid { grid-template-columns: 1fr; }
     .st-wrap { padding: 18px 14px 40px; }
 }
+
+/* ==========================================
+   ANTI-BOUNCE — keep scroll steady like original
+   ========================================== */
+html, body {
+    overscroll-behavior: none;
+}
+.screen {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: auto;
+}
+/* vantix-anti-bounce */
