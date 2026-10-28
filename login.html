@@ -9,7 +9,7 @@
 <style>
     :root {
         --bg: #000000;
-        --panel: #050505;
+        --panel: #080808;
         --border: #222222;
         --text: #FFFFFF;
         --text2: #A1A1AA;
@@ -17,6 +17,7 @@
         --green: #00FF88;
         --red: #FF2266;
         --violet: #8B7FFF;
+        --amber: #FFAA00;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -26,100 +27,147 @@
         height: 100vh;
         display: flex;
         overflow: hidden;
-        background-image: 
-            linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
-        background-size: 50px 50px;
-        background-position: center;
     }
 
-    /* LEFT SIDE - VISUALS */
-    .login-left {
+    /* LEFT SIDE - CHAT */
+    .chat-container {
         flex: 1.2;
-        position: relative;
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
         border-right: 1px solid var(--border);
+        background-image: 
+            linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 40px 40px;
     }
     
-    /* Glowing Center Orb */
-    .glow-orb {
-        position: absolute;
-        width: 400px;
-        height: 400px;
-        background: radial-gradient(circle, rgba(0, 229, 255, 0.1) 0%, transparent 70%);
-        border-radius: 50%;
-        pointer-events: none;
-        animation: pulse 4s infinite alternate;
+    .chat-header {
+        padding: 20px 32px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--panel);
     }
-    @keyframes pulse { 
-        0% { transform: scale(1); opacity: 0.5; } 
-        100% { transform: scale(1.2); opacity: 1; } 
+    .chat-header svg { width: 28px; height: 28px; }
+    .chat-header-title {
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+    .chat-header-title span { color: var(--cyan); }
+    .chat-status {
+        margin-left: auto;
+        font-size: 10px;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--green);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .chat-status::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        background: var(--green);
+        border-radius: 50%;
+        box-shadow: 0 0 10px var(--green);
     }
 
-    /* Floating UI Cards */
-    .float-card {
-        position: absolute;
-        background: rgba(10, 10, 10, 0.8);
-        backdrop-filter: blur(10px);
+    .chat-messages {
+        flex: 1;
+        padding: 32px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    /* Message Bubbles */
+    .msg {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        max-width: 85%;
+        animation: fadeUp 0.5s ease-out forwards;
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    
+    .msg-sender {
+        font-size: 10px;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--text2);
+        text-transform: uppercase;
+    }
+    .msg-sender.system { color: var(--cyan); }
+    
+    .msg-bubble {
+        background: var(--panel);
         border: 1px solid var(--border);
         padding: 16px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        transition: transform 0.1s ease-out;
-        width: 280px;
-        z-index: 10;
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--text2);
     }
-    .float-card-header {
-        font-size: 10px;
+    .msg-bubble strong { color: #fff; }
+
+    /* Mock UI Images inside Chat */
+    .mock-ui {
+        border: 1px solid var(--border);
+        background: #000;
+        padding: 12px;
+        margin-top: 8px;
+    }
+    .mock-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 9px;
         font-family: 'JetBrains Mono', monospace;
         text-transform: uppercase;
         font-weight: 800;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+    }
+    .mock-row {
         display: flex;
         justify-content: space-between;
+        font-size: 11px;
+        margin-bottom: 4px;
     }
-    .float-card-body { font-size: 13px; line-height: 1.5; color: var(--text2); }
-    
-    /* Card Positions */
-    .card-1 { top: 15%; left: 10%; }
-    .card-2 { top: 40%; right: 10%; width: 300px; }
-    .card-3 { bottom: 15%; left: 15%; }
+    .mock-val { font-family: 'JetBrains Mono', monospace; font-weight: 800; }
 
-    .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 800; }
-    .stat-green { color: var(--green); }
-    .stat-red { color: var(--red); }
-    .stat-cyan { color: var(--cyan); }
-    .stat-violet { color: var(--violet); }
+    /* Delays for chat sequence */
+    .msg:nth-child(1) { animation-delay: 0.1s; }
+    .msg:nth-child(2) { animation-delay: 0.8s; }
+    .msg:nth-child(3) { animation-delay: 1.8s; }
+    .msg:nth-child(4) { animation-delay: 3.0s; }
+    .msg:nth-child(5) { animation-delay: 4.2s; }
 
-    /* RIGHT SIDE - AUTH */
-    .login-right {
+    /* RIGHT SIDE - LOGIN */
+    .login-container {
         flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: var(--bg);
         padding: 40px;
+        background: var(--bg);
         position: relative;
-        z-index: 20;
     }
+    
     .login-box {
         width: 100%;
-        max-width: 420px;
+        max-width: 400px;
         background: var(--panel);
         border: 1px solid var(--border);
-        padding: 48px 40px;
-        text-align: center;
-        box-shadow: 0 0 50px rgba(0, 229, 255, 0.05);
+        padding: 40px;
+        text-align: left;
     }
     
-    .login-logo { margin-bottom: 24px; }
-    .login-logo svg { width: 64px; height: 64px; }
-    
     .login-box h1 {
-        font-size: 28px;
+        font-size: 22px;
         font-weight: 900;
         margin-bottom: 8px;
         letter-spacing: -0.5px;
@@ -127,7 +175,8 @@
     .login-box p {
         font-size: 13px;
         color: var(--text2);
-        margin-bottom: 40px;
+        margin-bottom: 32px;
+        line-height: 1.5;
     }
 
     .google-btn {
@@ -141,16 +190,16 @@
         color: #000000;
         border: none;
         font-family: 'Inter', sans-serif;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 800;
         cursor: pointer;
         transition: all 0.2s;
     }
     .google-btn:hover { 
-        box-shadow: 0 0 20px rgba(255,255,255,0.2);
-        transform: translateY(-1px);
+        background: var(--cyan);
+        box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
     }
-    .google-btn img { width: 20px; height: 20px; }
+    .google-btn img { width: 18px; height: 18px; }
     .google-btn:disabled { opacity: 0.7; cursor: wait; }
 
     .error-msg {
@@ -162,71 +211,101 @@
     }
 
     @media (max-width: 900px) {
-        body { flex-direction: column; overflow-y: auto; background-size: 30px 30px; }
-        .login-left { display: none; /* Hide visuals on mobile to save space */ }
-        .login-right { padding: 24px; min-height: 100vh; }
-        .login-box { padding: 32px 24px; }
+        body { flex-direction: column; overflow-y: auto; }
+        .chat-container { border-right: none; border-bottom: 1px solid var(--border); height: 50vh; }
+        .chat-messages { padding: 16px; gap: 16px; }
+        .login-container { min-height: 50vh; padding: 24px; }
+        .msg { max-width: 100%; }
     }
 </style>
 </head>
 <body>
 
-    <!-- LEFT SIDE - FLOATING VISUALS -->
-    <div class="login-left">
-        <div class="glow-orb"></div>
-
-        <!-- Card 1: Price War -->
-        <div class="float-card card-1" data-speed="2">
-            <div class="float-card-header">
-                <span style="color: var(--amber);">⚔️ Price War Safe Floor</span>
-                <span style="color: var(--text2);">LIVE</span>
-            </div>
-            <div class="float-card-body">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <span>Your Cost</span> <span class="stat-value" style="font-size:14px;">$11.59</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                    <span>Safe Floor</span> <span class="stat-value stat-cyan" style="font-size:14px;">$13.63</span>
-                </div>
-                <div class="stat-value stat-red" style="font-size: 16px; text-align: center; border-top: 1px solid #333; padding-top: 8px;">DO NOT MATCH</div>
-            </div>
+    <!-- LEFT SIDE - CHAT ONBOARDING -->
+    <div class="chat-container">
+        <div class="chat-header">
+            <svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg>
+            <div class="chat-header-title">VANTIX <span>SYSTEM</span></div>
+            <div class="chat-status">ONLINE</div>
         </div>
 
-        <!-- Card 2: AI Advisor -->
-        <div class="float-card card-2" data-speed="3">
-            <div class="float-card-header">
-                <span style="color: var(--violet);">🧠 AI Margin Advisor</span>
-                <span style="color: var(--text2);">GROQ</span>
+        <div class="chat-messages">
+            <!-- Msg 1 -->
+            <div class="msg">
+                <div class="msg-sender system">Vantix System</div>
+                <div class="msg-bubble">
+                    Welcome, Shopify Owner. <br><br>
+                    Did you know that <strong>80% of store owners</strong> are flying blind? They don't know when a competitor drops their price until they lose the sale.
+                </div>
             </div>
-            <div class="float-card-body" style="color: #fff;">
-                "HOLD—matching $10 will wipe out profit. Bundle with a premium gym bag to justify $28.97 and keep margins healthy."
-            </div>
-        </div>
 
-        <!-- Card 3: Competitor Alert -->
-        <div class="float-card card-3" data-speed="1.5">
-            <div class="float-card-header">
-                <span style="color: var(--red);">🚨 Competitor Price Drop</span>
-                <span style="color: var(--text2);">2m ago</span>
+            <!-- Msg 2 -->
+            <div class="msg">
+                <div class="msg-sender system">Vantix System</div>
+                <div class="msg-bubble">
+                    Vantix fixes that. We monitor your rivals 24/7. When they make a move, you know instantly.
+                    
+                    <!-- Mock Image 1: Alert -->
+                    <div class="mock-ui">
+                        <div class="mock-header" style="color: var(--red);">
+                            <span>🚨 Competitor Alert</span>
+                            <span>Just Now</span>
+                        </div>
+                        <div class="mock-row">
+                            <span style="color: var(--text2);">Boandtee Shorts</span>
+                            <span class="mock-val" style="color: var(--green);">$35.00</span>
+                        </div>
+                        <div class="mock-row">
+                            <span style="color: var(--text2);">Previous Price</span>
+                            <span class="mock-val" style="text-decoration: line-through;">$45.00</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="float-card-body">
-                <div style="font-weight: 800; color: #fff; margin-bottom: 4px;">Seamless Shorts in Midnight Navy</div>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <span style="text-decoration: line-through; color: var(--text2);">$45.00</span>
-                    <span class="stat-value stat-green">$35.00</span>
+
+            <!-- Msg 3 -->
+            <div class="msg">
+                <div class="msg-sender system">Vantix System</div>
+                <div class="msg-bubble">
+                    But we don't just spy. We protect your money. Our <strong>AI Margin Advisor</strong> does the math so you don't accidentally destroy your profit.
+                    
+                    <!-- Mock Image 2: AI -->
+                    <div class="mock-ui">
+                        <div class="mock-header" style="color: var(--violet);">
+                            <span>🧠 AI Strategy</span>
+                            <span>Groq</span>
+                        </div>
+                        <div style="font-size: 11px; color: #fff; line-height: 1.5;">
+                            "HOLD—matching their $35 price will wipe out your margin. Instead, bundle with a Gym Bag to justify your $45 price."
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Msg 4 -->
+            <div class="msg">
+                <div class="msg-sender system">Vantix System</div>
+                <div class="msg-bubble">
+                    When you're ready to expand, our <strong>Global Catalog Search</strong> finds high-demand products before they saturate the market.
+                </div>
+            </div>
+
+            <!-- Msg 5 -->
+            <div class="msg">
+                <div class="msg-sender system">Vantix System</div>
+                <div class="msg-bubble" style="border-color: var(--cyan); background: rgba(0, 229, 255, 0.05);">
+                    <strong style="color: var(--cyan);">SYSTEM READY.</strong><br>
+                    Authenticate with Google to initiate your dashboard.
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- RIGHT SIDE - LOGIN BOX -->
-    <div class="login-right">
+    <!-- RIGHT SIDE - LOGIN -->
+    <div class="login-container">
         <div class="login-box">
-            <div class="login-logo">
-                <svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg>
-            </div>
-            <h1>Welcome to Vantix</h1>
-            <p>Sign in to access your intelligence dashboard.</p>
+            <h1>Secure Login</h1>
+            <p>Authorize Vantix to sync your Shopify data and begin tracking your market.</p>
 
             <button id="login-btn" class="google-btn">
                 <img id="btn-icon" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
@@ -238,18 +317,6 @@
     </div>
 
 <script>
-    // 3D Parallax Effect
-    document.addEventListener('mousemove', (e) => {
-        const x = (window.innerWidth / 2 - e.pageX) / 40;
-        const y = (window.innerHeight / 2 - e.pageY) / 40;
-        
-        document.querySelectorAll('.float-card').forEach(card => {
-            const speed = card.getAttribute('data-speed');
-            card.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
-        });
-    });
-
-    // Supabase Auth (Exactly as before)
     document.addEventListener("DOMContentLoaded", () => {
         const btn = document.getElementById('login-btn');
         const btnText = document.getElementById('btn-text');
@@ -270,7 +337,7 @@
         btn.addEventListener('click', async () => {
             try {
                 btn.disabled = true;
-                btnText.innerText = "Connecting to Google...";
+                btnText.innerText = "Authenticating...";
                 btnIcon.style.display = 'none';
                 errorMsg.style.display = 'none';
 
