@@ -56,6 +56,7 @@ function renderWatchlist() {
 
         return `
             <div class="trm-watch-item ${isActive}" onclick="selectProduct(${index})">
+                <img class="trm-watch-img" src="${trmEsc(c.my_image || 'https://via.placeholder.com/40')}" onerror="this.style.visibility='hidden'">
                 <div class="trm-watch-body">
                     <div class="trm-watch-title">${trmEsc(c.my_product)}</div>
                     <div class="trm-watch-meta">${c.competitor_matches.length} Competitors</div>
@@ -267,5 +268,6 @@ async function fetchAIAdvice(productName) {
         div.innerHTML = `<div class="trm-empty trm-text-red">Backend asleep. Try again.</div>`;
     }
 }
+
 
 

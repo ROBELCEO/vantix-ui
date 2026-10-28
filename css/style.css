@@ -5998,3 +5998,17 @@ body, .screen, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .a
         grid-template-columns: 1fr !important;
     }
 }
+
+/* Terminal Watchlist Image */
+.trm-watch-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    object-fit: cover;
+    background: var(--ov-elev);
+    border: 1px solid var(--ov-border);
+    flex-shrink: 0;
+}
+.trm-watch-item {
+    gap: 12px !important;
+}
