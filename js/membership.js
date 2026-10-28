@@ -1,61 +1,86 @@
-﻿// REPLACE THESE WITH YOUR EXACT LEMON SQUEEZY CHECKOUT LINKS
-const LEMON_PRO_URL = "https://vantix.lemonsqueezy.com/checkout/buy/YOUR_PRO_VARIANT_ID";
-const LEMON_STARTER_URL = "https://vantix.lemonsqueezy.com/checkout/buy/YOUR_STARTER_VARIANT_ID";
-const LEMON_SCALE_URL = "https://vantix.lemonsqueezy.com/checkout/buy/YOUR_SCALE_VARIANT_ID";
-
-async function checkSubscription() {
-    try {
-        const statusRes = await fetch('https://vantix-my5f.onrender.com/api/auth/status');
-        if (statusRes.ok) {
-            const statusData = await statusRes.json();
-            const proBtn = document.getElementById('upgrade-btn-pro');
-            
-            if (statusData.plan !== 'trial') {
-                if (proBtn) {
-                    proBtn.innerText = "Current Plan (Active)";
-                    proBtn.disabled = true;
-                    proBtn.style.opacity = "0.5";
-                }
-            }
-        }
-
-        const roiRes = await fetch('https://vantix-my5f.onrender.com/api/billing/roi');
-        if (roiRes.ok) {
-            const roiData = await roiRes.json();
-            document.getElementById('roi-value').innerText = '$' + roiData.value_generated.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            document.getElementById('roi-alerts').innerText = roiData.alerts_found;
-            document.getElementById('roi-products').innerText = roiData.products_tracked;
-        }
-    } catch(e) { console.error("Failed to load membership data", e); }
-}
-
-async function triggerCheckout(baseUrl) {
-    const { data: { session } } = await window.supabaseClient.auth.getSession();
-    if (!session) {
-        alert("Please log in first.");
-        return;
-    }
-
-    // Pass the email and user_id to Lemon Squeezy
-    const checkoutUrl = `${baseUrl}?checkout[email]=${encodeURIComponent(session.user.email)}&checkout[custom][user_id]=${session.user.id}`;
-    window.open(checkoutUrl, '_blank');
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    checkSubscription();
-
-    const proBtn = document.getElementById('upgrade-btn-pro');
-    if (proBtn) {
-        proBtn.addEventListener('click', () => triggerCheckout(LEMON_PRO_URL));
-    }
+﻿async function checkSubscription() {
+    const banner = document.getElementById('trial-banner');
+    const bannerText = document.getElementById('banner-text');
+    const daysLeft = document.getElementById('trial-days-left');
     
-    const starterBtn = document.getElementById('upgrade-btn-starter');
-    if (starterBtn) {
-        starterBtn.addEventListener('click', () => triggerCheckout(LEMON_STARTER_URL));
-    }
+    const btnStarter = document.getElementById('btn-starter');
+    const btnPro = document.getElementById('btn-pro');
+    const btnScale = document.getElementById('btn-scale');
 
-    const scaleBtn = document.getElementById('upgrade-btn-scale');
-    if (scaleBtn) {
-        scaleBtn.addEventListener('click', () => triggerCheckout(LEMON_SCALE_URL));
+    if(!banner) return;
+
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/auth/status');
+        if (!res.ok) throw new Error("Failed to load status");
+
+        const data = await res.json();
+        banner.style.display = 'flex';
+
+        // Reset all buttons to normal state
+        const resetBtn = (btn, text, url) => {
+            btn.disabled = false;
+            btn.className = "btn btn-secondary";
+            btn.innerText = text;
+            btn.onclick = () => window.open(url, '_blank');
+        };
+
+        const starterUrl = 'https://vantix-app.lemonsqueezy.com/checkout/buy/d5f53e33-3d35-4cc5-aaca-3ca5a3236ed7';
+        const proUrl = 'https://vantix-app.lemonsqueezy.com/checkout/buy/422c4e93-6071-457c-90b6-a648c5dee4c4';
+        const scaleUrl = 'https://vantix-app.lemonsqueezy.com/checkout/buy/789d4ae0-cc01-462d-a074-78a360971168';
+
+        resetBtn(btnStarter, "Upgrade to Starter", starterUrl);
+        resetBtn(btnPro, "Upgrade to Pro →", proUrl);
+        btnPro.className = "btn btn-primary";
+        resetBtn(btnScale, "Upgrade to Scale", scaleUrl);
+
+        if(data.plan === 'trial') {
+            banner.style.background = 'rgba(0, 255, 136, 0.1)';
+            banner.style.borderColor = 'rgba(0, 255, 136, 0.2)';
+            banner.style.color = 'var(--green)';
+            bannerText.innerHTML = `🎉 You are currently on a <b>7-Day Free Trial</b>.`;
+            daysLeft.innerText = `${data.days_left} days remaining`;
+        } 
+        else if (data.plan === 'starter') {
+            banner.style.background = 'rgba(0, 255, 136, 0.1)';
+            bannerText.innerHTML = `⭐ You are subscribed to the <b>STARTER</b> plan.`;
+            daysLeft.innerText = "";
+            
+            btnStarter.innerText = "Current Plan";
+            btnStarter.disabled = true;
+            btnStarter.className = "btn btn-secondary";
+        }
+        else if (data.plan === 'pro') {
+            banner.style.background = 'rgba(0, 229, 255, 0.1)';
+            banner.style.borderColor = 'rgba(0, 229, 255, 0.2)';
+            banner.style.color = 'var(--accent)';
+            bannerText.innerHTML = `⭐ You are subscribed to the <b>PRO</b> plan.`;
+            daysLeft.innerText = "";
+            
+            btnPro.innerText = "Current Plan";
+            btnPro.disabled = true;
+            btnPro.className = "btn btn-secondary";
+        }
+        else if (data.plan === 'scale') {
+            banner.style.background = 'rgba(178, 102, 255, 0.1)';
+            banner.style.borderColor = 'rgba(178, 102, 255, 0.2)';
+            banner.style.color = 'var(--purple)';
+            bannerText.innerHTML = `⭐ You are subscribed to the <b>SCALE</b> plan.`;
+            daysLeft.innerText = "";
+            
+            btnScale.innerText = "Current Plan";
+            btnScale.disabled = true;
+            btnScale.className = "btn btn-secondary";
+        } 
+        else if (data.plan === 'none' || data.status === 'expired') {
+            banner.style.background = 'rgba(255, 34, 102, 0.1)';
+            banner.style.borderColor = 'rgba(255, 34, 102, 0.2)';
+            banner.style.color = 'var(--red)';
+            bannerText.innerHTML = `⚠️ Your free trial has expired. Please upgrade to continue.`;
+            daysLeft.innerText = "";
+        }
+    } catch(e) {
+        console.error("Subscription check failed", e);
+        banner.style.display = 'flex';
+        bannerText.innerText = "Could not load subscription status.";
     }
-});
+}
