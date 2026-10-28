@@ -44,6 +44,7 @@ window.addEventListener('load', async () => {
         if (typeof loadTerminal === 'function') loadTerminal();
         if (typeof loadAlerts === 'function') loadAlerts();
         if (typeof checkSubscription === 'function') checkSubscription();
+        if (typeof loadProfile === 'function') loadProfile();
         if (typeof fetchProducts === 'function') fetchProducts();
         if (typeof loadDiscovery === 'function') loadDiscovery();
     }, 100);
@@ -62,5 +63,6 @@ function toggleMenu() {
         overlay.style.display = drawer.classList.contains('open') ? 'block' : 'none';
     }
 }
+
 
 
