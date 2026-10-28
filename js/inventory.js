@@ -69,7 +69,10 @@ async function loadInventory() {
                     <!-- Cash Value -->
                     <div class="inv-col-stat">
                         <div class="inv-stat-label">Cash Value</div>
-                        <div class="inv-stat-value inv-text-green">${invMoney(item.cash_value)}</div>
+                        ${item.cash_value !== null 
+                            ? `<div class="inv-stat-value inv-text-green">${invMoney(item.cash_value)}</div>`
+                            : `<div class="inv-stat-value inv-text-red" style="font-size:12px; font-weight:bold;">MISSING COST</div>`
+                        }
                     </div>
 
                     <!-- Status -->
@@ -87,3 +90,4 @@ async function loadInventory() {
         if (statusEl) statusEl.innerText = "Offline";
     }
 }
+
