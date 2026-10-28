@@ -479,10 +479,10 @@ body {
    ========================================== */
 .ov-screen {
     --ov-bg: #000000;
-    --ov-panel: #1A1A1A;
-    --ov-card: #222222;
+    --ov-panel: #000000;
+    --ov-card: #000000;
     --ov-elev: #111519;
-    --ov-border: rgba(255,255,255,0.04);
+    --ov-border: rgba(255,255,255,0.08);
     --ov-text: #F4F7FA;
     --ov-text2: #A0A9B2;
     --ov-muted: #697580;
@@ -862,10 +862,10 @@ body {
    ========================================== */
 .st-screen {
     --ov-bg: #000000;
-    --ov-panel: #1A1A1A;
-    --ov-card: #222222;
+    --ov-panel: #000000;
+    --ov-card: #000000;
     --ov-elev: #111519;
-    --ov-border: rgba(255,255,255,0.04);
+    --ov-border: rgba(255,255,255,0.08);
     --ov-text: #F4F7FA;
     --ov-text2: #A0A9B2;
     --ov-muted: #697580;
@@ -1262,10 +1262,10 @@ html, body {
    ========================================== */
 .cmp-screen {
     --ov-bg: #000000;
-    --ov-panel: #1A1A1A;
-    --ov-card: #222222;
+    --ov-panel: #000000;
+    --ov-card: #000000;
     --ov-elev: #111519;
-    --ov-border: rgba(255,255,255,0.04);
+    --ov-border: rgba(255,255,255,0.08);
     --ov-text: #F4F7FA;
     --ov-text2: #A0A9B2;
     --ov-muted: #697580;
@@ -1491,10 +1491,10 @@ html, body {
    ========================================== */
 .cmp-screen {
     --ov-bg: #000000;
-    --ov-panel: #1A1A1A;
-    --ov-card: #222222;
+    --ov-panel: #000000;
+    --ov-card: #000000;
     --ov-elev: #111519;
-    --ov-border: rgba(255,255,255,0.04);
+    --ov-border: rgba(255,255,255,0.08);
     --ov-text: #F4F7FA;
     --ov-text2: #A0A9B2;
     --ov-muted: #697580;
@@ -1720,10 +1720,10 @@ html, body {
    ========================================== */
 .trm-screen {
     --ov-bg: #000000;
-    --ov-panel: #1A1A1A;
-    --ov-card: #222222;
+    --ov-panel: #000000;
+    --ov-card: #000000;
     --ov-elev: #111519;
-    --ov-border: rgba(255,255,255,0.04);
+    --ov-border: rgba(255,255,255,0.08);
     --ov-text: #F4F7FA;
     --ov-text2: #A0A9B2;
     --ov-muted: #697580;
@@ -1975,10 +1975,10 @@ html, body {
    ========================================== */
 .dsc-screen {
     --ov-bg: #000000;
-    --ov-panel: #1A1A1A;
-    --ov-card: #222222;
+    --ov-panel: #000000;
+    --ov-card: #000000;
     --ov-elev: #111519;
-    --ov-border: rgba(255,255,255,0.04);
+    --ov-border: rgba(255,255,255,0.08);
     --ov-text: #F4F7FA;
     --ov-text2: #A0A9B2;
     --ov-muted: #697580;
@@ -2218,10 +2218,10 @@ html, body {
    ========================================== */
 .inv-screen {
     --ov-bg: #000000;
-    --ov-panel: #1A1A1A;
-    --ov-card: #222222;
+    --ov-panel: #000000;
+    --ov-card: #000000;
     --ov-elev: #111519;
-    --ov-border: rgba(255,255,255,0.04);
+    --ov-border: rgba(255,255,255,0.08);
     --ov-text: #F4F7FA;
     --ov-text2: #A0A9B2;
     --ov-muted: #697580;
@@ -2447,10 +2447,10 @@ html, body {
    ========================================== */
 .cnx-screen {
     --ov-bg: #000000;
-    --ov-panel: #1A1A1A;
-    --ov-card: #222222;
+    --ov-panel: #000000;
+    --ov-card: #000000;
     --ov-elev: #111519;
-    --ov-border: rgba(255,255,255,0.04);
+    --ov-border: rgba(255,255,255,0.08);
     --ov-text: #F4F7FA;
     --ov-text2: #A0A9B2;
     --ov-muted: #697580;
@@ -2671,10 +2671,10 @@ html, body {
    ========================================== */
 .mem-screen {
     --ov-bg: #000000;
-    --ov-panel: #1A1A1A;
-    --ov-card: #222222;
+    --ov-panel: #000000;
+    --ov-card: #000000;
     --ov-elev: #111519;
-    --ov-border: rgba(255,255,255,0.04);
+    --ov-border: rgba(255,255,255,0.08);
     --ov-text: #F4F7FA;
     --ov-text2: #A0A9B2;
     --ov-muted: #697580;
@@ -2866,10 +2866,10 @@ html, body {
    ========================================== */
 .set-screen {
     --ov-bg: #000000;
-    --ov-panel: #1A1A1A;
-    --ov-card: #222222;
+    --ov-panel: #000000;
+    --ov-card: #000000;
     --ov-elev: #111519;
-    --ov-border: rgba(255,255,255,0.04);
+    --ov-border: rgba(255,255,255,0.08);
     --ov-text: #F4F7FA;
     --ov-text2: #A0A9B2;
     --ov-muted: #697580;
@@ -3026,3 +3026,4 @@ html, body {
     .set-row-a { flex-direction: column; }
     .set-grid-2 { grid-template-columns: 1fr; }
 }
+
