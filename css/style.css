@@ -3223,3 +3223,53 @@ html, body {
 .ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
     padding-top: 12px !important;
 }
+
+/* ==========================================
+   SMALL TITLES & ZERO VERTICAL GAP
+   ========================================== */
+
+/* 1. Bring back titles but make them much smaller */
+.ov-eyebrow, .st-eyebrow, .cmp-eyebrow, .trm-eyebrow, .dsc-eyebrow, .inv-eyebrow, .mem-eyebrow, .set-eyebrow {
+    display: block !important;
+    font-size: 10px !important;
+    letter-spacing: 1.2px !important;
+    margin-bottom: 2px !important;
+}
+
+.ov-title, .st-title, .cmp-title, .trm-title, .dsc-title, .inv-title, .mem-title, .set-title, .cnx-title {
+    display: block !important;
+    font-size: 22px !important; /* Much smaller than the original 32px */
+    font-weight: 800 !important;
+    margin: 0 0 2px !important;
+    letter-spacing: -0.3px !important;
+    color: #FFFFFF !important;
+}
+
+.ov-sub, .st-sub, .cmp-sub, .trm-sub, .dsc-sub, .inv-sub, .mem-sub, .set-sub, .cnx-sub {
+    display: block !important;
+    font-size: 12px !important; /* Smaller subtitle */
+    margin: 0 !important;
+    color: #A1A1AA !important;
+}
+
+/* 2. Restore Row A layout (Title left, Chips right) */
+.ov-row-a, .st-row-a, .cmp-row-a, .trm-row-a, .dsc-row-a, .inv-row-a, .set-row-a {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important; /* Align chips with the bottom of the title */
+    margin-bottom: 16px !important;
+}
+.mem-row-a {
+    display: block !important;
+    text-align: center !important;
+    margin-bottom: 16px !important;
+}
+
+/* 3. KILL the vertical gap */
+.screen {
+    padding-top: 0px !important; /* Overrides the default screen padding */
+}
+.ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
+    padding-top: 8px !important; /* Only a tiny 8px gap below the header */
+    margin-top: 0px !important;
+}
