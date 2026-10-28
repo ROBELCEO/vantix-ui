@@ -1782,20 +1782,16 @@ html, body {
 }
 .trm-layout {
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 340px 1fr;
     gap: 16px;
     align-items: start;
 }
-.trm-sidebar {
-    background: var(--ov-panel);
-    border: 1px solid var(--ov-border);
-    border-radius: 6px;
-    padding: 16px;
+.trm-left-col {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
 }
-.trm-main {
+.trm-right-col {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -1950,10 +1946,24 @@ html, body {
 .trm-input:focus { border-color: var(--ov-cyan); }
 @media (max-width: 1024px) {
     .trm-layout { grid-template-columns: 1fr; }
-    .trm-sidebar { order: 2; }
-    .trm-main { order: 1; }
 }
 @media (max-width: 768px) {
     .trm-grid-2 { grid-template-columns: 1fr; }
     .trm-row-a { flex-direction: column; }
 }
+
+/* Terminal Sidebar Internal Scroll */
+.trm-left-col #watchlist-container {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+.trm-left-col #ai-advisor-content {
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+/* Custom scrollbar for sidebar */
+.trm-left-col ::-webkit-scrollbar { width: 4px; }
+.trm-left-col ::-webkit-scrollbar-track { background: transparent; }
+.trm-left-col ::-webkit-scrollbar-thumb { background: var(--ov-border); border-radius: 4px; }
