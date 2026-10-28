@@ -34,7 +34,14 @@ async function loadInventory() {
         const data = await res.json();
         if (statusEl) statusEl.innerText = "Live Data";
 
-        document.getElementById('kpi-cash').innerText = invMoney(data.kpis.total_cash || 0);
+        const cashEl = document.getElementById('kpi-cash');
+        if (data.kpis.has_missing_costs) {
+            cashEl.innerText = invMoney(data.kpis.total_cash || 0) + "*";
+            cashEl.classList.add("inv-text-red");
+        } else {
+            cashEl.innerText = invMoney(data.kpis.total_cash || 0);
+            cashEl.classList.add("inv-text-green");
+        }
         document.getElementById('kpi-restock').innerText = data.kpis.restock_alerts || 0;
         document.getElementById('kpi-dead').innerText = data.kpis.dead_stock || 0;
 
@@ -176,3 +183,4 @@ async function loadInventory() {
         if (statusEl) statusEl.innerText = "Offline";
     }
 }
+
