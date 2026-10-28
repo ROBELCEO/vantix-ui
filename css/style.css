@@ -5979,3 +5979,22 @@ body, .screen, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .a
 ::-webkit-scrollbar-track { background: #EEF2F6 !important; }
 ::-webkit-scrollbar-thumb { background: #94A3B8 !important; }
 ::-webkit-scrollbar-thumb:hover { background: #64748B !important; }
+
+/* ==========================================
+   TERMINAL WATCHLIST FIX (Variant Names)
+   ========================================== */
+.trm-layout {
+    grid-template-columns: 400px 1fr !important; /* Make sidebar wider */
+}
+
+.trm-watch-title {
+    white-space: normal !important; /* Allow text to wrap */
+    line-height: 1.4 !important;
+    word-break: break-word;
+}
+
+@media (max-width: 1024px) {
+    .trm-layout {
+        grid-template-columns: 1fr !important;
+    }
+}
