@@ -50,7 +50,13 @@ async function loadDiscovery(category = '') {
             return;
         }
 
-        container.innerHTML = data.market_intel.map(item => `
+        container.innerHTML = data.market_intel.map((item, index) => {
+            // Calculate estimated profit (Assume wholesale is 35% of retail)
+            const estWholesale = item.price * 0.35;
+            const estProfit = item.price - estWholesale;
+            const margin = ((estProfit / item.price) * 100).toFixed(0);
+
+            return `
             <div class="panel" style="margin-bottom: 24px; padding: 20px;">
                 <div style="display: flex; gap: 20px; align-items: flex-start;">
                     <img src="${item.image}" style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); background: var(--bg-surface);">
@@ -66,28 +72,64 @@ async function loadDiscovery(category = '') {
 
                         <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 16px;">
                             <div>
-                                <span style="font-family: var(--font-mono); font-size: 18px; font-weight: 800; color: var(--green);">$${item.price.toFixed(2)}</span>
+                                <span style="font-family: var(--font-mono); font-size: 18px; font-weight: 800; color: var(--text-primary);">${item.price.toFixed(2)}</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 6px;">
                                 <div style="color: var(--amber); font-size: 14px;">★★★★★</div>
                                 <div style="font-size: 12px; color: var(--text-tertiary);">${item.rating} (${item.review_count} reviews)</div>
                             </div>
+                            <div>
+                                <span class="badge badge-violet" style="font-size: 11px;">Est. Margin: ${margin}%</span>
+                            </div>
                         </div>
 
-                        <div style="background: var(--bg-surface); border-left: 3px solid var(--violet); padding: 12px; border-radius: 4px;">
+                        <div style="background: var(--bg-surface); border-left: 3px solid var(--violet); padding: 12px; border-radius: 4px; margin-bottom: 16px;">
                             <div style="font-size: 10px; font-weight: 800; color: var(--violet); margin-bottom: 8px; text-transform: uppercase;">⚡ AI Goldmine Signals</div>
                             <ul style="margin: 0; padding-left: 16px; font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
                                 ${item.bullets.map(b => `<li>${b}</li>`).join('')}
                             </ul>
                         </div>
+
+                        <!-- THE 1-CLICK PUSH BUTTON -->
+                        <button onclick="pushToShopify('${item.name.replace(/'/g, "\\'")}', ${item.price}, '${item.image}', this)" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 13px;">
+                            🚀 Push to Shopify as Draft
+                        </button>
                     </div>
                 </div>
             </div>
-        `).join('');
+        `}).join('');
 
     } catch(e) {
         console.error("Discovery error:", e);
         container.innerHTML = '<div class="text-red" style="text-align: center; padding: 40px;">Failed to load intelligence.</div>';
+    }
+}
+
+async function pushToShopify(title, price, imageUrl, btn) {
+    btn.innerText = "Pushing to Shopify...";
+    btn.disabled = true;
+
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/push-draft', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: title, price: price, image_url: imageUrl })
+        });
+        
+        if (res.ok) {
+            btn.innerText = "✅ Pushed to Shopify Drafts!";
+            btn.style.background = "var(--green)";
+            btn.style.color = "#000";
+        } else {
+            throw new Error("Failed");
+        }
+    } catch(e) {
+        btn.innerText = "❌ Error Pushing";
+        btn.disabled = false;
+        setTimeout(() => {
+            btn.innerText = "🚀 Push to Shopify as Draft";
+            btn.style.background = "var(--accent)";
+        }, 3000);
     }
 }
 
@@ -97,3 +139,4 @@ window.addEventListener('load', () => {
         setTimeout(() => loadDiscovery(''), 500);
     }
 });
+
