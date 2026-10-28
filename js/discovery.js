@@ -116,20 +116,30 @@ async function pushToShopify(title, price, imageUrl, btn) {
             body: JSON.stringify({ title: title, price: price, image_url: imageUrl })
         });
         
+        const data = await res.json();
+
         if (res.ok) {
             btn.innerText = "✅ Pushed to Shopify Drafts!";
             btn.style.background = "var(--green)";
             btn.style.color = "#000";
         } else {
-            throw new Error("Failed");
+            // Show the EXACT error from Shopify
+            throw new Error(data.detail || "Unknown error");
         }
     } catch(e) {
-        btn.innerText = "❌ Error Pushing";
-        btn.disabled = false;
+        console.error("Push error:", e);
+        // Print the error on the button so you can read it
+        btn.innerText = "❌ " + e.message;
+        btn.style.background = "var(--red)";
+        btn.style.color = "#fff";
+        
+        // Reset after 5 seconds
         setTimeout(() => {
             btn.innerText = "🚀 Push to Shopify as Draft";
             btn.style.background = "var(--accent)";
-        }, 3000);
+            btn.style.color = "#000";
+            btn.disabled = false;
+        }, 5000);
     }
 }
 
@@ -139,4 +149,5 @@ window.addEventListener('load', () => {
         setTimeout(() => loadDiscovery(''), 500);
     }
 });
+
 
