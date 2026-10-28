@@ -79,13 +79,15 @@ async function loadOverview() {
                 netEl.style.color = "var(--ov-red)";
                 netEl.style.fontSize = "16px";
             }
+            if (metaEl) metaEl.innerText = "COGS not set in Shopify";
+            if (setupEl) setupEl.style.display = "none";
         } else if (kpis.profit_status === "MISSING_FEES") {
             if (netEl) {
                 netEl.innerText = "—";
                 netEl.style.color = "var(--ov-muted)";
             }
             if (metaEl) metaEl.innerText = "Fees not configured";
-            if (setupEl) setupEl.style.display = "inline-block";
+            if (setupEl) setupEl.style.display = "block";
         } else {
             if (netEl) {
                 netEl.style.fontSize = "24px";
@@ -262,5 +264,6 @@ function escapeHtml(str) {
 function escapeAttr(str) {
     return escapeHtml(str).replace(/`/g, "&#96;");
 }
+
 
 

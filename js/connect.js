@@ -193,3 +193,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+
+// Add this inside DOMContentLoaded or at the bottom of the file
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('setup') === 'fees') {
+        // Wait for the UI to load, then highlight the fields
+        setTimeout(() => {
+            const shippingInput = document.getElementById('shipping-cost');
+            const gatewayInput = document.getElementById('gateway-fee');
+            
+            if (shippingInput && gatewayInput) {
+                // Add glowing red borders
+                shippingInput.style.border = "2px solid #E11D48";
+                shippingInput.style.boxShadow = "0 0 0 3px rgba(225, 29, 72, 0.2)";
+                gatewayInput.style.border = "2px solid #E11D48";
+                gatewayInput.style.boxShadow = "0 0 0 3px rgba(225, 29, 72, 0.2)";
+                
+                // Scroll to them and focus
+                shippingInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                shippingInput.focus();
+            }
+        }, 800);
+    }
+});
