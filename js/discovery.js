@@ -33,6 +33,7 @@ async function loadDiscovery(category = '') {
             return;
         }
 
+        // The backend returns a flat array inside data.market_intel
         if (!data.market_intel || data.market_intel.length === 0) {
             container.innerHTML = '<div class="dsc-empty" style="grid-column: 1 / -1;">No opportunities found for this category. Try searching another niche.</div>';
             if (statusEl) statusEl.innerText = "0 Results";
@@ -40,26 +41,17 @@ async function loadDiscovery(category = '') {
         }
 
         if (statusEl) statusEl.innerText = "Global Data";
+        currentDiscoveryItems = data.market_intel;
 
-        // Flatten the opportunities from all returned categories
-        let allOpps = [];
-        data.market_intel.forEach(group => {
-            if (group.opportunities) {
-                allOpps = allOpps.concat(group.opportunities);
-            }
-        });
-
-        if (allOpps.length === 0) {
-            container.innerHTML = '<div class="dsc-empty" style="grid-column: 1 / -1;">No product data returned. Try again.</div>';
-            return;
-        }
-
-        currentDiscoveryItems = allOpps;
-
-        container.innerHTML = allOpps.map((opp, index) => {
-            const margin = opp.retail > 0 ? ((opp.retail - opp.wholesale) / opp.retail) * 100 : 0;
-            const sourceClass = opp.supplier && opp.supplier.includes('AliExpress') ? 'dsc-badge-green' : 'dsc-badge-cyan';
-            const bullets = Array.isArray(opp.bullets) ? opp.bullets : [opp.reason || "High demand signal detected."];
+        container.innerHTML = currentDiscoveryItems.map((opp, index) => {
+            // Map exactly to the backend fields
+            const price = Number(opp.price || 0);
+            const rating = Number(opp.rating || 0);
+            const reviewCount = Number(opp.review_count || 0);
+            const bullets = Array.isArray(opp.bullets) ? opp.bullets : ["High demand signal detected."];
+            
+            // Since the backend doesn't send "supplier", we default to "GLOBAL CATALOG"
+            const sourceBadge = `<span class="dsc-badge dsc-badge-cyan">GLOBAL CATALOG</span>`;
             
             return `
                 <div class="dsc-card">
@@ -68,23 +60,21 @@ async function loadDiscovery(category = '') {
                         <div class="dsc-card-info">
                             <div class="dsc-card-title">${dscEsc(opp.name)}</div>
                             <div class="dsc-card-source">
-                                <span class="dsc-badge ${sourceClass}">${dscEsc(opp.supplier || 'Estimated')}</span>
+                                ${sourceBadge}
                             </div>
                         </div>
                     </div>
                     
-                    <div class="dsc-card-pricing">
+                    <div class="dsc-card-pricing" style="justify-content: space-between; align-items: center;">
                         <div class="dsc-price-group">
-                            <div class="dsc-price-label">Wholesale</div>
-                            <div class="dsc-price-val">$${Number(opp.wholesale).toFixed(2)}</div>
-                        </div>
-                        <div class="dsc-price-group">
-                            <div class="dsc-price-label">Retail</div>
-                            <div class="dsc-price-val dsc-text-green">$${Number(opp.retail).toFixed(2)}</div>
+                            <div class="dsc-price-label">Price</div>
+                            <div class="dsc-price-val dsc-text-green">$${price.toFixed(2)}</div>
                         </div>
                         <div class="dsc-price-group" style="text-align: right;">
-                            <div class="dsc-price-label">Margin</div>
-                            <div class="dsc-badge dsc-badge-violet">${margin.toFixed(0)}%</div>
+                            <div class="dsc-price-label">Rating</div>
+                            <div class="dsc-price-val" style="color: var(--ov-amber); font-size: 12px;">
+                                ★ ${rating.toFixed(1)} <span style="color: var(--ov-muted); font-size: 10px;">(${reviewCount})</span>
+                            </div>
                         </div>
                     </div>
 
@@ -142,9 +132,9 @@ async function pushToShopify(index, btn) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 title: item.name,
-                price: item.retail,
+                price: Number(item.price),
                 image_url: item.image,
-                description: item.reason,
+                description: item.bullets ? item.bullets.join(". ") : "",
                 product_type: "Apparel"
             })
         });
@@ -152,7 +142,7 @@ async function pushToShopify(index, btn) {
         const data = await res.json();
 
         if (res.ok) {
-            btn.innerText = "✅ Pushed!";
+            btn.innerText = "✅ Pushed to Shopify!";
             btn.style.background = "var(--ov-green)";
             btn.style.color = "#000";
         } else {
