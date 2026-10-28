@@ -7,25 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-    .health-ring {
-        width: 120px; height: 120px; border-radius: 50%;
-        background: conic-gradient(var(--green) 0% 100%, var(--bg-elevated) 100% 100%);
-        display: flex; align-items: center; justify-content: center;
-        margin: 0 auto; position: relative;
-        transition: background 0.5s ease;
-    }
-    .health-ring::before {
-        content: ''; position: absolute; width: 100px; height: 100px;
-        background: var(--bg-panel); border-radius: 50%;
-    }
-    .health-text { position: relative; z-index: 1; text-align: center; }
-    .action-item {
-        display: flex; gap: 16px; padding: 16px; background: var(--bg-surface);
-        border: 1px solid var(--border); border-left: 3px solid var(--violet);
-        border-radius: var(--r-btn); margin-bottom: 12px;
-    }
-</style>
 </head>
 <body>
 
@@ -72,66 +53,61 @@
 </div>
 
 <div class="screen">
-    <div style="max-width: 1000px; margin: 0 auto;">
-        
-        <div class="screen-title">Executive Overview</div>
-        <div class="screen-sub">High-level intelligence summary</div>
+    <div style="max-width: 1100px; margin: 0 auto;">
+        <div class="screen-title">Command Center</div>
+        <div class="screen-sub">Your daily profit briefing and store health.</div>
 
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-label">Products Monitored</div>
-                <div class="kpi-value" id="ov-products">Loading...</div>
+        <!-- TOP KPIs -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+            <div class="kpi-card" style="border-color: rgba(0,255,136,0.3);">
+                <div class="kpi-label">True Net Profit (30d)</div>
+                <div class="kpi-value text-green" id="ov-net-profit">$0.00</div>
             </div>
             <div class="kpi-card">
-                <div class="kpi-label">Competitors Tracked</div>
-                <div class="kpi-value" id="ov-competitors">Loading...</div>
+                <div class="kpi-label">Gross Revenue (30d)</div>
+                <div class="kpi-value" id="ov-revenue">$0.00</div>
             </div>
-            <div class="kpi-card warning">
-                <div class="kpi-label">Active Alerts</div>
-                <div class="kpi-value" id="ov-alerts">Loading...</div>
-            </div>
-            <div class="kpi-card profit">
-                <div class="kpi-label">Market Status</div>
-                <div class="kpi-value text-green" style="font-size: 18px;">AGGRESSIVE</div>
+            <div class="kpi-card">
+                <div class="kpi-label">Competitor Price Index</div>
+                <div class="kpi-value" id="ov-price-index" style="color: var(--violet);">0%</div>
             </div>
         </div>
 
-        <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 16px;">
-            <!-- Store Health -->
-            <div class="panel" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                <div class="panel-header" style="width: 100%;">Store Health Score</div>
-                <div class="health-ring" id="health-ring">
-                    <div class="health-text">
-                        <div class="mono" id="health-score" style="font-size: 28px; font-weight: 800; color: var(--green);">--</div>
-                        <div class="text-tertiary" id="health-status" style="font-size: 10px; text-transform: uppercase;">--</div>
-                    </div>
+        <!-- MAIN GRID -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+            
+            <!-- LEFT COL: AI BRIEFING -->
+            <div class="panel" style="border-color: rgba(139, 127, 255, 0.4); background: linear-gradient(180deg, rgba(139,127,255,0.05), transparent);">
+                <div class="panel-header" style="color: var(--violet); display: flex; justify-content: space-between;">
+                    <div>🧠 Top 3 Moves Today</div>
+                    <div class="badge badge-violet">Groq AI</div>
                 </div>
-                <p class="text-tertiary" style="font-size: 11px; margin-top: 16px; line-height: 1.5;">
-                    Calculated based on stock levels and profit margins across your entire catalog.
-                </p>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">
+                    Based on your current profit, out-of-stock risks, and competitor pricing, here is your strategy for today.
+                </div>
+                <div id="ai-actions-container" style="display: flex; flex-direction: column; gap: 12px;">
+                    <div class="text-tertiary" style="font-size: 12px;">Analyzing store data...</div>
+                </div>
             </div>
 
-            <!-- AI Action Plan -->
-            <div class="panel">
-                <div class="panel-header" style="color: var(--violet);">Today's Top Strategic Actions</div>
-                <div id="ai-actions-container">
-                    <div class="text-tertiary" style="padding: 20px; text-align: center;">
-                        <span style="display:inline-block; width:12px; height:12px; border:2px solid var(--violet); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite;"></span>
-                        <div style="margin-top: 10px;">Analyzing store data...</div>
-                    </div>
+            <!-- RIGHT COL: LEAK DETECTOR -->
+            <div class="panel" style="border-color: rgba(255, 34, 102, 0.4); background: linear-gradient(180deg, rgba(255,34,102,0.05), transparent);">
+                <div class="panel-header" style="color: var(--red);">🚨 Profit Leak Detector</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">
+                    Money you are losing right now due to out-of-stock best-sellers.
                 </div>
+                <div style="text-align: center; padding: 20px 0;">
+                    <div style="font-size: 48px; font-weight: 900; color: var(--red);" id="ov-leaks">0</div>
+                    <div style="font-size: 12px; color: var(--text-tertiary); text-transform: uppercase; margin-top: 8px;">Items Out of Stock</div>
+                </div>
+                <a href="inventory.html" class="btn btn-secondary" style="width: 100%; font-size: 12px; border-color: var(--red); color: var(--red); text-align: center; display: block;">Restock Inventory →</a>
             </div>
+
         </div>
-
     </div>
 </div>
 
-<style>
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-</style>
-
-<script src="js/app.js?v=1100"></script>
-<script src="js/overview.js?v=1000"></script>
+<script src="js/app.js?v=2030"></script>
+<script src="js/overview.js?v=2030"></script>
 </body>
 </html>
-
