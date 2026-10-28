@@ -1225,11 +1225,33 @@ body {
    ANTI-BOUNCE — keep scroll steady like original
    ========================================== */
 html, body {
-    overscroll-behavior: none;
+
 }
 .screen {
     overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
+
+}
+
+
+/* ==========================================
+   ANTI-BOUNCE — final, definitive
+   No touch momentum. No overscroll chain.
+   Scroll stays inside .screen only.
+   ========================================== */
+html, body {
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: auto;
+}
+.screen {
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: auto;
     scroll-behavior: auto;
 }
-/* vantix-anti-bounce */
+.ov-screen, .st-screen {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: auto;
+}
+/* vantix-anti-bounce-2055 */
