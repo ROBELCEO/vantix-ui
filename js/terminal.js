@@ -157,14 +157,23 @@ function renderSafeFloor(product) {
     const match = product.competitor_matches[0];
     let badgeColor = "trm-text-green";
     let statusText = "SAFE TO HOLD";
+    let actionText = "You can safely drop to match them.";
     
-    if (match.war_status === "DANGER") {
+    if (match.war_status === "UNKNOWN_COST") {
+        badgeColor = "trm-text-red";
+        statusText = "COGS MISSING";
+        actionText = "You MUST add your product cost in Shopify to calculate a Safe Floor.";
+    } else if (match.war_status === "DANGER") {
         badgeColor = "trm-text-red";
         statusText = "DO NOT MATCH";
+        actionText = "Matching drops below your safe floor.";
     } else if (match.war_status === "WARNING") {
         badgeColor = "trm-text-amber";
         statusText = "PROCEED WITH CAUTION";
     }
+
+    const costDisplay = product.my_cost !== null && product.my_cost > 0 ? `$${Number(product.my_cost).toFixed(2)}` : "MISSING";
+    const floorDisplay = match.safe_floor !== null ? `$${Number(match.safe_floor).toFixed(2)}` : "UNKNOWN";
 
     div.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
@@ -174,17 +183,17 @@ function renderSafeFloor(product) {
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
             <div class="trm-stat-box">
                 <div class="trm-stat-label">Your Cost</div>
-                <div class="trm-stat-value">$${Number(product.my_cost || 0).toFixed(2)}</div>
+                <div class="trm-stat-value ${product.my_cost ? '' : 'trm-text-red'}">${costDisplay}</div>
             </div>
             <div class="trm-stat-box">
                 <div class="trm-stat-label">Safe Floor</div>
-                <div class="trm-stat-value">$${Number(match.safe_floor || 0).toFixed(2)}</div>
+                <div class="trm-stat-value ${match.safe_floor ? '' : 'trm-text-red'}">${floorDisplay}</div>
             </div>
         </div>
 
         <div class="trm-advice-box">
             Competitor price: <b>$${Number(match.comp_price).toFixed(2)}</b>. 
-            ${match.war_status === 'DANGER' ? 'Matching drops below your safe floor.' : 'You can safely drop to match them.'}
+            ${actionText}
         </div>
     `;
 }
@@ -258,4 +267,5 @@ async function fetchAIAdvice(productName) {
         div.innerHTML = `<div class="trm-empty trm-text-red">Backend asleep. Try again.</div>`;
     }
 }
+
 
