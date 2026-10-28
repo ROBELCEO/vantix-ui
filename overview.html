@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Overview</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2084">
+<link rel="stylesheet" href="css/style.css?v=2085">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -47,8 +47,8 @@
         <a href="settings.html" class="tab">Settings</a>
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
-        <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">loading...</div>
-        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
+        <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none; background: #222 !important; color: #FFF !important; border-color: #333 !important;">Log Out</button>
         <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
     </div>
 </div>
@@ -56,11 +56,11 @@
 <div class="screen ov-screen">
     <div class="ov-wrap">
 
-        <!-- ROW A -->
+        <!-- ROW A: HEADER -->
         <div class="ov-row-a">
             <div>
                 <div class="ov-eyebrow">OVERVIEW</div>
-                <h1 class="ov-title">Your Shopify Store Intelligence</h1>
+                <h1 class="ov-title">Command Center</h1>
                 <p class="ov-sub">A real-time read on profit, risk, and the next move worth making.</p>
             </div>
             <div class="ov-status-group">
@@ -70,37 +70,38 @@
             </div>
         </div>
 
-        <!-- ROW B: 5 KPI CARDS -->
+        <!-- ROW B: KPI CARDS -->
         <div class="ov-kpi-grid">
             <div class="ov-kpi">
-                <div class="ov-kpi-top"><span class="ov-kpi-icon">$</span><span class="ov-kpi-label">Gross Revenue</span></div>
+                <div class="ov-kpi-label">Gross Revenue</div>
                 <div class="ov-kpi-value" id="ov-revenue">—</div>
                 <div class="ov-kpi-meta">Last 30 days</div>
             </div>
             <div class="ov-kpi">
-                <div class="ov-kpi-top"><span class="ov-kpi-icon ov-green">✓</span><span class="ov-kpi-label">True Net Profit</span></div>
-                <div class="ov-kpi-value ov-green" id="ov-net-profit">—</div>
+                <div class="ov-kpi-label">True Net Profit</div>
+                <div class="ov-kpi-value ov-text-green" id="ov-net-profit">—</div>
                 <div class="ov-kpi-meta">Revenue minus costs</div>
             </div>
             <div class="ov-kpi">
-                <div class="ov-kpi-top"><span class="ov-kpi-icon">#</span><span class="ov-kpi-label">Total Orders</span></div>
+                <div class="ov-kpi-label">Total Orders</div>
                 <div class="ov-kpi-value" id="ov-orders">—</div>
                 <div class="ov-kpi-meta">Last 30 days</div>
             </div>
             <div class="ov-kpi">
-                <div class="ov-kpi-top"><span class="ov-kpi-icon">↕</span><span class="ov-kpi-label">Price Index</span></div>
+                <div class="ov-kpi-label">Price Index</div>
                 <div class="ov-kpi-value" id="ov-price-index">—</div>
                 <div class="ov-kpi-meta" id="ov-price-index-meta">vs competitors</div>
             </div>
             <div class="ov-kpi">
-                <div class="ov-kpi-top"><span class="ov-kpi-icon ov-red">!</span><span class="ov-kpi-label">Low Stock SKUs</span></div>
-                <div class="ov-kpi-value ov-red" id="ov-leaks">—</div>
+                <div class="ov-kpi-label">Low Stock SKUs</div>
+                <div class="ov-kpi-value ov-text-red" id="ov-leaks">—</div>
                 <div class="ov-kpi-meta">Out of stock</div>
             </div>
         </div>
 
-        <!-- ROW C -->
+        <!-- ROW C: MAIN GRID -->
         <div class="ov-grid-3">
+            <!-- CHART -->
             <div class="ov-panel ov-panel-chart">
                 <div class="ov-panel-head">
                     <div>
@@ -114,11 +115,12 @@
                 </div>
                 <div class="ov-chart-summary">
                     <div><span>Revenue</span><b id="ov-chart-revenue">—</b></div>
-                    <div><span>Net Profit</span><b class="ov-green" id="ov-chart-profit">—</b></div>
+                    <div><span>Net Profit</span><b class="ov-text-green" id="ov-chart-profit">—</b></div>
                     <div><span>Orders</span><b id="ov-chart-orders">—</b></div>
                 </div>
             </div>
 
+            <!-- OPPORTUNITIES -->
             <div class="ov-panel">
                 <div class="ov-panel-head">
                     <div>
@@ -132,6 +134,7 @@
                 </div>
             </div>
 
+            <!-- INSIGHTS -->
             <div class="ov-panel">
                 <div class="ov-panel-head">
                     <div>
@@ -145,8 +148,9 @@
             </div>
         </div>
 
-        <!-- ROW D -->
+        <!-- ROW D: SECONDARY GRID -->
         <div class="ov-grid-3">
+            <!-- CATEGORY -->
             <div class="ov-panel">
                 <div class="ov-panel-head">
                     <div>
@@ -159,6 +163,7 @@
                 </div>
             </div>
 
+            <!-- TOP PRODUCTS -->
             <div class="ov-panel">
                 <div class="ov-panel-head">
                     <div>
@@ -172,6 +177,7 @@
                 </div>
             </div>
 
+            <!-- AI ASSISTANT -->
             <div class="ov-panel ov-ai-panel">
                 <div class="ov-panel-head">
                     <div>
@@ -191,20 +197,7 @@
     </div>
 </div>
 
-<script src="js/app.js?v=2084"></script>
-<script src="js/overview.js?v=2051"></script>
+<script src="js/app.js?v=2085"></script>
+<script src="js/overview.js?v=2085"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -5,28 +5,23 @@ function ovMoney(n) {
     if (!Number.isFinite(v)) return "—";
     return "$" + v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
-
 function ovNum(n) {
     const v = Number(n);
     if (!Number.isFinite(v)) return "—";
     return v.toLocaleString();
 }
-
 function ovSet(id, text) {
     const el = document.getElementById(id);
     if (el) el.innerText = text;
 }
-
 function ovSetClass(id, className) {
     const el = document.getElementById(id);
     if (el) el.className = className;
 }
-
 function ovEmpty(id, text) {
     const el = document.getElementById(id);
     if (el) el.innerHTML = `<div class="ov-empty">${text}</div>`;
 }
-
 async function ovFetchJson(url) {
     try {
         const res = await fetch(url);
@@ -39,10 +34,8 @@ async function ovFetchJson(url) {
 }
 
 async function loadOverview() {
-    // Header status
     ovSet("ov-last-updated", "Updated: " + new Date().toLocaleTimeString());
 
-    // Fetch all sources in parallel, tolerate individual failures
     const [summaryRes, storeStatusRes, storeDetailedRes, alertsRes] = await Promise.all([
         ovFetchJson("https://vantix-my5f.onrender.com/api/overview/summary"),
         ovFetchJson("https://vantix-my5f.onrender.com/api/shopify/status"),
@@ -50,7 +43,6 @@ async function loadOverview() {
         ovFetchJson("https://vantix-my5f.onrender.com/api/alerts/list")
     ]);
 
-    // Store status
     if (storeStatusRes.ok && storeStatusRes.data && storeStatusRes.data.connected) {
         ovSet("ov-store-status", "Store: " + (storeStatusRes.data.domain || "connected"));
     } else if (storeStatusRes.ok) {
@@ -59,16 +51,11 @@ async function loadOverview() {
         ovSet("ov-store-status", "Store: status unavailable");
     }
 
-    // Summary + KPIs
     let summary = summaryRes.ok ? summaryRes.data : null;
     let kpis = (summary && summary.kpis) ? summary.kpis : {};
 
     if (summary && summary.status === "needs_setup") {
-        ovSet("ov-revenue", "—");
-        ovSet("ov-net-profit", "—");
-        ovSet("ov-orders", "—");
-        ovSet("ov-price-index", "—");
-        ovSet("ov-leaks", "—");
+        ovSet("ov-revenue", "—"); ovSet("ov-net-profit", "—"); ovSet("ov-orders", "—"); ovSet("ov-price-index", "—"); ovSet("ov-leaks", "—");
         ovSet("ov-ai-status", "AI: setup needed");
         const actions = summary.actions || ["Connect a store and sync products to get started."];
         renderOpportunities(actions, "Setup required");
@@ -88,7 +75,7 @@ async function loadOverview() {
         if (priceEl) {
             if (Number.isFinite(priceIndex)) {
                 priceEl.innerText = (priceIndex > 0 ? "+" : "") + priceIndex + "%";
-                priceEl.className = "ov-kpi-value " + (priceIndex > 0 ? "ov-red" : priceIndex < 0 ? "ov-green" : "");
+                priceEl.className = "ov-kpi-value " + (priceIndex > 0 ? "ov-text-red" : priceIndex < 0 ? "ov-text-green" : "");
                 ovSet("ov-price-index-meta", priceIndex > 0 ? "You are higher than market" : priceIndex < 0 ? "You are lower than market" : "In line with market");
             } else {
                 priceEl.innerText = "—";
@@ -106,7 +93,6 @@ async function loadOverview() {
         }
     }
 
-    // Chart + top products from store detailed
     let detailed = storeDetailedRes.ok ? storeDetailedRes.data : null;
     if (detailed) {
         renderChart(detailed.chart || { labels: [], data: [] });
@@ -117,20 +103,16 @@ async function loadOverview() {
         renderTopProducts(detailed.top_products || []);
     } else {
         renderChart({ labels: [], data: [] });
-        ovSet("ov-chart-revenue", "—");
-        ovSet("ov-chart-profit", "—");
-        ovSet("ov-chart-orders", "—");
+        ovSet("ov-chart-revenue", "—"); ovSet("ov-chart-profit", "—"); ovSet("ov-chart-orders", "—");
         ovEmpty("ov-top-products", "Product data unavailable. Connect Shopify and sync products.");
     }
 
-    // Insights from alerts
     if (alertsRes.ok && alertsRes.data && Array.isArray(alertsRes.data.alerts)) {
         renderInsights(alertsRes.data.alerts);
     } else {
         ovEmpty("ov-insights", "No insights available yet.");
     }
 
-    // AI assistant note
     const aiNote = document.getElementById("ov-ai-assistant-note");
     if (aiNote) {
         aiNote.innerText = (summary && summary.actions && summary.actions.length)
@@ -209,8 +191,8 @@ function renderChart(chart) {
 
     const ctx = canvas.getContext("2d");
     const gradient = ctx.createLinearGradient(0, 0, 0, 260);
-    gradient.addColorStop(0, "rgba(0, 217, 245, 0.18)");
-    gradient.addColorStop(1, "rgba(0, 217, 245, 0)");
+    gradient.addColorStop(0, "rgba(2, 132, 199, 0.15)"); // Light mode cyan
+    gradient.addColorStop(1, "rgba(2, 132, 199, 0)");
 
     ovChartInstance = new Chart(ctx, {
         type: "line",
@@ -219,7 +201,7 @@ function renderChart(chart) {
             datasets: [{
                 label: "Revenue",
                 data,
-                borderColor: "#00D9F5",
+                borderColor: "#0284C7", // Light mode cyan
                 backgroundColor: gradient,
                 borderWidth: 2,
                 tension: 0.35,
@@ -232,8 +214,8 @@ function renderChart(chart) {
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                x: { grid: { display: false }, ticks: { color: "#697580", font: { size: 10 } } },
-                y: { grid: { color: "#20262C" }, ticks: { color: "#697580", font: { size: 10 } } }
+                x: { grid: { display: false }, ticks: { color: "#6B7280", font: { size: 10 } } },
+                y: { grid: { color: "#E5E7EB" }, ticks: { color: "#6B7280", font: { size: 10 } } }
             }
         }
     });
@@ -247,5 +229,3 @@ function escapeHtml(str) {
 function escapeAttr(str) {
     return escapeHtml(str).replace(/`/g, "&#96;");
 }
-
-// app.js triggers this after auth is ready
