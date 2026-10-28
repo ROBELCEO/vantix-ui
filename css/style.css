@@ -3296,3 +3296,54 @@ html, body {
     scrollbar-width: thin;
     scrollbar-color: #333333 #000000;
 }
+
+/* ==========================================
+   GLOBAL LIGHT MODE OVERRIDE
+   ========================================== */
+:root, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen, .set-wrap, .ov-wrap {
+    --bg: #FFFFFF;
+    --ov-bg: #FFFFFF;
+    --panel: #F9FAFB;
+    --ov-panel: #F9FAFB;
+    --card: #F3F4F6;
+    --ov-card: #F3F4F6;
+    --elev: #E5E7EB;
+    --ov-elev: #E5E7EB;
+    --border: #E5E7EB;
+    --ov-border: #E5E7EB;
+    --text: #111827;
+    --ov-text: #111827;
+    --text2: #4B5563;
+    --ov-text2: #4B5563;
+    --muted: #9CA3AF;
+    --ov-muted: #9CA3AF;
+    
+    /* Darkened accents for white background readability */
+    --cyan: #0284C7; 
+    --ov-cyan: #0284C7;
+    --green: #059669;
+    --ov-green: #059669;
+    --red: #E11D48;
+    --ov-red: #E11D48;
+    --amber: #D97706;
+    --ov-amber: #D97706;
+    --violet: #6D28D9;
+    --ov-violet: #6D28D9;
+}
+
+/* Force backgrounds and text globally */
+body, .screen, .chat-container {
+    background-color: #FFFFFF !important;
+    color: #111827 !important;
+}
+
+/* Fix chat specific backgrounds */
+.chat-container { background-image: none !important; }
+.login-container { background: #F9FAFB !important; }
+
+/* Fix specific dark mode elements */
+.chat-header, .chat-status { background: #FFFFFF !important; }
+.google-btn { border: 1px solid #D1D5DB !important; color: #111827 !important; }
+.google-btn:hover { background: #F3F4F6 !important; }
+.msg-bubble { background: #FFFFFF !important; border-color: #E5E7EB !important; }
+.inline-card { background: #F9FAFB !important; border-color: #E5E7EB !important; }
