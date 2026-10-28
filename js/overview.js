@@ -76,7 +76,7 @@ async function loadOverview() {
         if (kpis.profit_status === "MISSING_COGS") {
             if (netEl) {
                 netEl.innerText = "MISSING";
-                netEl.style.color = "var(--ov-red)";
+                netEl.style.color = "#E11D48";
                 netEl.style.fontSize = "16px";
             }
             if (metaEl) metaEl.innerText = "COGS not set in Shopify";
@@ -84,18 +84,18 @@ async function loadOverview() {
         } else if (kpis.profit_status === "MISSING_FEES") {
             if (netEl) {
                 netEl.innerText = "—";
-                netEl.style.color = "var(--ov-muted)";
+                netEl.style.color = "#9CA3AF";
             }
             if (metaEl) metaEl.innerText = "Fees not configured";
-            if (setupEl) setupEl.style.display = "block";
+            if (setupEl) setupEl.style.display = "block"; // Force it to show
         } else {
             if (netEl) {
                 netEl.style.fontSize = "24px";
-                netEl.style.color = "var(--ov-green)";
+                netEl.style.color = "#059669";
             }
             if (metaEl) metaEl.innerText = "Revenue minus costs";
-            if (setupEl) setupEl.style.display = "none";
-            ovSet("ov-net-profit", Number.isFinite(net) ? ovMoney(net) : "—");
+            if (setupEl) setupEl.style.display = "none"; // Force it to hide
+            ovSet("ov-net-profit", Number.isFinite(net) ? ovMoney(net) : "$0.00");
         }
 
         ovSet("ov-orders", Number.isFinite(orders) ? ovNum(orders) : "—");
@@ -264,6 +264,7 @@ function escapeHtml(str) {
 function escapeAttr(str) {
     return escapeHtml(str).replace(/`/g, "&#96;");
 }
+
 
 
 
