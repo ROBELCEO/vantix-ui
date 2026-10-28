@@ -3446,3 +3446,93 @@ body, .screen, .ov-wrap, .cnx-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .
 ::-webkit-scrollbar-track { background: #FFFFFF !important; }
 ::-webkit-scrollbar-thumb { background: #D1D5DB !important; }
 ::-webkit-scrollbar-thumb:hover { background: #9CA3AF !important; }
+
+/* ==========================================
+   STRICT LIGHT MODE ENFORCEMENT
+   (Kills all leftover dark mode variables)
+   ========================================== */
+
+/* 1. Force Global Variables to Light */
+:root {
+    --bg: #F8F9FA !important;
+    --bg-base: #F8F9FA !important;
+    --bg-panel: #FFFFFF !important;
+    --bg-surface: #FFFFFF !important;
+    --bg-elevated: #F3F4F6 !important;
+    --border: #E5E7EB !important;
+    --border-strong: #D1D5DB !important;
+    --text-primary: #111827 !important;
+    --text-secondary: #4B5563 !important;
+    --text-tertiary: #6B7280 !important;
+    --accent: #0284C7 !important;
+    --cyan: #0284C7 !important;
+    --green: #059669 !important;
+    --red: #E11D48 !important;
+    --amber: #D97706 !important;
+    --violet: #6D28D9 !important;
+}
+
+/* 2. Force Body and Screens to Light */
+body, .screen, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
+    background-color: var(--bg) !important;
+    color: var(--text-primary) !important;
+}
+
+/* 3. Force Panels/Cards to White with Light Borders */
+.panel, .ov-panel, .st-panel, .cmp-panel, .trm-panel, .dsc-card, .inv-panel, .mem-card, .set-panel, .cnx-panel, .kpi-card, .ov-kpi, .st-kpi, .inv-kpi {
+    background-color: var(--bg-panel) !important;
+    border-color: var(--border) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+}
+
+/* 4. Force All Text to Dark */
+h1, h2, h3, h4, .ov-title, .st-title, .cnx-title, .cmp-title, .trm-title, .dsc-title, .inv-title, .mem-title, .set-title,
+.panel-header, .ov-panel-title, .st-panel-title, .cnx-panel-title, .dsc-card-title, .set-panel-title {
+    color: var(--text-primary) !important;
+}
+p, .ov-sub, .st-sub, .cnx-sub, .cmp-sub, .trm-sub, .dsc-sub, .inv-sub, .mem-sub, .set-sub, .ov-panel-sub, .st-panel-sub, .cnx-panel-sub {
+    color: var(--text-secondary) !important;
+}
+.text-tertiary, .ov-muted, .st-muted, .set-label, .cnx-label {
+    color: var(--text-tertiary) !important;
+}
+
+/* 5. Inputs & Forms */
+input, select, textarea, .form-input, .cnx-input, .dsc-search-input, .trm-input, .cmp-input {
+    background-color: #FFFFFF !important;
+    border: 1px solid var(--border-strong) !important;
+    color: var(--text-primary) !important;
+}
+input:focus, .form-input:focus {
+    border-color: var(--accent) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1) !important;
+}
+
+/* 6. Buttons */
+.btn-primary, .cnx-btn-primary, .mem-btn-primary, .dsc-search-btn, .dsc-push-btn {
+    background-color: var(--accent) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+}
+.btn-secondary, .cnx-btn-secondary, .mem-btn-secondary, .set-btn-secondary {
+    background-color: #FFFFFF !important;
+    border: 1px solid var(--border-strong) !important;
+    color: var(--text-primary) !important;
+}
+
+/* 7. Keep Header Pitch Black */
+.header {
+    background-color: #000000 !important;
+    border-bottom: 1px solid #222222 !important;
+}
+.header .brand div, .header #user-email { color: #FFFFFF !important; }
+.header .tabs { background-color: #111111 !important; border: 1px solid #222222 !important; }
+.header .tab { color: #A1A1AA !important; }
+.header .tab.active { background-color: #00E5FF !important; color: #000000 !important; font-weight: 800 !important; }
+.header .mobile-menu-btn { color: #FFFFFF !important; }
+
+/* 8. Scrollbar Light Mode */
+::-webkit-scrollbar-track { background: #F8F9FA !important; }
+::-webkit-scrollbar-thumb { background: #D1D5DB !important; }
+::-webkit-scrollbar-thumb:hover { background: #9CA3AF !important; }
