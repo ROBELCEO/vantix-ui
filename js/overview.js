@@ -67,7 +67,19 @@ async function loadOverview() {
         const leaks = Number(kpis.leak_count ?? NaN);
 
         ovSet("ov-revenue", Number.isFinite(gross) ? ovMoney(gross) : "—");
-        ovSet("ov-net-profit", Number.isFinite(net) ? ovMoney(net) : "—");
+        
+        // Handle missing Net Profit
+        if (kpis.profit_status === "MISSING_COGS") {
+            const netEl = document.getElementById("ov-net-profit");
+            if (netEl) {
+                netEl.innerText = "MISSING";
+                netEl.style.color = "var(--ov-red)";
+                netEl.style.fontSize = "16px";
+            }
+        } else {
+            ovSet("ov-net-profit", Number.isFinite(net) ? ovMoney(net) : "—");
+        }
+
         ovSet("ov-orders", Number.isFinite(orders) ? ovNum(orders) : "—");
         ovSet("ov-leaks", Number.isFinite(leaks) ? ovNum(leaks) : "—");
 
@@ -98,7 +110,12 @@ async function loadOverview() {
         renderChart(detailed.chart || { labels: [], data: [] });
         const dk = detailed.kpis || {};
         ovSet("ov-chart-revenue", Number.isFinite(Number(dk.total_revenue)) ? ovMoney(dk.total_revenue) : "—");
-        ovSet("ov-chart-profit", Number.isFinite(Number(dk.net_profit)) ? ovMoney(dk.net_profit) : "—");
+        if (kpis && kpis.profit_status === "MISSING_COGS") {
+            const cp = document.getElementById("ov-chart-profit");
+            if (cp) { cp.innerText = "MISSING"; cp.style.color = "var(--ov-red)"; }
+        } else {
+            ovSet("ov-chart-profit", Number.isFinite(Number(dk.net_profit)) ? ovMoney(dk.net_profit) : "—");
+        }
         ovSet("ov-chart-orders", Number.isFinite(Number(dk.order_count)) ? ovNum(dk.order_count) : "—");
         renderTopProducts(detailed.top_products || []);
     } else {
@@ -229,3 +246,4 @@ function escapeHtml(str) {
 function escapeAttr(str) {
     return escapeHtml(str).replace(/`/g, "&#96;");
 }
+
