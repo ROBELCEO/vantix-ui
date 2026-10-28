@@ -1,26 +1,24 @@
-﻿async function checkSubscription() {
+﻿// REPLACE THESE WITH YOUR EXACT LEMON SQUEEZY CHECKOUT LINKS
+const LEMON_PRO_URL = "https://vantix.lemonsqueezy.com/checkout/buy/YOUR_PRO_VARIANT_ID";
+const LEMON_STARTER_URL = "https://vantix.lemonsqueezy.com/checkout/buy/YOUR_STARTER_VARIANT_ID";
+const LEMON_SCALE_URL = "https://vantix.lemonsqueezy.com/checkout/buy/YOUR_SCALE_VARIANT_ID";
+
+async function checkSubscription() {
     try {
         const statusRes = await fetch('https://vantix-my5f.onrender.com/api/auth/status');
         if (statusRes.ok) {
             const statusData = await statusRes.json();
-            const upgradeBtn = document.getElementById('upgrade-btn');
-            const manageBtn = document.getElementById('manage-btn');
-            const trialBanner = document.getElementById('trial-banner');
-
-            if (statusData.plan === 'pro' || statusData.plan === 'scale') {
-                upgradeBtn.style.display = 'none';
-                manageBtn.style.display = 'block';
-                trialBanner.innerText = "⭐ You are currently subscribed to the PRO plan.";
-                trialBanner.style.color = "var(--accent)";
-            } else {
-                upgradeBtn.style.display = 'block';
-                manageBtn.style.display = 'none';
-                trialBanner.innerText = "You are currently on a 7-Day Free Trial.";
-                trialBanner.style.color = "var(--amber)";
+            const proBtn = document.getElementById('upgrade-btn-pro');
+            
+            if (statusData.plan !== 'trial') {
+                if (proBtn) {
+                    proBtn.innerText = "Current Plan (Active)";
+                    proBtn.disabled = true;
+                    proBtn.style.opacity = "0.5";
+                }
             }
         }
 
-        // Fetch ROI Data
         const roiRes = await fetch('https://vantix-my5f.onrender.com/api/billing/roi');
         if (roiRes.ok) {
             const roiData = await roiRes.json();
@@ -28,32 +26,36 @@
             document.getElementById('roi-alerts').innerText = roiData.alerts_found;
             document.getElementById('roi-products').innerText = roiData.products_tracked;
         }
-    } catch(e) {
-        console.error("Failed to load membership data", e);
-    }
+    } catch(e) { console.error("Failed to load membership data", e); }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-    checkSubscription();
-
-    const upgradeBtn = document.getElementById('upgrade-btn');
-    const manageBtn = document.getElementById('manage-btn');
-
-    // 1. Upgrade Logic
-    if (upgradeBtn) {
-        const { data: { session } } = await window.supabaseClient.auth.getSession();
-        if (session) {
-            // REPLACE YOUR_CHECKOUT_ID WITH YOUR ACTUAL LEMON SQUEEZY LINK
-            const checkoutUrl = `https://vantix.lemonsqueezy.com/checkout/buy/YOUR_CHECKOUT_ID?checkout[email]=${encodeURIComponent(session.user.email)}&checkout[custom][user_id]=${session.user.id}`;
-            upgradeBtn.addEventListener('click', () => window.open(checkoutUrl, '_blank'));
-        }
+async function triggerCheckout(baseUrl) {
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
+    if (!session) {
+        alert("Please log in first.");
+        return;
     }
 
-    // 2. Manage/Cancel Logic
-    if (manageBtn) {
-        manageBtn.addEventListener('click', () => {
-            // This opens the Lemon Squeezy customer portal where they can cancel/update cards
-            window.open('https://vantix.lemonsqueezy.com/billing', '_blank');
-        });
+    // Pass the email and user_id to Lemon Squeezy
+    const checkoutUrl = `${baseUrl}?checkout[email]=${encodeURIComponent(session.user.email)}&checkout[custom][user_id]=${session.user.id}`;
+    window.open(checkoutUrl, '_blank');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    checkSubscription();
+
+    const proBtn = document.getElementById('upgrade-btn-pro');
+    if (proBtn) {
+        proBtn.addEventListener('click', () => triggerCheckout(LEMON_PRO_URL));
+    }
+    
+    const starterBtn = document.getElementById('upgrade-btn-starter');
+    if (starterBtn) {
+        starterBtn.addEventListener('click', () => triggerCheckout(LEMON_STARTER_URL));
+    }
+
+    const scaleBtn = document.getElementById('upgrade-btn-scale');
+    if (scaleBtn) {
+        scaleBtn.addEventListener('click', () => triggerCheckout(LEMON_SCALE_URL));
     }
 });
