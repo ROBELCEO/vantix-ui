@@ -1,151 +1,174 @@
 ﻿let allCompetitors = [];
 
-async function fetchCompetitors() {
-    const list = document.getElementById('competitors-list');
-    try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/list');
-        if (!res.ok) throw new Error("Failed");
-        const data = await res.json();
-        
-        allCompetitors = data.competitors || [];
-        
-        if (allCompetitors.length === 0) {
-            list.innerHTML = '<div class="text-tertiary" style="font-size: 12px;">No competitors added yet.</div>';
-            return;
-        }
-
-        // Fetch products counts by hitting the opportunities endpoint or we can just show the domain
-        list.innerHTML = allCompetitors.map(c => `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-btn); margin-bottom: 8px;">
-                <div style="font-weight: 700; font-size: 14px; color: var(--text-primary);">${c.domain}</div>
-                <div class="badge badge-green">Active</div>
-            </div>
-        `).join('');
-
-    } catch(e) {
-        list.innerHTML = '<div class="text-red" style="font-size: 12px;">Failed to load competitors.</div>';
-    }
+function cmpEsc(str) {
+    return String(str ?? "").replace(/[&<>"']/g, s => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[s]));
 }
 
-async function addCompetitor() {
-    const input = document.getElementById('comp-domain');
-    const domain = input.value.trim();
-    if (!domain) return;
+async function fetchCompetitors() {
+    const list = document.getElementById('competitors-list');
+    const countEl = document.getElementById('comp-count');
+    const planEl = document.getElementById('cmp-plan-status');
+    if(!list) return;
 
     try {
-        input.disabled = true;
-        input.placeholder = "Scraping... (takes 5s)";
+        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/list');
+        if(!res.ok) throw new Error("HTTP " + res.status);
         
-        const res = await fetch(`https://vantix-my5f.onrender.com/api/competitors/add?domain=${encodeURIComponent(domain)}`, { method: 'POST' });
+        const data = await res.json();
+        allCompetitors = data.competitors || [];
         
-        if (res.ok) {
-            input.value = '';
-            fetchCompetitors();
-            loadCompetitorIntel();
-            loadCatalogGaps();
-        } else {
-            const d = await res.json();
-            alert(d.detail || "Failed to add competitor.");
+        if (planEl) planEl.innerText = "Plan: " + (data.tier || 'TRIAL').toUpperCase();
+        if (countEl) countEl.innerText = `${allCompetitors.length} / ${data.limit || 10} used`;
+
+        if(allCompetitors.length === 0) { 
+            list.innerHTML = '<div class="cmp-empty">No competitors tracked yet. Add one above to begin.</div>'; 
+            return; 
         }
-    } catch(e) {
-        alert("Network error.");
-    } finally {
-        input.disabled = false;
-        input.placeholder = "competitor.com";
+        
+        list.innerHTML = allCompetitors.map(c => `
+            <div class="cmp-product-row">
+                <img class="cmp-avatar" src="https://ui-avatars.com/api/?name=${cmpEsc(c.domain)}&background=111519&color=00D9F5&bold=true" alt="">
+                <div class="cmp-row-body">
+                    <div class="cmp-row-title">${cmpEsc(c.domain)}</div>
+                    <div class="cmp-row-meta">Tracking active</div>
+                </div>
+                <div class="cmp-badge cmp-badge-green">${c.product_count || 0} Products</div>
+            </div>
+        `).join('');
+    } catch(e) { 
+        list.innerHTML = '<div class="cmp-empty cmp-text-red">Failed to load competitors. Please refresh.</div>'; 
     }
 }
 
 async function autoDiscover() {
-    const btn = event.target;
-    btn.innerText = "Scanning market...";
-    btn.disabled = true;
+    const btn = document.getElementById('discover-btn');
+    const results = document.getElementById('discovery-results');
+    if(!btn || !results) return;
+    
+    btn.innerText = "Scanning market…"; btn.disabled = true;
+    results.innerHTML = '<div class="cmp-empty" style="padding: 12px;">Searching for brands in your niche…</div>';
 
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/discover');
         const data = await res.json();
         
-        if (data.suggested_competitors && data.suggested_competitors.length > 0) {
-            const suggested = data.suggested_competitors[0]; // Just take the top one for quick add
-            const confirmAdd = confirm(`AI found a top competitor in your niche: ${suggested}\n\nAdd them now?`);
-            if (confirmAdd) {
-                document.getElementById('comp-domain').value = suggested;
-                addCompetitor();
-            }
+        if (!res.ok) throw new Error(data.detail || "Network error");
+        
+        if (!data.suggested_competitors || data.suggested_competitors.length === 0) {
+            results.innerHTML = '<div class="cmp-empty">No competitors found. Try adding manually.</div>';
         } else {
-            alert("Could not auto-detect competitors right now.");
+            results.innerHTML = data.suggested_competitors.map(domain => `
+                <div class="cmp-suggestion-row">
+                    <div class="cmp-row-title">${cmpEsc(domain)}</div>
+                    <button onclick="addCompetitor('${cmpEsc(domain)}')" class="cmp-btn-small">+ Add</button>
+                </div>
+            `).join('');
         }
     } catch(e) {
-        alert("Error discovering competitors.");
-    } finally {
-        btn.innerText = "Find My Competitors →";
-        btn.disabled = false;
+        results.innerHTML = `<div class="cmp-empty cmp-text-red">${cmpEsc(e.message)}</div>`;
+    }
+    btn.innerText = "Find My Competitors →"; btn.disabled = false;
+}
+
+function handleAddKey(e) {
+    if (e.key === 'Enter') addCompetitor(document.getElementById('comp-domain').value);
+}
+
+async function addCompetitor(domain) {
+    if(!domain) return;
+    const status = document.getElementById('comp-status');
+    status.style.display = 'block'; 
+    status.className = 'cmp-status-msg cmp-text-amber'; 
+    status.innerText = "Scraping competitor products (takes 5-10s)…";
+    
+    try {
+        const res = await fetch(`https://vantix-my5f.onrender.com/api/competitors/add?domain=${encodeURIComponent(domain)}`);
+        const data = await res.json();
+        
+        if(res.ok && data.status === "success") {
+            status.className = 'cmp-status-msg cmp-text-green'; 
+            status.innerText = data.message;
+            document.getElementById('comp-domain').value = "";
+            document.getElementById('discovery-results').innerHTML = ""; 
+            fetchCompetitors(); 
+            loadCompetitorIntel();
+            loadCatalogGaps();
+        } else { 
+            status.className = 'cmp-status-msg cmp-text-red'; 
+            status.innerText = data.detail || data.message || "Error adding."; 
+        }
+    } catch(e) { 
+        status.className = 'cmp-status-msg cmp-text-red'; 
+        status.innerText = "Error adding competitor. Check backend."; 
     }
 }
 
 async function loadCompetitorIntel() {
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/opportunities');
+        if (!res.ok) return;
         const data = await res.json();
 
         const stockList = document.getElementById('stockout-list');
         if (data.stock_outs && data.stock_outs.length > 0) {
             stockList.innerHTML = data.stock_outs.map(p => `
-                <div style="display: flex; justify-content: space-between; padding: 10px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-btn); margin-bottom: 8px;">
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <img src="${p.image || 'https://via.placeholder.com/32'}" style="width: 32px; height: 32px; border-radius: 4px;">
-                        <div style="font-size: 12px; font-weight: 700;">${p.title}</div>
+                <div class="cmp-product-row">
+                    <img class="cmp-avatar" src="${cmpEsc(p.image || '')}" onerror="this.style.visibility='hidden'">
+                    <div class="cmp-row-body">
+                        <div class="cmp-row-title">${cmpEsc(p.title)}</div>
+                        <div class="cmp-row-meta">${cmpEsc(p.store)}</div>
                     </div>
-                    <div class="mono text-amber" style="font-size: 12px;">$${p.price}</div>
+                    <div class="cmp-row-price cmp-text-amber">$${p.price}</div>
                 </div>
             `).join('');
-        } else { stockList.innerHTML = '<div class="text-tertiary" style="font-size: 12px; text-align: center;">No stock-outs detected.</div>'; }
+        } else { 
+            stockList.innerHTML = '<div class="cmp-empty">No stock-outs detected.</div>'; 
+        }
 
         const launchList = document.getElementById('launch-list');
         if (data.new_launches && data.new_launches.length > 0) {
             launchList.innerHTML = data.new_launches.map(p => `
-                <div style="display: flex; justify-content: space-between; padding: 10px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-btn); margin-bottom: 8px;">
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <img src="${p.image || 'https://via.placeholder.com/32'}" style="width: 32px; height: 32px; border-radius: 4px;">
-                        <div style="font-size: 12px; font-weight: 700;">${p.title}</div>
+                <div class="cmp-product-row">
+                    <img class="cmp-avatar" src="${cmpEsc(p.image || '')}" onerror="this.style.visibility='hidden'">
+                    <div class="cmp-row-body">
+                        <div class="cmp-row-title">${cmpEsc(p.title)}</div>
+                        <div class="cmp-row-meta">${cmpEsc(p.store)} • ${p.date}</div>
                     </div>
-                    <div class="mono text-green" style="font-size: 12px;">$${p.price}</div>
+                    <div class="cmp-row-price cmp-text-green">$${p.price}</div>
                 </div>
             `).join('');
-        } else { launchList.innerHTML = '<div class="text-tertiary" style="font-size: 12px; text-align: center;">No new launches found.</div>'; }
-
+        } else { 
+            launchList.innerHTML = '<div class="cmp-empty">No new launches found.</div>'; 
+        }
     } catch(e) { console.error(e); }
 }
 
 async function loadCatalogGaps() {
     const list = document.getElementById('gap-list');
+    if (!list) return;
+    
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/gaps');
+        if (!res.ok) return;
         const data = await res.json();
 
         if (data.gaps && data.gaps.length > 0) {
             list.innerHTML = data.gaps.map(g => `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-btn);">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <img src="${g.image || 'https://via.placeholder.com/40'}" style="width: 40px; height: 40px; border-radius: 4px;">
-                        <div>
-                            <div style="font-weight: 700; font-size: 13px;">${g.title}</div>
-                            <div class="text-tertiary" style="font-size: 10px;">You sell 0 ${g.keyword}s</div>
-                        </div>
+                <div class="cmp-product-row">
+                    <img class="cmp-avatar" src="${cmpEsc(g.image || '')}" onerror="this.style.visibility='hidden'">
+                    <div class="cmp-row-body">
+                        <div class="cmp-row-title">${cmpEsc(g.title)}</div>
+                        <div class="cmp-row-meta">You sell 0 ${cmpEsc(g.keyword)}s</div>
                     </div>
-                    <div class="mono text-violet" style="font-weight: 800; font-size: 14px;">$${g.price.toFixed(2)}</div>
+                    <div class="cmp-row-price cmp-text-violet">$${Number(g.price).toFixed(2)}</div>
                 </div>
             `).join('');
         } else {
-            list.innerHTML = '<div class="text-green" style="font-size: 12px; text-align: center; padding: 12px; grid-column: span 2;">✅ No gaps found.</div>';
+            list.innerHTML = '<div class="cmp-empty cmp-text-green" style="grid-column: span 2;">✅ No catalog gaps found. Your catalog is competitive.</div>';
         }
-    } catch(e) { list.innerHTML = '<div class="text-red" style="text-align: center;">Failed to load gaps.</div>'; }
+    } catch(e) { 
+        list.innerHTML = '<div class="cmp-empty cmp-text-red" style="grid-column: span 2;">Failed to load gaps.</div>'; 
+    }
 }
-
-// Init
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        fetchCompetitors();
-        loadCompetitorIntel();
-        loadCatalogGaps();
-    }, 500);
-});
