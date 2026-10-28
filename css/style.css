@@ -479,10 +479,10 @@ body {
    ========================================== */
 .ov-screen {
     --ov-bg: #000000;
-    --ov-panel: #080A0C;
-    --ov-card: #090B0D;
+    --ov-panel: #16181A;
+    --ov-card: #1C1F22;
     --ov-elev: #111519;
-    --ov-border: #20262C;
+    --ov-border: rgba(255,255,255,0.04);
     --ov-text: #F4F7FA;
     --ov-text2: #A0A9B2;
     --ov-muted: #697580;
@@ -862,10 +862,10 @@ body {
    ========================================== */
 .st-screen {
     --ov-bg: #000000;
-    --ov-panel: #080A0C;
-    --ov-card: #090B0D;
+    --ov-panel: #16181A;
+    --ov-card: #1C1F22;
     --ov-elev: #111519;
-    --ov-border: #20262C;
+    --ov-border: rgba(255,255,255,0.04);
     --ov-text: #F4F7FA;
     --ov-text2: #A0A9B2;
     --ov-muted: #697580;
@@ -1015,10 +1015,10 @@ body {
     display: flex;
     flex-direction: column;
 }
-.st-panel-amber { border-color: rgba(255,180,84,0.3); background: linear-gradient(180deg, rgba(255,180,84,0.04), var(--ov-panel)); }
-.st-panel-red { border-color: rgba(255,66,103,0.3); background: linear-gradient(180deg, rgba(255,66,103,0.04), var(--ov-panel)); }
-.st-panel-violet { border-color: rgba(167,139,250,0.3); background: linear-gradient(180deg, rgba(167,139,250,0.04), var(--ov-panel)); }
-.st-panel-cyan { border-color: rgba(0,217,245,0.3); background: linear-gradient(180deg, rgba(0,217,245,0.04), var(--ov-panel)); }
+.st-panel-amber { border-color: rgba(255,180,84,0.1); background: linear-gradient(180deg, rgba(255,180,84,0.04), var(--ov-panel)); }
+.st-panel-red { border-color: rgba(255,66,103,0.1); background: linear-gradient(180deg, rgba(255,66,103,0.04), var(--ov-panel)); }
+.st-panel-violet { border-color: rgba(167,139,250,0.1); background: linear-gradient(180deg, rgba(167,139,250,0.04), var(--ov-panel)); }
+.st-panel-cyan { border-color: rgba(0,217,245,0.1); background: linear-gradient(180deg, rgba(0,217,245,0.04), var(--ov-panel)); }
 .st-panel-head {
     display: flex;
     justify-content: space-between;
@@ -1255,3 +1255,4 @@ html, body {
     -webkit-overflow-scrolling: auto;
 }
 /* vantix-anti-bounce-2055 */
+
