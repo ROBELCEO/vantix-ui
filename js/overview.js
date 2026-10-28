@@ -68,15 +68,31 @@ async function loadOverview() {
 
         ovSet("ov-revenue", Number.isFinite(gross) ? ovMoney(gross) : "—");
         
-        // Handle missing Net Profit
+        // Handle missing Net Profit & Missing Fees
+        const netEl = document.getElementById("ov-net-profit");
+        const metaEl = document.getElementById("ov-net-profit-meta");
+        const setupEl = document.getElementById("ov-net-profit-setup");
+
         if (kpis.profit_status === "MISSING_COGS") {
-            const netEl = document.getElementById("ov-net-profit");
             if (netEl) {
                 netEl.innerText = "MISSING";
                 netEl.style.color = "var(--ov-red)";
                 netEl.style.fontSize = "16px";
             }
+        } else if (kpis.profit_status === "MISSING_FEES") {
+            if (netEl) {
+                netEl.innerText = "—";
+                netEl.style.color = "var(--ov-muted)";
+            }
+            if (metaEl) metaEl.innerText = "Fees not configured";
+            if (setupEl) setupEl.style.display = "inline-block";
         } else {
+            if (netEl) {
+                netEl.style.fontSize = "24px";
+                netEl.style.color = "var(--ov-green)";
+            }
+            if (metaEl) metaEl.innerText = "Revenue minus costs";
+            if (setupEl) setupEl.style.display = "none";
             ovSet("ov-net-profit", Number.isFinite(net) ? ovMoney(net) : "—");
         }
 
@@ -246,4 +262,5 @@ function escapeHtml(str) {
 function escapeAttr(str) {
     return escapeHtml(str).replace(/`/g, "&#96;");
 }
+
 
