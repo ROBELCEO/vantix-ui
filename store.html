@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — My Store</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=2052">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -17,17 +17,16 @@
         <div class="brand"><div>VANTI<span>X</span></div></div>
         <button class="drawer-close" onclick="toggleMenu()">✕</button>
     </div>
-    <a href="index.html" class="drawer-tab ">Connect</a>
-    <a href="overview.html" class="drawer-tab ">Overview</a>
+    <a href="index.html" class="drawer-tab">Connect</a>
+    <a href="overview.html" class="drawer-tab">Overview</a>
     <a href="store.html" class="drawer-tab active">My Store</a>
-    <a href="competitors.html" class="drawer-tab ">Competitors</a>
-    <a href="terminal.html" class="drawer-tab ">Terminal</a>
-    <a href="discovery.html" class="drawer-tab ">Discovery</a>
-    <a href="alerts.html" class="drawer-tab ">Alerts</a>
-    <a href="inventory.html" class="drawer-tab ">Inventory</a>
-    <a href="membership.html" class="drawer-tab ">Membership</a>
-    <a href="settings.html" class="drawer-tab ">Settings</a>
-    
+    <a href="competitors.html" class="drawer-tab">Competitors</a>
+    <a href="terminal.html" class="drawer-tab">Terminal</a>
+    <a href="discovery.html" class="drawer-tab">Discovery</a>
+    <a href="alerts.html" class="drawer-tab">Alerts</a>
+    <a href="inventory.html" class="drawer-tab">Inventory</a>
+    <a href="membership.html" class="drawer-tab">Membership</a>
+    <a href="settings.html" class="drawer-tab">Settings</a>
 </div>
 
 <div class="header">
@@ -36,17 +35,16 @@
         <div>VANTI<span>X</span></div>
     </a>
     <div class="tabs">
-        <a href="index.html" class="tab ">Connect</a>
-        <a href="overview.html" class="tab ">Overview</a>
+        <a href="index.html" class="tab">Connect</a>
+        <a href="overview.html" class="tab">Overview</a>
         <a href="store.html" class="tab active">My Store</a>
-        <a href="competitors.html" class="tab ">Competitors</a>
-        <a href="terminal.html" class="tab ">Terminal</a>
-        <a href="discovery.html" class="tab ">Discovery</a>
-        <a href="alerts.html" class="tab ">Alerts</a>
-        <a href="inventory.html" class="tab ">Inventory</a>
-        <a href="membership.html" class="tab ">Membership</a>
-        <a href="settings.html" class="tab ">Settings</a>
-        
+        <a href="competitors.html" class="tab">Competitors</a>
+        <a href="terminal.html" class="tab">Terminal</a>
+        <a href="discovery.html" class="tab">Discovery</a>
+        <a href="alerts.html" class="tab">Alerts</a>
+        <a href="inventory.html" class="tab">Inventory</a>
+        <a href="membership.html" class="tab">Membership</a>
+        <a href="settings.html" class="tab">Settings</a>
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
         <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">loading...</div>
@@ -55,118 +53,165 @@
     </div>
 </div>
 
-<div class="screen">
-    <div style="max-width: 1100px; margin: 0 auto; padding-top: 20px;">
-        
-        <!-- HEADER -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-            <div>
-                <div class="screen-title" style="margin-bottom: 4px;" id="store-name">Loading Store...</div>
-                <div class="screen-sub" id="store-domain" style="margin-bottom: 0;">loading...</div>
-            </div>
-            <img id="store-avatar" src="" style="width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--border);">
-        </div>
+<div class="screen st-screen">
+    <div class="st-wrap">
 
-        <!-- TOP KPIs -->
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
-            <div class="kpi-card">
-                <div class="kpi-label">Revenue (30d)</div>
-                <div class="kpi-value" id="kpi-revenue">$0.00</div>
+        <!-- ROW A: STORE IDENTITY -->
+        <div class="st-header-row">
+            <div class="st-identity">
+                <div class="st-monogram" id="store-monogram">··</div>
+                <div>
+                    <div class="st-eyebrow">MY STORE</div>
+                    <h1 class="st-title" id="store-name">Loading store…</h1>
+                    <div class="st-domain" id="store-domain">connecting…</div>
+                </div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Orders (30d)</div>
-                <div class="kpi-value" id="kpi-orders">0</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Avg Order Value</div>
-                <div class="kpi-value" id="kpi-aov">$0.00</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Abandoned Carts</div>
-                <div class="kpi-value text-amber" id="kpi-abandoned">$0.00</div>
+            <div class="st-status-group">
+                <div class="st-chip" id="st-shopify-status">Shopify: checking…</div>
+                <div class="st-chip" id="st-last-synced">Updated: —</div>
             </div>
         </div>
 
-        <!-- MAIN GRID -->
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px;">
-            <div>
-                <div class="panel" style="margin-bottom: 24px;">
-                    <div class="panel-header">Revenue — Last 30 Days</div>
-                    <div style="height: 250px;">
-                        <canvas id="revenueChart"></canvas>
+        <!-- ROW B: 5 KPI CARDS -->
+        <div class="st-kpi-grid">
+            <div class="st-kpi">
+                <div class="st-kpi-label">Revenue (30d)</div>
+                <div class="st-kpi-value" id="kpi-revenue">—</div>
+                <div class="st-kpi-meta">Gross from orders</div>
+            </div>
+            <div class="st-kpi">
+                <div class="st-kpi-label">Net Profit (30d)</div>
+                <div class="st-kpi-value st-green" id="kpi-net-profit">—</div>
+                <div class="st-kpi-meta">Revenue − COGS</div>
+            </div>
+            <div class="st-kpi">
+                <div class="st-kpi-label">Orders (30d)</div>
+                <div class="st-kpi-value" id="kpi-orders">—</div>
+                <div class="st-kpi-meta">Real order count</div>
+            </div>
+            <div class="st-kpi">
+                <div class="st-kpi-label">Avg Order Value</div>
+                <div class="st-kpi-value" id="kpi-aov">—</div>
+                <div class="st-kpi-meta">Revenue / orders</div>
+            </div>
+            <div class="st-kpi">
+                <div class="st-kpi-label">Abandoned Carts</div>
+                <div class="st-kpi-value st-amber" id="kpi-abandoned">—</div>
+                <div class="st-kpi-meta">Recoverable value</div>
+            </div>
+        </div>
+
+        <!-- ROW C: CHART + TOP PRODUCTS -->
+        <div class="st-grid-2-1">
+            <div class="st-panel">
+                <div class="st-panel-head">
+                    <div>
+                        <div class="st-panel-title">Revenue — Last 30 Days</div>
+                        <div class="st-panel-sub">Shopify order totals</div>
                     </div>
+                    <div class="st-badge">LIVE DATA</div>
+                </div>
+                <div class="st-chart-wrap">
+                    <canvas id="revenueChart"></canvas>
                 </div>
             </div>
-            <div>
-                <div class="panel" style="margin-bottom: 24px;">
-                    <div class="panel-header">Top Selling Products</div>
-                    <div id="top-products-list">
-                        <div class="text-tertiary" style="padding: 20px 0; text-align: center;">Loading...</div>
+
+            <div class="st-panel">
+                <div class="st-panel-head">
+                    <div>
+                        <div class="st-panel-title">Top Selling Products</div>
+                        <div class="st-panel-sub">By revenue, last 30 days</div>
                     </div>
+                    <a href="inventory.html" class="st-link">Inventory →</a>
+                </div>
+                <div id="top-products-list" class="st-list">
+                    <div class="st-empty">Loading products…</div>
                 </div>
             </div>
         </div>
 
-        <!-- PROFIT ENGINE PANELS (FEATURES 1-4) -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
-            <div class="panel" style="border-color: rgba(255, 170, 0, 0.4); background: linear-gradient(180deg, rgba(255,170,0,0.05), transparent);">
-                <div class="panel-header" style="color: var(--amber);">💰 Abandoned Cart ROI</div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">Money sitting on the table. Send a recovery message.</div>
-                <div id="carts-list"></div>
-            </div>
-
-            <div class="panel" style="border-color: rgba(255, 34, 102, 0.4); background: linear-gradient(180deg, rgba(255,34,102,0.05), transparent);">
-                <div class="panel-header" style="color: var(--red);">🪤 Dead Stock Cash Trap</div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">Cash trapped in inventory that hasn't sold in 60 days.</div>
-                <div id="dead-stock-list"></div>
-            </div>
-
-            <div class="panel" style="border-color: rgba(139, 127, 255, 0.4); background: linear-gradient(180deg, rgba(139,127,255,0.05), transparent);">
-                <div class="panel-header" style="color: var(--violet); display: flex; justify-content: space-between;">
-                    <div>📦 AOV Bundle Suggester</div><div class="badge badge-violet">AI</div>
+        <!-- ROW D: 4 PROFIT ENGINE PANELS -->
+        <div class="st-grid-2-2">
+            <div class="st-panel st-panel-amber">
+                <div class="st-panel-head">
+                    <div>
+                        <div class="st-panel-title">Abandoned Cart ROI</div>
+                        <div class="st-panel-sub">Money sitting on the table</div>
+                    </div>
+                    <div class="st-badge st-badge-amber">RECOVER</div>
                 </div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">Bundle products customers already buy together.</div>
-                <div id="bundle-container"></div>
+                <div id="carts-list" class="st-list">
+                    <div class="st-empty">Loading abandoned carts…</div>
+                </div>
             </div>
 
-            <div class="panel" style="border-color: rgba(0, 229, 255, 0.4); background: linear-gradient(180deg, rgba(0,229,255,0.05), transparent);">
-                <div class="panel-header" style="color: var(--accent); display: flex; justify-content: space-between;">
-                    <div>👑 VIP Customer LTV</div><div class="badge badge-green">Top 10%</div>
+            <div class="st-panel st-panel-red">
+                <div class="st-panel-head">
+                    <div>
+                        <div class="st-panel-title">Dead Stock Cash Trap</div>
+                        <div class="st-panel-sub">Cash stuck in slow inventory</div>
+                    </div>
+                    <div class="st-badge st-badge-red">CASH TRAPPED</div>
                 </div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">Your highest-spending customers. Target them with VIP offers.</div>
-                <div id="ltv-list"></div>
+                <div id="dead-stock-list" class="st-list">
+                    <div class="st-empty">Analyzing inventory…</div>
+                </div>
+            </div>
+
+            <div class="st-panel st-panel-violet">
+                <div class="st-panel-head">
+                    <div>
+                        <div class="st-panel-title">AOV Bundle Suggester</div>
+                        <div class="st-panel-sub">Products bought together</div>
+                    </div>
+                    <div class="st-badge st-badge-violet">AI</div>
+                </div>
+                <div id="bundle-container">
+                    <div class="st-empty">Analyzing order history…</div>
+                </div>
+            </div>
+
+            <div class="st-panel st-panel-cyan">
+                <div class="st-panel-head">
+                    <div>
+                        <div class="st-panel-title">VIP Customer LTV</div>
+                        <div class="st-panel-sub">Highest-spending customers</div>
+                    </div>
+                    <div class="st-badge st-badge-cyan">TOP 10%</div>
+                </div>
+                <div id="ltv-list" class="st-list">
+                    <div class="st-empty">Loading VIP customers…</div>
+                </div>
             </div>
         </div>
 
-        <!-- BOTTOM GRID: LOW STOCK & CUSTOMER SEGMENTS -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-            <div class="panel">
-                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>⚠️ Low Stock Alerts</div>
-                    <div class="badge badge-red">Restock Now</div>
+        <!-- ROW E: LOW STOCK + CUSTOMER STATS (HONEST) -->
+        <div class="st-grid-2-2">
+            <div class="st-panel">
+                <div class="st-panel-head">
+                    <div>
+                        <div class="st-panel-title">Low Stock Alerts</div>
+                        <div class="st-panel-sub">Items under 15 units</div>
+                    </div>
+                    <div class="st-badge st-badge-red">RESTOCK</div>
                 </div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">These items have less than 15 units left.</div>
-                <div id="low-stock-list"></div>
+                <div id="low-stock-list" class="st-list">
+                    <div class="st-empty">Loading stock…</div>
+                </div>
             </div>
 
-            <div class="panel">
-                <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>👥 Customer Segments</div>
-                    <div class="badge badge-green">Shopify Customers</div>
-                </div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">Breakdown of your New vs Returning buyers.</div>
-                <div style="height: 180px; display: flex; justify-content: center; align-items: center; position: relative;">
-                    <canvas id="customerChart"></canvas>
-                </div>
-                <div style="display: flex; justify-content: center; gap: 24px; margin-top: 12px;">
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--green);"></div>
-                        <span style="font-size: 11px; color: var(--text-secondary);">Returning</span>
+            <div class="st-panel">
+                <div class="st-panel-head">
+                    <div>
+                        <div class="st-panel-title">Customer Snapshot</div>
+                        <div class="st-panel-sub">What we can prove from your customer data</div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent);"></div>
-                        <span style="font-size: 11px; color: var(--text-secondary);">New</span>
-                    </div>
+                </div>
+                <div id="customer-snapshot" class="st-list">
+                    <div class="st-empty">Loading customer data…</div>
+                </div>
+                <div class="st-note">
+                    Full New vs Returning segmentation requires Shopify Analytics access, which is not yet connected. This panel shows only verified customer data.
                 </div>
             </div>
         </div>
@@ -174,7 +219,7 @@
     </div>
 </div>
 
-<script src="js/app.js?v=2050"></script>
-<script src="js/store.js?v=2020"></script>
+<script src="js/app.js?v=2052"></script>
+<script src="js/store.js?v=2052"></script>
 </body>
 </html>
