@@ -29,7 +29,7 @@ async function fetchCompetitors() {
         
         list.innerHTML = allCompetitors.map(c => `
             <div class="cmp-product-row">
-                <img class="cmp-avatar" src="https://ui-avatars.com/api/?name=${cmpEsc(c.domain)}&background=111519&color=00D9F5&bold=true" alt="">
+                <img class="cmp-avatar" src="https://ui-avatars.com/api/?name=${cmpEsc(c.domain)}&background=FFFFFF&color=0284C7&bold=true" alt="">
                 <div class="cmp-row-body">
                     <div class="cmp-row-title">${cmpEsc(c.domain)}</div>
                     <div class="cmp-row-meta">Tracking active</div>
@@ -120,7 +120,7 @@ async function loadCompetitorIntel() {
                         <div class="cmp-row-title">${cmpEsc(p.title)}</div>
                         <div class="cmp-row-meta">${cmpEsc(p.store)}</div>
                     </div>
-                    <div class="cmp-row-price cmp-text-amber">$${p.price}</div>
+                    <div class="cmp-row-price cmp-text-amber">${Number(p.price).toFixed(2)}</div>
                 </div>
             `).join('');
         } else { 
@@ -136,7 +136,7 @@ async function loadCompetitorIntel() {
                         <div class="cmp-row-title">${cmpEsc(p.title)}</div>
                         <div class="cmp-row-meta">${cmpEsc(p.store)} • ${p.date}</div>
                     </div>
-                    <div class="cmp-row-price cmp-text-green">$${p.price}</div>
+                    <div class="cmp-row-price cmp-text-green">${Number(p.price).toFixed(2)}</div>
                 </div>
             `).join('');
         } else { 
@@ -172,3 +172,4 @@ async function loadCatalogGaps() {
         list.innerHTML = '<div class="cmp-empty cmp-text-red" style="grid-column: span 2;">Failed to load gaps.</div>'; 
     }
 }
+
