@@ -7,21 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-    .alert-card {
-        background: var(--bg-surface); border: 1px solid var(--border);
-        border-radius: var(--r-card); padding: 16px; position: relative;
-        overflow: hidden; margin-bottom: 12px;
-    }
-    .alert-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; }
-    .alert-card.price-drop::before { background: var(--red); }
-    .alert-card.stock-out::before { background: var(--green); }
-    .alert-card.ai-insight::before { background: var(--violet); }
-    .alert-card.default::before { background: var(--border-strong); }
-    .alert-time { font-size: 10px; font-family: var(--font-mono); color: var(--text-tertiary); margin-bottom: 8px; }
-    .alert-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
-    .alert-body { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
-</style>
 </head>
 <body>
 
@@ -31,17 +16,16 @@
         <div class="brand"><div>VANTI<span>X</span></div></div>
         <button class="drawer-close" onclick="toggleMenu()">✕</button>
     </div>
-    <a href="index.html" class="drawer-tab ">Connect</a>
-    <a href="overview.html" class="drawer-tab ">Overview</a>
-    <a href="store.html" class="drawer-tab ">My Store</a>
-    <a href="competitors.html" class="drawer-tab ">Competitors</a>
-    <a href="terminal.html" class="drawer-tab ">Terminal</a>
-    <a href="discovery.html" class="drawer-tab ">Discovery</a>
+    <a href="index.html" class="drawer-tab">Connect</a>
+    <a href="overview.html" class="drawer-tab">Overview</a>
+    <a href="store.html" class="drawer-tab">My Store</a>
+    <a href="competitors.html" class="drawer-tab">Competitors</a>
+    <a href="terminal.html" class="drawer-tab">Terminal</a>
+    <a href="discovery.html" class="drawer-tab">Discovery</a>
     <a href="alerts.html" class="drawer-tab active">Alerts</a>
-    <a href="inventory.html" class="drawer-tab ">Inventory</a>
-    <a href="membership.html" class="drawer-tab ">Membership</a>
-    <a href="settings.html" class="drawer-tab ">Settings</a>
-    
+    <a href="inventory.html" class="drawer-tab">Inventory</a>
+    <a href="membership.html" class="drawer-tab">Membership</a>
+    <a href="settings.html" class="drawer-tab">Settings</a>
 </div>
 
 <div class="header">
@@ -50,17 +34,16 @@
         <div>VANTI<span>X</span></div>
     </a>
     <div class="tabs">
-        <a href="index.html" class="tab ">Connect</a>
-        <a href="overview.html" class="tab ">Overview</a>
-        <a href="store.html" class="tab ">My Store</a>
-        <a href="competitors.html" class="tab ">Competitors</a>
-        <a href="terminal.html" class="tab ">Terminal</a>
-        <a href="discovery.html" class="tab ">Discovery</a>
+        <a href="index.html" class="tab">Connect</a>
+        <a href="overview.html" class="tab">Overview</a>
+        <a href="store.html" class="tab">My Store</a>
+        <a href="competitors.html" class="tab">Competitors</a>
+        <a href="terminal.html" class="tab">Terminal</a>
+        <a href="discovery.html" class="tab">Discovery</a>
         <a href="alerts.html" class="tab active">Alerts</a>
-        <a href="inventory.html" class="tab ">Inventory</a>
-        <a href="membership.html" class="tab ">Membership</a>
-        <a href="settings.html" class="tab ">Settings</a>
-        
+        <a href="inventory.html" class="tab">Inventory</a>
+        <a href="membership.html" class="tab">Membership</a>
+        <a href="settings.html" class="tab">Settings</a>
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
         <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">loading...</div>
@@ -71,24 +54,18 @@
 
 <div class="screen">
     <div style="max-width: 1100px; margin: 0 auto; padding-top: 20px;">
+        
         <div class="screen-title">Alerts Feed</div>
         <div class="screen-sub">Automated competitor monitoring & AI insights</div>
 
-        <div id="alerts-container">
-            <div class="text-tertiary" style="text-align: center; padding: 40px;">
-                <span style="display:inline-block; width:20px; height:20px; border:2px solid var(--accent); border-top-color:transparent; border-radius:50%; animation: spin 1s linear infinite;"></span>
-                <div style="margin-top: 12px;">Loading alert history...</div>
-            </div>
+        <div id="alerts-container" style="margin-top: 24px; display: flex; flex-direction: column; gap: 12px;">
+            <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 20px;">Loading alerts...</div>
         </div>
+
     </div>
 </div>
 
-<style>
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-</style>
-
-<script src="js/app.js?v=2050"></script>
-<script src="js/alerts.js?v=1100"></script>
+<script src="js/app.js?v=2051"></script>
+<script src="js/alerts.js?v=2051"></script>
 </body>
 </html>
-
