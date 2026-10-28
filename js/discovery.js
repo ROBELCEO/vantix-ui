@@ -101,7 +101,7 @@ async function loadDiscovery(category = '') {
 
     } catch(e) {
         console.error("Discovery error:", e);
-        container.innerHTML = '<div class="text-red" style="text-align: center; padding: 40px;">Failed to load intelligence.</div>';
+        container.innerHTML = `<div class="text-red" style="text-align: center; padding: 40px;">Failed: ${e.message}</div>`;
     }
 }
 
@@ -149,5 +149,6 @@ window.addEventListener('load', () => {
         setTimeout(() => loadDiscovery(''), 500);
     }
 });
+
 
 
