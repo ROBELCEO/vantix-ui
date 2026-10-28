@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Login</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2079">
+<link rel="stylesheet" href="css/style.css?v=2080">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
     :root {
@@ -18,23 +18,27 @@
         --green: #00FF88;
         --red: #FF2266;
         --violet: #8B7FFF;
-        --amber: #FFAA00;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    /* FORCE BODY TO BE A FIXED GRID */
     body {
         background-color: var(--bg);
         color: var(--text);
         font-family: 'Inter', sans-serif;
         height: 100vh;
-        display: flex;
-        overflow: hidden;
+        width: 100vw;
+        overflow: hidden; /* Kill page-level scrolling */
+        display: grid;
+        grid-template-columns: 1.2fr 1fr; /* 2 columns */
     }
 
     /* LEFT SIDE - CHAT */
     .chat-container {
-        flex: 1.2;
         display: flex;
         flex-direction: column;
+        height: 100%;
+        overflow: hidden; /* Contain the chat inside this column */
         border-right: 1px solid var(--border);
         background-image: 
             linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
@@ -49,13 +53,10 @@
         align-items: center;
         gap: 12px;
         background: var(--panel);
+        flex-shrink: 0; /* Prevent header from shrinking */
     }
     .chat-header svg { width: 28px; height: 28px; }
-    .chat-header-title {
-        font-size: 14px;
-        font-weight: 800;
-        letter-spacing: 1px;
-    }
+    .chat-header-title { font-size: 14px; font-weight: 800; letter-spacing: 1px; }
     .chat-header-title span { color: var(--cyan); }
     .chat-status {
         margin-left: auto;
@@ -75,9 +76,10 @@
         box-shadow: 0 0 10px var(--green);
     }
 
+    /* THE CRITICAL FIX: flex: 1 + height: 0 forces the chat to scroll inside */
     .chat-messages {
         flex: 1;
-        min-height: 0; /* CRITICAL FIX: Stops the chat from pushing the right side */
+        height: 0; 
         padding: 32px;
         overflow-y: auto;
         display: flex;
@@ -88,7 +90,7 @@
 
     /* Message Bubbles */
     .msg {
-        display: none; /* Hidden by default, JS reveals them */
+        display: none;
         flex-direction: column;
         gap: 6px;
         max-width: 85%;
@@ -96,20 +98,9 @@
         transform: translateY(10px);
         transition: opacity 0.4s ease, transform 0.4s ease;
     }
-    .msg.show {
-        display: flex;
-        opacity: 1;
-        transform: translateY(0);
-    }
-    
-    .msg-sender {
-        font-size: 10px;
-        font-family: 'JetBrains Mono', monospace;
-        color: var(--text2);
-        text-transform: uppercase;
-    }
+    .msg.show { display: flex; opacity: 1; transform: translateY(0); }
+    .msg-sender { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--text2); text-transform: uppercase; }
     .msg-sender.system { color: var(--cyan); }
-    
     .msg-bubble {
         background: var(--panel);
         border: 1px solid var(--border);
@@ -120,65 +111,35 @@
     }
     .msg-bubble strong { color: #fff; }
 
-    /* Mock UI Images inside Chat */
-    .mock-ui {
-        border: 1px solid var(--border);
-        background: #000;
-        padding: 12px;
-        margin-top: 8px;
-    }
+    /* Mock UI */
+    .mock-ui { border: 1px solid var(--border); background: #000; padding: 12px; margin-top: 8px; }
     .mock-header {
-        display: flex;
-        justify-content: space-between;
-        font-size: 9px;
-        font-family: 'JetBrains Mono', monospace;
-        text-transform: uppercase;
-        font-weight: 800;
-        margin-bottom: 8px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid var(--border);
+        display: flex; justify-content: space-between; font-size: 9px;
+        font-family: 'JetBrains Mono', monospace; text-transform: uppercase; font-weight: 800;
+        margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
     }
-    .mock-row {
-        display: flex;
-        justify-content: space-between;
-        font-size: 11px;
-        margin-bottom: 4px;
-    }
+    .mock-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
     .mock-val { font-family: 'JetBrains Mono', monospace; font-weight: 800; }
 
     /* Typing Indicator */
     .typing-indicator {
-        display: none;
-        gap: 4px;
-        padding: 12px 16px;
-        background: var(--panel);
-        border: 1px solid var(--border);
-        width: fit-content;
+        display: none; gap: 4px; padding: 12px 16px;
+        background: var(--panel); border: 1px solid var(--border); width: fit-content;
     }
     .typing-indicator.show { display: flex; }
-    .typing-dot {
-        width: 6px;
-        height: 6px;
-        background: var(--text2);
-        border-radius: 50%;
-        animation: typing 1.4s infinite ease-in-out both;
-    }
+    .typing-dot { width: 6px; height: 6px; background: var(--text2); border-radius: 50%; animation: typing 1.4s infinite ease-in-out both; }
     .typing-dot:nth-child(1) { animation-delay: -0.32s; }
     .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-    @keyframes typing {
-        0%, 80%, 100% { transform: scale(0); }
-        40% { transform: scale(1); }
-    }
+    @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
     /* RIGHT SIDE - LOGIN */
     .login-container {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        height: 100%;
+        display: grid;
+        place-items: center; /* Dead center, always */
         padding: 40px;
+        overflow-y: auto; /* If screen is too short, scroll the login container */
         background: var(--bg);
-        overflow-y: auto; /* Allows login box to scroll if screen is too short */
     }
     
     .login-box {
@@ -188,95 +149,36 @@
         border: 1px solid var(--border);
         padding: 40px;
     }
-    
-    .login-box h1 {
-        font-size: 22px;
-        font-weight: 900;
-        margin-bottom: 8px;
-    }
-    .login-box p {
-        font-size: 13px;
-        color: var(--text2);
-        margin-bottom: 32px;
-        line-height: 1.5;
-    }
+    .login-box h1 { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
+    .login-box p { font-size: 13px; color: var(--text2); margin-bottom: 32px; line-height: 1.5; }
 
     .google-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        width: 100%;
-        height: 48px;
-        background: #FFFFFF;
-        color: #000000;
-        border: none;
-        font-family: 'Inter', sans-serif;
-        font-size: 13px;
-        font-weight: 800;
-        cursor: pointer;
-        transition: all 0.2s;
+        display: flex; align-items: center; justify-content: center; gap: 12px;
+        width: 100%; height: 48px; background: #FFFFFF; color: #000000;
+        border: none; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 800;
+        cursor: pointer; transition: all 0.2s;
     }
-    .google-btn:hover { 
-        background: var(--cyan);
-        box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
-    }
+    .google-btn:hover { background: var(--cyan); box-shadow: 0 0 20px rgba(0, 229, 255, 0.3); }
     .google-btn img { width: 18px; height: 18px; }
 
-    .error-msg {
-        color: var(--red);
-        font-size: 12px;
-        margin-top: 16px;
-        display: none;
-        font-weight: 600;
-    }
+    .error-msg { color: var(--red); font-size: 12px; margin-top: 16px; display: none; font-weight: 600; }
 
+    /* Mobile View */
     @media (max-width: 900px) {
         body { 
-            flex-direction: column; 
-            height: auto; 
-            overflow-y: auto; 
+            grid-template-columns: 1fr; 
+            grid-template-rows: 60vh 40vh; /* Chat gets 60%, Login gets 40% */
+            overflow: hidden;
         }
-        .chat-container { 
-            border-right: none; 
-            border-bottom: 1px solid var(--border); 
-            height: 50vh; 
-            min-height: 400px;
-        }
+        .chat-container { border-right: none; border-bottom: 1px solid var(--border); }
         .chat-messages { padding: 16px; }
-        .login-container { 
-            min-height: 50vh; 
-            padding: 40px 20px; 
-        }
-        .msg { max-width: 100%; }
-    }
-        .login-container {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 40px;
-        background: var(--bg);
-        overflow-y: auto; /* Allows login box to scroll if screen is too short */
-    }
-        .msg { max-width: 100%; }
-    }
-        .login-container {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 40px;
-        background: var(--bg);
-        overflow-y: auto; /* Allows login box to scroll if screen is too short */
-    }
+        .login-container { padding: 24px; }
         .msg { max-width: 100%; }
     }
 </style>
 </head>
 <body>
 
-    <!-- LEFT SIDE - CHAT ONBOARDING -->
     <div class="chat-container">
         <div class="chat-header">
             <svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg>
@@ -331,7 +233,6 @@
                 </div>
             </div>
 
-            <!-- Typing Indicator -->
             <div class="typing-indicator" id="typing">
                 <div class="typing-dot"></div>
                 <div class="typing-dot"></div>
@@ -340,7 +241,6 @@
         </div>
     </div>
 
-    <!-- RIGHT SIDE - LOGIN -->
     <div class="login-container">
         <div class="login-box">
             <h1>Secure Login</h1>
@@ -363,14 +263,10 @@
     const chatStatus = document.querySelector('.chat-status');
 
     function scrollToBottom() {
-        chatBox.scrollTo({
-            top: chatBox.scrollHeight,
-            behavior: 'smooth'
-        });
+        chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
     }
 
     async function playChatSequence() {
-        // Initial delay
         await new Promise(r => setTimeout(r, 800));
         chatStatus.innerText = "ONLINE";
 
@@ -378,26 +274,16 @@
             const msgId = messages[i];
             const msgEl = document.getElementById('msg-' + msgId);
             
-            // Show typing indicator
             typingIndicator.classList.add('show');
             scrollToBottom();
-
-            // Wait for "typing" duration based on message length
             await new Promise(r => setTimeout(r, 1200 + (i * 200)));
-
-            // Hide typing indicator, show message
             typingIndicator.classList.remove('show');
             msgEl.classList.add('show');
-            
-            // Scroll to bottom to show the new message
             scrollToBottom();
-
-            // Pause before next message
             await new Promise(r => setTimeout(r, 1500));
         }
     }
 
-    // Start chat on load
     window.addEventListener('load', playChatSequence);
 
     // --- 2. SUPABASE AUTH LOGIC ---
@@ -427,10 +313,7 @@
 
                 const { data, error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
-                    options: {
-                        redirectTo: 'https://robelceo.github.io/vantix-ui/index.html',
-                        skipBrowserRedirect: false
-                    }
+                    options: { redirectTo: 'https://robelceo.github.io/vantix-ui/index.html' }
                 });
 
                 if (error) throw error;
@@ -446,8 +329,3 @@
 </script>
 </body>
 </html>
-
-
-
-
-
