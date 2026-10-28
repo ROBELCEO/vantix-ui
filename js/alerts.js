@@ -42,7 +42,6 @@ async function loadAlerts() {
             const title = alrtEsc(a.title || "Alert");
             const body = alrtEsc(a.body || "");
 
-            // Severity detection based on title keywords (same as Overview page)
             const titleLower = (a.title || "").toLowerCase();
             let severityClass = "alrt-alert-amber";
             let icon = "⚡";
