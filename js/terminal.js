@@ -107,14 +107,14 @@ function renderChart(product) {
     let datasets = [{
         label: 'Your Price',
         data: myPriceData,
-        borderColor: '#00D9A0',
+        borderColor: '#059669',
         borderWidth: 2,
         tension: 0,
         pointRadius: 0
     }];
 
     if (product.competitor_matches && product.competitor_matches.length > 0) {
-        const colors = ['#FF4267', '#FFB454', '#A78BFA'];
+        const colors = ['#E11D48', '#D97706', '#6D28D9'];
         product.competitor_matches.slice(0, 3).forEach((match, i) => {
             const compPrice = Number(match.comp_price);
             const compData = [compPrice, compPrice, compPrice, compPrice];
@@ -126,7 +126,7 @@ function renderChart(product) {
                 borderWidth: 2,
                 tension: 0.4,
                 pointRadius: 2,
-                pointBackgroundColor: '#000',
+                pointBackgroundColor: '#FFFFFF',
                 pointBorderColor: colors[i % colors.length],
                 pointBorderWidth: 2
             });
@@ -138,10 +138,10 @@ function renderChart(product) {
         data: { labels: dates, datasets: datasets },
         options: {
             responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: true, labels: { color: '#A0A9B2', font: { size: 10 } } } },
+            plugins: { legend: { display: true, labels: { color: '#4B5563', font: { size: 10 } } } },
             scales: {
-                y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#697580', font: { size: 10 } } },
-                x: { grid: { display: false }, ticks: { color: '#697580', font: { size: 10 } } }
+                y: { grid: { color: '#E5E7EB' }, ticks: { color: '#6B7280', font: { size: 10 } } },
+                x: { grid: { display: false }, ticks: { color: '#6B7280', font: { size: 10 } } }
             }
         }
     });
@@ -248,9 +248,9 @@ async function fetchAIAdvice(productName) {
         const data = await res.json();
         if(data.status === "success") {
             div.innerHTML = `
-                <div class="trm-advice-box" style="border-left-color: var(--ov-violet);">
-                    <div style="font-size: 10px; text-transform: uppercase; color: var(--ov-muted); margin-bottom: 6px;">Groq Analysis</div>
-                    <div style="font-size: 13px; line-height: 1.6; color: var(--ov-text);">${trmEsc(data.advice)}</div>
+                <div class="trm-advice-box" style="border-left-color: #6D28D9;">
+                    <div style="font-size: 10px; text-transform: uppercase; color: #9CA3AF; margin-bottom: 6px;">Groq Analysis</div>
+                    <div style="font-size: 13px; line-height: 1.6; color: #111827;">${trmEsc(data.advice)}</div>
                 </div>
             `;
         }
@@ -258,3 +258,4 @@ async function fetchAIAdvice(productName) {
         div.innerHTML = `<div class="trm-empty trm-text-red">Backend asleep. Try again.</div>`;
     }
 }
+
