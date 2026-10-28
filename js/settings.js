@@ -1,12 +1,39 @@
-﻿document.addEventListener('DOMContentLoaded', async () => {
-    const emailInput = document.getElementById('settings-email');
-    if(!emailInput) return;
+﻿async function loadProfile() {
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/auth/profile');
+        if (!res.ok) return;
+        const data = await res.json();
 
-    const { data: { session } } = await window.supabaseClient.auth.getSession();
-    if (session) {
-        emailInput.value = session.user.email;
+        document.getElementById('settings-email').innerText = data.email;
+        
+        const planBadge = document.getElementById('settings-plan');
+        planBadge.innerText = data.plan.toUpperCase();
+        if (data.plan === 'pro') planBadge.className = "badge badge-green";
+        else if (data.plan === 'scale') planBadge.className = "badge badge-violet";
+        else planBadge.className = "badge badge-amber";
+
+        const shopEl = document.getElementById('settings-shopify');
+        if (data.shopify_connected) {
+            shopEl.innerText = data.shopify_domain;
+            shopEl.style.color = "var(--green)";
+        } else {
+            shopEl.innerText = "Not Connected";
+            shopEl.style.color = "var(--red)";
+        }
+
+        const teleEl = document.getElementById('settings-telegram');
+        if (data.telegram_linked) {
+            teleEl.innerText = "Connected & Active";
+            teleEl.style.color = "var(--green)";
+        } else {
+            teleEl.innerText = "Not Linked";
+            teleEl.style.color = "var(--red)";
+        }
+
+    } catch(e) {
+        console.error("Failed to load profile", e);
     }
-});
+}
 
 async function confirmDelete() {
     const confirmation = prompt("WARNING: This will permanently delete your account and all data.\n\nType 'DELETE' to confirm.");

@@ -53,27 +53,53 @@
 </div>
 
 <div class="screen">
-    <div style="max-width: 600px; margin: 0 auto;">
+    <div style="max-width: 700px; margin: 0 auto;">
         <div class="screen-title">Account Settings</div>
-        <div class="screen-sub">Manage your Vantix account</div>
+        <div class="screen-sub">Manage your profile, integrations, and preferences.</div>
 
         <!-- PROFILE -->
-        <div class="panel">
-            <div class="panel-header">Profile Information</div>
-            <div class="form-group">
-                <label class="form-label">Email Address</label>
-                <input type="text" id="settings-email" class="form-input" disabled style="opacity: 0.7;">
+        <div class="panel" style="margin-bottom: 24px;">
+            <div class="panel-header">👤 Profile Information</div>
+            <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                <div style="font-size: 13px; color: var(--text-secondary);">Email</div>
+                <div class="mono" id="settings-email" style="font-size: 13px;">Loading...</div>
             </div>
-            <button onclick="logOut()" class="btn btn-secondary" style="width: 100%;">Sign Out</button>
+            <div style="display: flex; justify-content: space-between; padding: 12px 0;">
+                <div style="font-size: 13px; color: var(--text-secondary);">Current Plan</div>
+                <div class="badge badge-violet" id="settings-plan">...</div>
+            </div>
+        </div>
+
+        <!-- INTEGRATIONS -->
+        <div class="panel" style="margin-bottom: 24px;">
+            <div class="panel-header">🔗 Integrations</div>
+            
+            <!-- Shopify Status -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                <div>
+                    <div style="font-size: 14px; font-weight: 700;">Shopify Store</div>
+                    <div class="text-tertiary" style="font-size: 11px;" id="settings-shopify">Checking...</div>
+                </div>
+                <a href="index.html" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;">Manage</a>
+            </div>
+
+            <!-- Telegram Status -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                <div>
+                    <div style="font-size: 14px; font-weight: 700;">Telegram Bot</div>
+                    <div class="text-tertiary" style="font-size: 11px;" id="settings-telegram">Checking...</div>
+                </div>
+                <a href="index.html" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;">Manage</a>
+            </div>
         </div>
 
         <!-- DANGER ZONE -->
-        <div class="panel" style="border-color: rgba(255, 34, 102, 0.4); background: linear-gradient(180deg, rgba(255, 34, 102, 0.05), var(--panel));">
-            <div class="panel-header" style="color: var(--red);">Danger Zone</div>
+        <div class="panel" style="border-color: rgba(255, 34, 102, 0.4); background: linear-gradient(180deg, rgba(255,34,102,0.05), transparent);">
+            <div class="panel-header" style="color: var(--red);">⚠️ Danger Zone</div>
             <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">
                 Once you delete your account, there is no going back. All your connected stores, competitors, alerts, and data will be permanently erased.
             </p>
-            <button onclick="confirmDelete()" class="btn" style="width: 100%; background: var(--red); color: #fff;" id="delete-btn">
+            <button id="delete-btn" class="btn" style="width: 100%; background: var(--red); color: #fff;" onclick="confirmDelete()">
                 Delete Account Permanently
             </button>
         </div>
@@ -81,7 +107,7 @@
     </div>
 </div>
 
-<script src="js/app.js?v=1100"></script>
-<script src="js/settings.js"></script>
+<script src="js/app.js?v=2043"></script>
+<script src="js/settings.js?v=2043"></script>
 </body>
 </html>
