@@ -99,8 +99,8 @@ function renderRevenueChart(chartData) {
 
     const ctx = canvas.getContext("2d");
     const gradient = ctx.createLinearGradient(0, 0, 0, 260);
-    gradient.addColorStop(0, "rgba(0, 217, 245, 0.18)");
-    gradient.addColorStop(1, "rgba(0, 217, 245, 0)");
+    gradient.addColorStop(0, "rgba(2, 132, 199, 0.15)");
+    gradient.addColorStop(1, "rgba(2, 132, 199, 0)");
 
     revChartInstance = new Chart(ctx, {
         type: "line",
@@ -109,7 +109,7 @@ function renderRevenueChart(chartData) {
             datasets: [{
                 label: "Revenue",
                 data,
-                borderColor: "#00D9F5",
+                borderColor: "#0284C7",
                 backgroundColor: gradient,
                 borderWidth: 2,
                 tension: 0.35,
@@ -122,8 +122,8 @@ function renderRevenueChart(chartData) {
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                x: { grid: { display: false }, ticks: { color: "#697580", font: { size: 10 } } },
-                y: { grid: { color: "#20262C" }, ticks: { color: "#697580", font: { size: 10 } } }
+                x: { grid: { display: false }, ticks: { color: "#6B7280", font: { size: 10 } } },
+                y: { grid: { color: "#E5E7EB" }, ticks: { color: "#6B7280", font: { size: 10 } } }
             }
         }
     });
@@ -302,3 +302,4 @@ async function loadCustomerLTV() {
         if (snapEl) snapEl.innerHTML = '<div class="st-empty">Failed to summarize customers.</div>';
     }
 }
+
