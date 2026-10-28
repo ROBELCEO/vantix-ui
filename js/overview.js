@@ -14,10 +14,6 @@ function ovSet(id, text) {
     const el = document.getElementById(id);
     if (el) el.innerText = text;
 }
-function ovSetClass(id, className) {
-    const el = document.getElementById(id);
-    if (el) el.className = className;
-}
 function ovEmpty(id, text) {
     const el = document.getElementById(id);
     if (el) el.innerHTML = `<div class="ov-empty">${text}</div>`;
@@ -68,34 +64,24 @@ async function loadOverview() {
 
         ovSet("ov-revenue", Number.isFinite(gross) ? ovMoney(gross) : "—");
         
-        // Handle missing Net Profit & Missing Fees
+        // Handle Missing Fees & Missing COGS
         const netEl = document.getElementById("ov-net-profit");
         const metaEl = document.getElementById("ov-net-profit-meta");
         const setupEl = document.getElementById("ov-net-profit-setup");
 
         if (kpis.profit_status === "MISSING_COGS") {
-            if (netEl) {
-                netEl.innerText = "MISSING";
-                netEl.style.color = "#E11D48";
-                netEl.style.fontSize = "16px";
-            }
+            if (netEl) { netEl.innerText = "MISSING"; netEl.style.color = "#E11D48"; netEl.style.fontSize = "16px"; }
             if (metaEl) metaEl.innerText = "COGS not set in Shopify";
             if (setupEl) setupEl.style.display = "none";
         } else if (kpis.profit_status === "MISSING_FEES") {
-            if (netEl) {
-                netEl.innerText = "—";
-                netEl.style.color = "#9CA3AF";
-            }
+            if (netEl) { netEl.innerText = "—"; netEl.style.color = "#9CA3AF"; netEl.style.fontSize = "24px"; }
             if (metaEl) metaEl.innerText = "Fees not configured";
-            if (setupEl) setupEl.style.display = "block"; // Force it to show
+            if (setupEl) setupEl.style.display = "block";
         } else {
-            if (netEl) {
-                netEl.style.fontSize = "24px";
-                netEl.style.color = "#059669";
-            }
+            if (netEl) { netEl.style.fontSize = "24px"; netEl.style.color = "#059669"; }
             if (metaEl) metaEl.innerText = "Revenue minus costs";
-            if (setupEl) setupEl.style.display = "none"; // Force it to hide
-            ovSet("ov-net-profit", Number.isFinite(net) ? ovMoney(net) : "$0.00");
+            if (setupEl) setupEl.style.display = "none";
+            ovSet("ov-net-profit", Number.isFinite(net) ? ovMoney(net) : "—");
         }
 
         ovSet("ov-orders", Number.isFinite(orders) ? ovNum(orders) : "—");
@@ -128,12 +114,14 @@ async function loadOverview() {
         renderChart(detailed.chart || { labels: [], data: [] });
         const dk = detailed.kpis || {};
         ovSet("ov-chart-revenue", Number.isFinite(Number(dk.total_revenue)) ? ovMoney(dk.total_revenue) : "—");
+        
         if (kpis && kpis.profit_status === "MISSING_COGS") {
             const cp = document.getElementById("ov-chart-profit");
-            if (cp) { cp.innerText = "MISSING"; cp.style.color = "var(--ov-red)"; }
+            if (cp) { cp.innerText = "MISSING"; cp.style.color = "#E11D48"; }
         } else {
             ovSet("ov-chart-profit", Number.isFinite(Number(dk.net_profit)) ? ovMoney(dk.net_profit) : "—");
         }
+        
         ovSet("ov-chart-orders", Number.isFinite(Number(dk.order_count)) ? ovNum(dk.order_count) : "—");
         renderTopProducts(detailed.top_products || []);
     } else {
@@ -226,7 +214,7 @@ function renderChart(chart) {
 
     const ctx = canvas.getContext("2d");
     const gradient = ctx.createLinearGradient(0, 0, 0, 260);
-    gradient.addColorStop(0, "rgba(2, 132, 199, 0.15)"); // Light mode cyan
+    gradient.addColorStop(0, "rgba(2, 132, 199, 0.15)");
     gradient.addColorStop(1, "rgba(2, 132, 199, 0)");
 
     ovChartInstance = new Chart(ctx, {
@@ -236,7 +224,7 @@ function renderChart(chart) {
             datasets: [{
                 label: "Revenue",
                 data,
-                borderColor: "#0284C7", // Light mode cyan
+                borderColor: "#0284C7",
                 backgroundColor: gradient,
                 borderWidth: 2,
                 tension: 0.35,
@@ -264,7 +252,3 @@ function escapeHtml(str) {
 function escapeAttr(str) {
     return escapeHtml(str).replace(/`/g, "&#96;");
 }
-
-
-
-
