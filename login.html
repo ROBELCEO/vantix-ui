@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Login</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2084">
+<link rel="stylesheet" href="css/style.css?v=2093">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
     :root {
-        --bg: #F8F9FA;
+        --bg: #EEF2F6;
         --panel: #FFFFFF;
-        --border: #E5E7EB;
-        --text: #111827;
-        --text2: #4B5563;
+        --border: #CBD5E1;
+        --text: #0F172A;
+        --text2: #334155;
         --cyan: #0284C7;
         --green: #059669;
         --red: #E11D48;
@@ -119,7 +119,7 @@
         font-size: 14px;
         line-height: 1.6;
         color: var(--text2);
-        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 2px 6px rgba(15,23,42,0.06);
     }
     .msg-bubble strong { color: var(--text); font-weight: 700; }
 
@@ -156,14 +156,19 @@
         display: grid !important;
         place-items: center !important; 
         padding: 40px;
-        background: var(--panel);
+        background: var(--bg);
     }
     
     .login-box {
-        width: 100%;
-        max-width: 380px;
-        text-align: center;
-    }
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(15,23,42,0.08);
+}
     .login-logo {
         width: 56px; height: 56px;
         background: #000000;
@@ -179,7 +184,7 @@
     .google-btn {
         display: flex; align-items: center; justify-content: center; gap: 12px;
         width: 100%; height: 50px; background: #FFFFFF; color: #111827;
-        border-radius: 6px; border: 1px solid #D1D5DB;
+        border-radius: 6px; border: 1px solid #94A3B8;
         font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700;
         cursor: pointer; transition: all 0.2s;
     }
@@ -355,4 +360,6 @@
 </script>
 </body>
 </html>
+
+
 

@@ -5821,3 +5821,161 @@ input:focus, .form-input:focus {
     .set-row-a { flex-direction: column; align-items: flex-start; }
     .set-grid-2 { grid-template-columns: 1fr; }
 }
+
+/* ==========================================
+   CONTRAST ENFORCEMENT — LIGHT MODE
+   Kills the washed-out look across all pages
+   ========================================== */
+
+/* 1. Higher contrast CSS variables */
+:root, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .alrt-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
+    --bg: #EEF2F6 !important;
+    --ov-bg: #EEF2F6 !important;
+    --panel: #FFFFFF !important;
+    --ov-panel: #FFFFFF !important;
+    --card: #F8FAFC !important;
+    --ov-card: #F8FAFC !important;
+    --elev: #F1F5F9 !important;
+    --ov-elev: #F1F5F9 !important;
+    --border: #CBD5E1 !important;
+    --ov-border: #CBD5E1 !important;
+    --text: #0F172A !important;
+    --ov-text: #0F172A !important;
+    --text2: #334155 !important;
+    --ov-text2: #334155 !important;
+    --muted: #64748B !important;
+    --ov-muted: #64748B !important;
+}
+
+/* 2. Page backgrounds — darker slate so white panels pop */
+body, .screen, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .alrt-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
+    background: #EEF2F6 !important;
+    color: #0F172A !important;
+}
+
+/* 3. Panels — crisp white + visible border + real shadow */
+.ov-panel, .st-panel, .cmp-panel, .trm-panel, .trm-sidebar,
+.dsc-card, .alrt-alert, .alrt-stable, .inv-panel, .inv-kpi,
+.ov-kpi, .st-kpi, .mem-card, .set-panel, .cnx-panel {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 2px 6px rgba(15,23,42,0.05) !important;
+}
+
+/* Accent panels keep their tint but with visible borders */
+.alrt-alert-red { border-left-color: #E11D48 !important; background: #FFF1F2 !important; }
+.alrt-alert-amber { border-left-color: #D97706 !important; background: #FFFBEB !important; }
+.alrt-alert-green { border-left-color: #059669 !important; background: #ECFDF5 !important; }
+.alrt-alert-cyan { border-left-color: #0284C7 !important; background: #E0F2FE !important; }
+.alrt-stable { background: #ECFDF5 !important; border-color: #A7F3D0 !important; }
+.set-panel-danger { background: #FFF1F2 !important; border-color: #FECDD3 !important; }
+.mem-card-popular { border-color: #0284C7 !important; box-shadow: 0 4px 20px rgba(2,132,199,0.15) !important; }
+
+/* 4. Headings + KPI values — near-black */
+.ov-title, .st-title, .cmp-title, .trm-title, .dsc-title, .alrt-title,
+.inv-title, .mem-title, .set-title, .cnx-title,
+.ov-panel-title, .st-panel-title, .cmp-panel-title, .trm-panel-title,
+.dsc-card-title, .inv-panel-title, .set-panel-title, .cnx-panel-title, .mem-plan-name,
+.ov-kpi-value, .st-kpi-value, .inv-kpi-value, .mem-plan-price,
+.ov-insight-title, .alrt-alert-title, .dsc-price-val,
+.trm-watch-title, .trm-watch-price,
+.ov-product-title, .st-row-title, .cmp-row-title, .inv-product-title,
+.cnx-product-title, .cnx-row-title, .set-value, .ov-alert-title {
+    color: #0F172A !important;
+}
+
+/* 5. Body / subtext — solid dark slate */
+.ov-sub, .st-sub, .cmp-sub, .trm-sub, .dsc-sub, .alrt-sub,
+.inv-sub, .mem-sub, .set-sub, .cnx-sub,
+.ov-panel-sub, .st-panel-sub, .cmp-panel-sub, .trm-panel-sub,
+.dsc-reason-label, .alrt-alert-body, .alrt-alert-meta,
+.ov-kpi-meta, .st-kpi-meta, .inv-kpi-meta,
+.ov-opportunity-text, .ov-opportunity-meta,
+.ov-insight-body, .ov-insight-time,
+.ov-product-meta, .st-row-meta, .cmp-row-meta, .inv-product-meta, .trm-watch-meta,
+.set-label, .cnx-label, .cnx-panel-sub, .set-panel-sub,
+.cnx-row-meta, .dsc-price-label, .mem-plan-desc {
+    color: #475569 !important;
+}
+
+/* Eyebrows stay cyan (brand) */
+.ov-eyebrow, .st-eyebrow, .cmp-eyebrow, .trm-eyebrow, .dsc-eyebrow,
+.alrt-eyebrow, .inv-eyebrow, .mem-eyebrow, .set-eyebrow, .cnx-eyebrow {
+    color: #0284C7 !important;
+}
+/* Uppercase micro labels — mid slate, not cyan */
+.ov-kpi-label, .st-kpi-label, .inv-kpi-label {
+    color: #475569 !important;
+}
+
+/* 6. Chips */
+.ov-status-chip, .st-chip, .cmp-chip, .trm-chip, .dsc-chip, .alrt-chip, .inv-chip, .set-chip, .cnx-chip {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #334155 !important;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.03) !important;
+}
+
+/* 7. Badges — visible tinted pills */
+.ov-badge, .st-badge, .cmp-badge, .trm-badge, .dsc-badge, .inv-badge, .set-badge {
+    border-color: #CBD5E1 !important;
+    background: #FFFFFF !important;
+}
+.ov-badge-violet, .cmp-badge-violet, .trm-badge-violet, .dsc-badge-violet, .set-badge-violet {
+    background: #F3E8FF !important; color: #6D28D9 !important; border-color: #E9D5FF !important;
+}
+.ov-badge-cyan, .cmp-badge-cyan, .trm-badge-cyan, .dsc-badge-cyan {
+    background: #E0F2FE !important; color: #0284C7 !important; border-color: #BAE6FD !important;
+}
+.cmp-badge-green, .dsc-badge-green, .set-badge-green, .inv-badge-green {
+    background: #ECFDF5 !important; color: #059669 !important; border-color: #A7F3D0 !important;
+}
+.cmp-badge-amber, .st-badge-amber, .trm-badge-amber, .inv-badge-amber, .set-badge-amber {
+    background: #FFFBEB !important; color: #D97706 !important; border-color: #FDE68A !important;
+}
+.inv-badge-red, .st-badge-red, .cmp-badge-red {
+    background: #FFF1F2 !important; color: #E11D48 !important; border-color: #FECDD3 !important;
+}
+
+/* 8. Rows inside panels — light slate on white */
+.ov-product-row, .st-product-row, .cmp-product-row, .cmp-suggestion-row, .cnx-product-row,
+.inv-product-row, .trm-watch-item, .dsc-card-pricing, .ov-opportunity, .ov-insight,
+.st-bundle, .st-cust-stat, .trm-stat-box, .trm-advice-box {
+    background: #F8FAFC !important;
+    border-color: #E2E8F0 !important;
+}
+.trm-watch-item.active { border-color: #0284C7 !important; background: #E0F2FE !important; }
+
+/* 9. Inputs — solid border */
+.cnx-input, .cmp-input, .trm-input, .dsc-search-input, .form-input {
+    background: #FFFFFF !important;
+    border: 1px solid #94A3B8 !important;
+    color: #0F172A !important;
+}
+.cnx-input::placeholder, .cmp-input::placeholder, .trm-input::placeholder, .dsc-search-input::placeholder {
+    color: #64748B !important;
+}
+.cnx-input:focus, .cmp-input:focus, .trm-input:focus, .dsc-search-input:focus {
+    border-color: #0284C7 !important;
+    box-shadow: 0 0 0 3px rgba(2,132,199,0.15) !important;
+}
+
+/* 10. Secondary buttons — sharper border */
+.cnx-btn-secondary, .cmp-btn-secondary, .cmp-btn-small, .mem-btn-secondary, .set-btn-secondary {
+    border: 1px solid #94A3B8 !important;
+    color: #0F172A !important;
+    background: #FFFFFF !important;
+}
+.cnx-btn-secondary:hover, .cmp-btn-secondary:hover, .cmp-btn-small:hover, .mem-btn-secondary:hover, .set-btn-secondary:hover {
+    background: #F1F5F9 !important;
+}
+
+/* 11. Section separators clearer */
+.st-chart-summary { border-top-color: #E2E8F0 !important; }
+.trm-panel-head, .inv-panel-head { border-color: #E2E8F0 !important; }
+.st-note { border-top-color: #E2E8F0 !important; }
+
+/* 12. Scrollbar higher contrast */
+::-webkit-scrollbar-track { background: #EEF2F6 !important; }
+::-webkit-scrollbar-thumb { background: #94A3B8 !important; }
+::-webkit-scrollbar-thumb:hover { background: #64748B !important; }
