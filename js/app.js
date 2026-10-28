@@ -38,6 +38,8 @@ window.addEventListener('load', async () => {
     setTimeout(() => {
         if (typeof checkConnectionStatus === 'function') checkConnectionStatus();
         if (typeof fetchCompetitors === 'function') fetchCompetitors();
+        if (typeof loadCompetitorIntel === 'function') loadCompetitorIntel();
+        if (typeof loadCatalogGaps === 'function') loadCatalogGaps();
         if (typeof loadInventory === 'function') loadInventory();
         if (typeof loadStoreData === 'function') loadStoreData();
         if (typeof loadOverview === 'function') loadOverview();
@@ -63,6 +65,7 @@ function toggleMenu() {
         overlay.style.display = drawer.classList.contains('open') ? 'block' : 'none';
     }
 }
+
 
 
 
