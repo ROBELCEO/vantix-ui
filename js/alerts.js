@@ -1,45 +1,74 @@
-﻿async function loadAlerts() {
+﻿function alrtEsc(str) {
+    return String(str ?? "").replace(/[&<>"']/g, s => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[s]));
+}
+
+async function loadAlerts() {
     const container = document.getElementById('alerts-container');
-    if(!container) return;
+    const statusEl = document.getElementById('alrt-status');
+    if (!container) return;
 
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/alerts/list');
-        
+
         if (!res.ok) {
-            container.innerHTML = '<div class="text-red" style="text-align: center; padding: 40px;">Failed to load alerts.</div>';
+            container.innerHTML = '<div class="alrt-empty alrt-text-red">Failed to load alerts.</div>';
+            if (statusEl) statusEl.innerText = "Error";
             return;
         }
 
         const data = await res.json();
-        
-        if(!data.alerts || data.alerts.length === 0) {
+
+        if (!data.alerts || data.alerts.length === 0) {
             container.innerHTML = `
-                <div class="panel" style="text-align: center; padding: 40px 20px; border-color: rgba(0, 255, 136, 0.2); background: rgba(0, 255, 136, 0.05);">
-                    <div style="font-size: 32px; margin-bottom: 16px;">📈</div>
-                    <div style="font-weight: 700; font-size: 16px; margin-bottom: 4px;">All Prices Are Stable</div>
-                    <div class="text-tertiary" style="font-size: 12px;">We'll notify you the second a competitor changes their pricing.</div>
+                <div class="alrt-stable">
+                    <div style="font-size: 32px; margin-bottom: 12px;">📈</div>
+                    <div class="alrt-stable-title">All Prices Are Stable</div>
+                    <div class="alrt-stable-sub">We will notify you the second a competitor changes their pricing.</div>
                 </div>
             `;
+            if (statusEl) statusEl.innerText = "0 Alerts";
             return;
         }
-        
+
+        if (statusEl) statusEl.innerText = `${data.alerts.length} Alert${data.alerts.length > 1 ? "s" : ""}`;
+
         container.innerHTML = data.alerts.map(a => {
             const dateObj = new Date(a.created_at);
             const timeString = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const dateString = dateObj.toLocaleDateString([], { month: 'short', day: 'numeric' });
-            
-            // The red border styling matches your screenshot
+
+            const title = alrtEsc(a.title || "Alert");
+            const body = alrtEsc(a.body || "");
+
+            // Severity detection based on title keywords (same as Overview page)
+            const titleLower = (a.title || "").toLowerCase();
+            let severityClass = "alrt-alert-amber";
+            let icon = "⚡";
+            if (titleLower.includes("price drop") || titleLower.includes("price cut") || titleLower.includes("out of stock")) {
+                severityClass = "alrt-alert-red";
+                icon = "🚨";
+            } else if (titleLower.includes("price increase") || titleLower.includes("new launch")) {
+                severityClass = "alrt-alert-green";
+                icon = "📈";
+            } else if (titleLower.includes("restock") || titleLower.includes("back in stock")) {
+                severityClass = "alrt-alert-cyan";
+                icon = "📦";
+            }
+
             return `
-                <div style="background: var(--bg-surface); border-left: 4px solid var(--red); padding: 16px; border-radius: 4px;">
-                    <div class="mono text-tertiary" style="font-size: 10px; margin-bottom: 8px;">${dateString} • ${timeString}</div>
-                    <div style="font-weight: 800; font-size: 14px; color: var(--text-primary); margin-bottom: 4px;">🚨 ${a.title}</div>
-                    <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">${a.body}</div>
+                <div class="alrt-alert ${severityClass}">
+                    <div class="alrt-alert-meta">${icon} ${dateString} • ${timeString}</div>
+                    <div class="alrt-alert-title">${title}</div>
+                    <div class="alrt-alert-body">${body}</div>
                 </div>
             `;
         }).join('');
-        
+
     } catch(e) {
         console.error("Alerts error:", e);
-        container.innerHTML = '<div class="text-red" style="text-align: center; padding: 40px;">Network error. Backend might be asleep.</div>';
+        container.innerHTML = '<div class="alrt-empty alrt-text-red">Network error. Backend might be asleep.</div>';
+        if (statusEl) statusEl.innerText = "Offline";
     }
 }

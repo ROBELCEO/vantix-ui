@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Alerts</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2084">
+<link rel="stylesheet" href="css/style.css?v=2089">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -46,36 +46,36 @@
         <a href="settings.html" class="tab">Settings</a>
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
-        <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">loading...</div>
-        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
+        <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none; background: #222 !important; color: #FFF !important; border-color: #333 !important;">Log Out</button>
         <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
     </div>
 </div>
 
-<div class="screen">
-    <div style="max-width: 1100px; margin: 0 auto; padding-top: 20px;">
-        
-        <div class="screen-title">Alerts Feed</div>
-        <div class="screen-sub">Automated competitor monitoring & AI insights</div>
+<div class="screen alrt-screen">
+    <div class="alrt-wrap">
 
-        <div id="alerts-container" style="margin-top: 24px; display: flex; flex-direction: column; gap: 12px;">
-            <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 20px;">Loading alerts...</div>
+        <!-- ROW A -->
+        <div class="alrt-row-a">
+            <div>
+                <div class="alrt-eyebrow">MONITORING</div>
+                <h1 class="alrt-title">Alerts Feed</h1>
+                <p class="alrt-sub">Automated competitor monitoring &amp; AI insights.</p>
+            </div>
+            <div class="alrt-status-group">
+                <div class="alrt-chip" id="alrt-status">Loading…</div>
+            </div>
+        </div>
+
+        <!-- FEED -->
+        <div id="alerts-container" class="alrt-list">
+            <div class="alrt-empty">Loading alerts…</div>
         </div>
 
     </div>
 </div>
 
-<script src="js/app.js?v=2084"></script>
-<script src="js/alerts.js?v=2051"></script>
+<script src="js/app.js?v=2089"></script>
+<script src="js/alerts.js?v=2089"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
