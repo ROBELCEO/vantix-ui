@@ -20,10 +20,10 @@ async function loadDiscovery(category = '') {
     if (statusEl) statusEl.innerText = "Scanning…";
 
     try {
-        const url = category 
+        const url = category
             ? `https://vantix-my5f.onrender.com/api/discovery/trends?category=${encodeURIComponent(category)}`
             : 'https://vantix-my5f.onrender.com/api/discovery/trends';
-            
+
         const res = await fetch(url);
         const data = await res.json();
 
@@ -33,7 +33,6 @@ async function loadDiscovery(category = '') {
             return;
         }
 
-        // The backend returns a flat array inside data.market_intel
         if (!data.market_intel || data.market_intel.length === 0) {
             container.innerHTML = '<div class="dsc-empty" style="grid-column: 1 / -1;">No opportunities found for this category. Try searching another niche.</div>';
             if (statusEl) statusEl.innerText = "0 Results";
@@ -44,15 +43,16 @@ async function loadDiscovery(category = '') {
         currentDiscoveryItems = data.market_intel;
 
         container.innerHTML = currentDiscoveryItems.map((opp, index) => {
-            // Map exactly to the backend fields
             const price = Number(opp.price || 0);
             const rating = Number(opp.rating || 0);
             const reviewCount = Number(opp.review_count || 0);
             const bullets = Array.isArray(opp.bullets) ? opp.bullets : ["High demand signal detected."];
-            
-            // Since the backend doesn't send "supplier", we default to "GLOBAL CATALOG"
-            const sourceBadge = `<span class="dsc-badge dsc-badge-cyan">GLOBAL CATALOG</span>`;
-            
+
+            const sourceBadge = `<span class="dsc-badge dsc-badge-cyan">GLOBAL</span>`;
+            const bulletSourceBadge = opp.bullet_source === 'ai'
+                ? `<span class="dsc-badge dsc-badge-violet">AI ANALYZED</span>`
+                : `<span class="dsc-badge dsc-badge-amber">FALLBACK SIGNALS</span>`;
+
             return `
                 <div class="dsc-card">
                     <div class="dsc-card-top">
@@ -61,10 +61,11 @@ async function loadDiscovery(category = '') {
                             <div class="dsc-card-title">${dscEsc(opp.name)}</div>
                             <div class="dsc-card-source">
                                 ${sourceBadge}
+                                ${bulletSourceBadge}
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="dsc-card-pricing" style="justify-content: space-between; align-items: center;">
                         <div class="dsc-price-group">
                             <div class="dsc-price-label">Price</div>
@@ -79,7 +80,7 @@ async function loadDiscovery(category = '') {
                     </div>
 
                     <div class="dsc-card-reason">
-                        <div class="dsc-reason-label">⚡ AI Goldmine Signals</div>
+                        <div class="dsc-reason-label">⚡ Signals</div>
                         <ul style="margin: 0; padding-left: 16px; font-size: 11px; color: #4B5563; line-height: 1.4;">
                             ${bullets.map(b => `<li>${dscEsc(b)}</li>`).join('')}
                         </ul>
@@ -110,7 +111,7 @@ function triggerSearch() {
     if (!input) return;
     const query = input.value.trim();
     if (!query) return;
-    
+
     document.querySelectorAll('.dsc-pill').forEach(p => p.classList.remove('active'));
     loadDiscovery(query);
 }
@@ -162,4 +163,3 @@ async function pushToShopify(index, btn) {
         }, 3000);
     }
 }
-
