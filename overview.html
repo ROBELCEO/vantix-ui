@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Overview</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=2051">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -16,17 +17,16 @@
         <div class="brand"><div>VANTI<span>X</span></div></div>
         <button class="drawer-close" onclick="toggleMenu()">✕</button>
     </div>
-    <a href="index.html" class="drawer-tab ">Connect</a>
+    <a href="index.html" class="drawer-tab">Connect</a>
     <a href="overview.html" class="drawer-tab active">Overview</a>
-    <a href="store.html" class="drawer-tab ">My Store</a>
-    <a href="competitors.html" class="drawer-tab ">Competitors</a>
-    <a href="terminal.html" class="drawer-tab ">Terminal</a>
-    <a href="discovery.html" class="drawer-tab ">Discovery</a>
-    <a href="alerts.html" class="drawer-tab ">Alerts</a>
-    <a href="inventory.html" class="drawer-tab ">Inventory</a>
-    <a href="membership.html" class="drawer-tab ">Membership</a>
-    <a href="settings.html" class="drawer-tab ">Settings</a>
-    
+    <a href="store.html" class="drawer-tab">My Store</a>
+    <a href="competitors.html" class="drawer-tab">Competitors</a>
+    <a href="terminal.html" class="drawer-tab">Terminal</a>
+    <a href="discovery.html" class="drawer-tab">Discovery</a>
+    <a href="alerts.html" class="drawer-tab">Alerts</a>
+    <a href="inventory.html" class="drawer-tab">Inventory</a>
+    <a href="membership.html" class="drawer-tab">Membership</a>
+    <a href="settings.html" class="drawer-tab">Settings</a>
 </div>
 
 <div class="header">
@@ -35,17 +35,16 @@
         <div>VANTI<span>X</span></div>
     </a>
     <div class="tabs">
-        <a href="index.html" class="tab ">Connect</a>
+        <a href="index.html" class="tab">Connect</a>
         <a href="overview.html" class="tab active">Overview</a>
-        <a href="store.html" class="tab ">My Store</a>
-        <a href="competitors.html" class="tab ">Competitors</a>
-        <a href="terminal.html" class="tab ">Terminal</a>
-        <a href="discovery.html" class="tab ">Discovery</a>
-        <a href="alerts.html" class="tab ">Alerts</a>
-        <a href="inventory.html" class="tab ">Inventory</a>
-        <a href="membership.html" class="tab ">Membership</a>
-        <a href="settings.html" class="tab ">Settings</a>
-        
+        <a href="store.html" class="tab">My Store</a>
+        <a href="competitors.html" class="tab">Competitors</a>
+        <a href="terminal.html" class="tab">Terminal</a>
+        <a href="discovery.html" class="tab">Discovery</a>
+        <a href="alerts.html" class="tab">Alerts</a>
+        <a href="inventory.html" class="tab">Inventory</a>
+        <a href="membership.html" class="tab">Membership</a>
+        <a href="settings.html" class="tab">Settings</a>
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
         <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">loading...</div>
@@ -54,62 +53,145 @@
     </div>
 </div>
 
-<div class="screen">
-    <div style="max-width: 1100px; margin: 0 auto; padding-top: 20px;">
-        <div class="screen-title">Command Center</div>
-        <div class="screen-sub">Your daily profit briefing and store health.</div>
+<div class="screen ov-screen">
+    <div class="ov-wrap">
 
-        <!-- TOP KPIs -->
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
-            <div class="kpi-card" style="border-color: rgba(0,255,136,0.3);">
-                <div class="kpi-label">True Net Profit (30d)</div>
-                <div class="kpi-value text-green" id="ov-net-profit">$0.00</div>
+        <!-- ROW A -->
+        <div class="ov-row-a">
+            <div>
+                <div class="ov-eyebrow">OVERVIEW</div>
+                <h1 class="ov-title">Your Shopify Store Intelligence</h1>
+                <p class="ov-sub">A real-time read on profit, risk, and the next move worth making.</p>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Gross Revenue (30d)</div>
-                <div class="kpi-value" id="ov-revenue">$0.00</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Competitor Price Index</div>
-                <div class="kpi-value" id="ov-price-index" style="color: var(--violet);">0%</div>
+            <div class="ov-status-group">
+                <div class="ov-status-chip" id="ov-store-status">Store: checking…</div>
+                <div class="ov-status-chip" id="ov-last-updated">Updated: —</div>
+                <div class="ov-status-chip" id="ov-ai-status">AI: standby</div>
             </div>
         </div>
 
-        <!-- MAIN GRID -->
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
-            
-            <!-- LEFT COL: AI BRIEFING -->
-            <div class="panel" style="border-color: rgba(139, 127, 255, 0.4); background: linear-gradient(180deg, rgba(139,127,255,0.05), transparent);">
-                <div class="panel-header" style="color: var(--violet); display: flex; justify-content: space-between;">
-                    <div>🧠 Top 3 Moves Today</div>
-                    <div class="badge badge-violet">Groq AI</div>
-                </div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">
-                    Based on your current profit, out-of-stock risks, and competitor pricing, here is your strategy for today.
-                </div>
-                <div id="ai-actions-container" style="display: flex; flex-direction: column; gap: 12px;">
-                    <div class="text-tertiary" style="font-size: 12px;">Analyzing store data...</div>
-                </div>
+        <!-- ROW B: 5 KPI CARDS -->
+        <div class="ov-kpi-grid">
+            <div class="ov-kpi">
+                <div class="ov-kpi-top"><span class="ov-kpi-icon">$</span><span class="ov-kpi-label">Gross Revenue</span></div>
+                <div class="ov-kpi-value" id="ov-revenue">—</div>
+                <div class="ov-kpi-meta">Last 30 days</div>
             </div>
-
-            <!-- RIGHT COL: LEAK DETECTOR -->
-            <div class="panel" style="border-color: rgba(255, 34, 102, 0.4); background: linear-gradient(180deg, rgba(255,34,102,0.05), transparent);">
-                <div class="panel-header" style="color: var(--red);">🚨 Profit Leak Detector</div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">
-                    Money you are losing right now due to out-of-stock best-sellers.
-                </div>
-                <div style="text-align: center; padding: 20px 0;">
-                    <div style="font-size: 48px; font-weight: 900; color: var(--red);" id="ov-leaks">0</div>
-                    <div style="font-size: 12px; color: var(--text-tertiary); text-transform: uppercase; margin-top: 8px;">Items Out of Stock</div>
-                </div>
-                <a href="inventory.html" class="btn btn-secondary" style="width: 100%; font-size: 12px; border-color: var(--red); color: var(--red); text-align: center; display: block;">Restock Inventory →</a>
+            <div class="ov-kpi">
+                <div class="ov-kpi-top"><span class="ov-kpi-icon ov-green">✓</span><span class="ov-kpi-label">True Net Profit</span></div>
+                <div class="ov-kpi-value ov-green" id="ov-net-profit">—</div>
+                <div class="ov-kpi-meta">Revenue minus costs</div>
             </div>
-
+            <div class="ov-kpi">
+                <div class="ov-kpi-top"><span class="ov-kpi-icon">#</span><span class="ov-kpi-label">Total Orders</span></div>
+                <div class="ov-kpi-value" id="ov-orders">—</div>
+                <div class="ov-kpi-meta">Last 30 days</div>
+            </div>
+            <div class="ov-kpi">
+                <div class="ov-kpi-top"><span class="ov-kpi-icon">↕</span><span class="ov-kpi-label">Price Index</span></div>
+                <div class="ov-kpi-value" id="ov-price-index">—</div>
+                <div class="ov-kpi-meta" id="ov-price-index-meta">vs competitors</div>
+            </div>
+            <div class="ov-kpi">
+                <div class="ov-kpi-top"><span class="ov-kpi-icon ov-red">!</span><span class="ov-kpi-label">Low Stock SKUs</span></div>
+                <div class="ov-kpi-value ov-red" id="ov-leaks">—</div>
+                <div class="ov-kpi-meta">Out of stock</div>
+            </div>
         </div>
+
+        <!-- ROW C -->
+        <div class="ov-grid-3">
+            <div class="ov-panel ov-panel-chart">
+                <div class="ov-panel-head">
+                    <div>
+                        <div class="ov-panel-title">Profit Overview</div>
+                        <div class="ov-panel-sub">Revenue from Shopify orders</div>
+                    </div>
+                    <div class="ov-badge">LIVE DATA</div>
+                </div>
+                <div class="ov-chart-wrap">
+                    <canvas id="ov-profit-chart"></canvas>
+                </div>
+                <div class="ov-chart-summary">
+                    <div><span>Revenue</span><b id="ov-chart-revenue">—</b></div>
+                    <div><span>Net Profit</span><b class="ov-green" id="ov-chart-profit">—</b></div>
+                    <div><span>Orders</span><b id="ov-chart-orders">—</b></div>
+                </div>
+            </div>
+
+            <div class="ov-panel">
+                <div class="ov-panel-head">
+                    <div>
+                        <div class="ov-panel-title">Top Opportunities</div>
+                        <div class="ov-panel-sub">AI-ranked moves from your data</div>
+                    </div>
+                    <div class="ov-badge ov-badge-violet">AI</div>
+                </div>
+                <div id="ov-opportunities" class="ov-list">
+                    <div class="ov-empty">Analyzing store data…</div>
+                </div>
+            </div>
+
+            <div class="ov-panel">
+                <div class="ov-panel-head">
+                    <div>
+                        <div class="ov-panel-title">Recent Insights</div>
+                        <div class="ov-panel-sub">Latest alerts and changes</div>
+                    </div>
+                </div>
+                <div id="ov-insights" class="ov-list">
+                    <div class="ov-empty">Loading insights…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW D -->
+        <div class="ov-grid-3">
+            <div class="ov-panel">
+                <div class="ov-panel-head">
+                    <div>
+                        <div class="ov-panel-title">Sales by Category</div>
+                        <div class="ov-panel-sub">Category breakdown</div>
+                    </div>
+                </div>
+                <div id="ov-category" class="ov-empty ov-empty-lg">
+                    Category breakdown is not yet available from the connected data source.
+                </div>
+            </div>
+
+            <div class="ov-panel">
+                <div class="ov-panel-head">
+                    <div>
+                        <div class="ov-panel-title">Top Products</div>
+                        <div class="ov-panel-sub">By revenue, last 30 days</div>
+                    </div>
+                    <a href="store.html" class="ov-link">View all →</a>
+                </div>
+                <div id="ov-top-products" class="ov-list">
+                    <div class="ov-empty">Loading products…</div>
+                </div>
+            </div>
+
+            <div class="ov-panel ov-ai-panel">
+                <div class="ov-panel-head">
+                    <div>
+                        <div class="ov-panel-title">VANTIX AI Assistant</div>
+                        <div class="ov-panel-sub">Profit-aware recommendations</div>
+                    </div>
+                    <div class="ov-badge ov-badge-cyan">GROQ</div>
+                </div>
+                <div class="ov-ai-copy">
+                    Ask the Terminal to compare your margin against a competitor price, or review today’s actions above.
+                </div>
+                <a href="terminal.html" class="ov-btn-primary">Open Terminal →</a>
+                <div class="ov-ai-note" id="ov-ai-assistant-note">AI status: standby</div>
+            </div>
+        </div>
+
     </div>
 </div>
 
-<script src="js/app.js?v=2050"></script>
-<script src="js/overview.js?v=2030"></script>
+<script src="js/app.js?v=2051"></script>
+<script src="js/overview.js?v=2051"></script>
 </body>
 </html>
