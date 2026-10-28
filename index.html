@@ -22,47 +22,7 @@
 </head>
 <body>
 
-<div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
-<div class="drawer" id="mobile-drawer">
-    <div class="drawer-header">
-        <div class="brand"><div>VANTI<span>X</span></div></div>
-        <button class="drawer-close" onclick="toggleMenu()">✕</button>
-    </div>
-    <a href="index.html" class="drawer-tab active">Connect</a>
-    <a href="overview.html" class="drawer-tab">Overview</a>
-    <a href="store.html" class="drawer-tab">My Store</a>
-    <a href="competitors.html" class="drawer-tab">Competitors</a>
-    <a href="terminal.html" class="drawer-tab">Terminal</a>
-    <a href="discovery.html" class="drawer-tab">Discovery</a>
-    <a href="alerts.html" class="drawer-tab">Alerts</a>
-    <a href="inventory.html" class="drawer-tab">Inventory</a>
-    <a href="membership.html" class="drawer-tab">Membership</a>
-    <a href="settings.html" class="drawer-tab">Settings</a>
-</div>
-
-<div class="header">
-    <a href="index.html" class="brand">
-        <div class="mark"><svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg></div>
-        <div>VANTI<span>X</span></div>
-    </a>
-    <div class="tabs">
-        <a href="index.html" class="tab active">Connect</a>
-        <a href="overview.html" class="tab">Overview</a>
-        <a href="store.html" class="tab">My Store</a>
-        <a href="competitors.html" class="tab">Competitors</a>
-        <a href="terminal.html" class="tab">Terminal</a>
-        <a href="discovery.html" class="tab">Discovery</a>
-        <a href="alerts.html" class="tab">Alerts</a>
-        <a href="inventory.html" class="tab">Inventory</a>
-        <a href="membership.html" class="tab">Membership</a>
-        <a href="settings.html" class="tab">Settings</a>
-    </div>
-    <div style="display: flex; align-items: center; gap: 12px;">
-        <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">loading...</div>
-        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
-        <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
-    </div>
-</div>
+<div id="master-nav-container"></div>
 
 <div class="screen">
     <div style="max-width: 720px; margin: 0 auto; padding-top: 20px;">
@@ -155,7 +115,8 @@
     </div>
 </div>
 
-<script src="js/app.js?v=2010"></script>
+<script src="js/nav.js"></script>
+<script src="js/app.js?v=2045"></script>
 <script src="js/connect.js?v=2011"></script>
 </body>
 </html>
