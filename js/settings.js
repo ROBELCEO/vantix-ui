@@ -16,19 +16,19 @@
         const shopEl = document.getElementById('settings-shopify');
         if (data.shopify_connected) {
             shopEl.innerText = data.shopify_domain;
-            shopEl.style.color = "var(--ov-green)";
+            shopEl.style.color = "#059669";
         } else {
             shopEl.innerText = "Not Connected";
-            shopEl.style.color = "var(--ov-red)";
+            shopEl.style.color = "#E11D48";
         }
 
         const teleEl = document.getElementById('settings-telegram');
         if (data.telegram_linked) {
             teleEl.innerText = "Connected & Active";
-            teleEl.style.color = "var(--ov-green)";
+            teleEl.style.color = "#059669";
         } else {
             teleEl.innerText = "Not Linked";
-            teleEl.style.color = "var(--ov-red)";
+            teleEl.style.color = "#E11D48";
         }
     } catch(e) {
         console.error("Failed to load profile", e);
@@ -66,3 +66,4 @@ async function confirmDelete() {
         btn.disabled = false;
     }
 }
+
