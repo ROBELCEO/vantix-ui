@@ -1,53 +1,59 @@
 ﻿async function checkSubscription() {
-    const banner = document.getElementById('trial-banner');
-    const bannerText = document.getElementById('banner-text');
-    const daysLeft = document.getElementById('trial-days-left');
-    const proBtn = document.getElementById('btn-pro');
-
-    if(!banner) return;
-
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/auth/status');
-        
-        if (!res.ok) throw new Error("Failed to load status");
+        const statusRes = await fetch('https://vantix-my5f.onrender.com/api/auth/status');
+        if (statusRes.ok) {
+            const statusData = await statusRes.json();
+            const upgradeBtn = document.getElementById('upgrade-btn');
+            const manageBtn = document.getElementById('manage-btn');
+            const trialBanner = document.getElementById('trial-banner');
 
-        const data = await res.json();
-        
-        banner.style.display = 'flex';
-
-        if(data.status === 'active' && data.plan === 'trial') {
-            banner.style.background = 'rgba(0, 255, 136, 0.1)';
-            banner.style.borderColor = 'rgba(0, 255, 136, 0.2)';
-            banner.style.color = 'var(--green)';
-            bannerText.innerHTML = `🎉 You are currently on a <b>7-Day Free Trial</b>.`;
-            daysLeft.innerText = `${data.days_left} days remaining`;
-        } 
-        else if (data.plan === 'pro' || data.plan === 'scale') {
-            banner.style.background = 'rgba(0, 229, 255, 0.1)';
-            banner.style.borderColor = 'rgba(0, 229, 255, 0.2)';
-            banner.style.color = 'var(--accent)';
-            bannerText.innerHTML = `⭐ You are currently subscribed to the <b>${data.plan.toUpperCase()}</b> plan.`;
-            daysLeft.innerText = "";
-            
-            if (data.plan === 'pro') {
-                proBtn.innerText = "Current Plan";
-                proBtn.className = "btn btn-secondary";
-                proBtn.disabled = true;
+            if (statusData.plan === 'pro' || statusData.plan === 'scale') {
+                upgradeBtn.style.display = 'none';
+                manageBtn.style.display = 'block';
+                trialBanner.innerText = "⭐ You are currently subscribed to the PRO plan.";
+                trialBanner.style.color = "var(--accent)";
+            } else {
+                upgradeBtn.style.display = 'block';
+                manageBtn.style.display = 'none';
+                trialBanner.innerText = "You are currently on a 7-Day Free Trial.";
+                trialBanner.style.color = "var(--amber)";
             }
-        } 
-        else if (data.status === 'expired') {
-            banner.style.background = 'rgba(255, 34, 102, 0.1)';
-            banner.style.borderColor = 'rgba(255, 34, 102, 0.2)';
-            banner.style.color = 'var(--red)';
-            bannerText.innerHTML = `⚠️ Your free trial has expired. Please upgrade to continue.`;
-            daysLeft.innerText = "";
+        }
+
+        // Fetch ROI Data
+        const roiRes = await fetch('https://vantix-my5f.onrender.com/api/billing/roi');
+        if (roiRes.ok) {
+            const roiData = await roiRes.json();
+            document.getElementById('roi-value').innerText = '$' + roiData.value_generated.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('roi-alerts').innerText = roiData.alerts_found;
+            document.getElementById('roi-products').innerText = roiData.products_tracked;
         }
     } catch(e) {
-        console.error("Subscription check failed", e);
-        banner.style.display = 'flex';
-        bannerText.innerText = "Could not load subscription status.";
+        console.error("Failed to load membership data", e);
     }
 }
 
+document.addEventListener('DOMContentLoaded', async () => {
+    checkSubscription();
 
+    const upgradeBtn = document.getElementById('upgrade-btn');
+    const manageBtn = document.getElementById('manage-btn');
 
+    // 1. Upgrade Logic
+    if (upgradeBtn) {
+        const { data: { session } } = await window.supabaseClient.auth.getSession();
+        if (session) {
+            // REPLACE YOUR_CHECKOUT_ID WITH YOUR ACTUAL LEMON SQUEEZY LINK
+            const checkoutUrl = `https://vantix.lemonsqueezy.com/checkout/buy/YOUR_CHECKOUT_ID?checkout[email]=${encodeURIComponent(session.user.email)}&checkout[custom][user_id]=${session.user.id}`;
+            upgradeBtn.addEventListener('click', () => window.open(checkoutUrl, '_blank'));
+        }
+    }
+
+    // 2. Manage/Cancel Logic
+    if (manageBtn) {
+        manageBtn.addEventListener('click', () => {
+            // This opens the Lemon Squeezy customer portal where they can cancel/update cards
+            window.open('https://vantix.lemonsqueezy.com/billing', '_blank');
+        });
+    }
+});
