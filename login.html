@@ -26,19 +26,21 @@
         background-color: var(--bg);
         color: var(--text);
         font-family: 'Inter', sans-serif;
-        height: 100vh;
-        width: 100vw;
-        overflow: hidden; /* Kill page-level scrolling */
-        display: grid;
-        grid-template-columns: 1.2fr 1fr; /* 2 columns */
+        height: 100vh !important;
+        width: 100vw !important;
+        overflow: hidden !important; 
+        display: grid !important;
+        grid-template-columns: 1.2fr 1fr !important; 
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
     /* LEFT SIDE - CHAT */
     .chat-container {
         display: flex;
         flex-direction: column;
-        height: 100%;
-        overflow: hidden; /* Contain the chat inside this column */
+        height: 100vh !important;
+        overflow: hidden; 
         border-right: 1px solid var(--border);
         background-image: 
             linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
@@ -134,11 +136,11 @@
 
     /* RIGHT SIDE - LOGIN */
     .login-container {
-        height: 100%;
-        display: grid;
-        place-items: center; /* Dead center, always */
+        height: 100vh !important;
+        display: grid !important;
+        place-items: center !important; 
         padding: 40px;
-        overflow-y: auto; /* If screen is too short, scroll the login container */
+        overflow-y: auto; 
         background: var(--bg);
     }
     
@@ -166,13 +168,41 @@
     /* Mobile View */
     @media (max-width: 900px) {
         body { 
-            grid-template-columns: 1fr; 
-            grid-template-rows: 60vh 40vh; /* Chat gets 60%, Login gets 40% */
-            overflow: hidden;
+            grid-template-columns: 1fr !important; 
+            grid-template-rows: 60vh 40vh !important; 
         }
-        .chat-container { border-right: none; border-bottom: 1px solid var(--border); }
+        .chat-container { 
+            border-right: none; 
+            border-bottom: 1px solid var(--border);
+            height: 60vh !important;
+        }
+        .login-container {
+            height: 40vh !important;
+        }
         .chat-messages { padding: 16px; }
         .login-container { padding: 24px; }
+        .msg { max-width: 100%; }
+    }
+        .chat-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh !important;
+        overflow: hidden; 
+        border-right: 1px solid var(--border);
+        background-image: 
+            linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 40px 40px;
+    }
+        .chat-messages { padding: 16px; }
+        .login-container {
+        height: 100vh !important;
+        display: grid !important;
+        place-items: center !important; 
+        padding: 40px;
+        overflow-y: auto; 
+        background: var(--bg);
+    }
         .msg { max-width: 100%; }
     }
 </style>
@@ -329,3 +359,4 @@
 </script>
 </body>
 </html>
+
