@@ -1,18 +1,29 @@
-﻿async function checkConnectionStatus() {
+﻿function cnxEsc(str) {
+    return String(str ?? "").replace(/[&<>"']/g, s => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[s]));
+}
+
+async function checkConnectionStatus() {
     const unconnectedView = document.getElementById('view-unconnected');
     const connectedView = document.getElementById('view-connected');
+    const statusEl = document.getElementById('cnx-status');
 
     if (!unconnectedView || !connectedView) return;
 
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/shopify/status');
-        if (res.status === 401) return;
+        if (res.status === 401) {
+            if (statusEl) statusEl.innerText = "Unauthorized";
+            return;
+        }
 
         const data = await res.json();
         
-        if(data.connected) {
+        if (data.connected) {
             unconnectedView.style.display = 'none';
             connectedView.style.display = 'block';
+            if (statusEl) statusEl.innerText = "Connected";
             document.getElementById('connected-domain').innerText = data.domain;
             
             // Load saved settings
@@ -24,18 +35,21 @@
                     document.getElementById('shipping-cost').value = settings.avg_shipping_cost || '';
                     document.getElementById('gateway-fee').value = settings.gateway_fee || '';
                 }
-            } catch(e) { console.error("Failed to load settings", e); }
+            } catch(e) { console.error("Settings load error", e); }
             
-            // Auto-discover real competitors
             discoverRealCompetitors();
             checkTelegramStatus();
             
         } else {
             unconnectedView.style.display = 'block';
             connectedView.style.display = 'none';
+            if (statusEl) statusEl.innerText = "Not Connected";
         }
     } catch(e) {
         console.error("Status check failed", e);
+        unconnectedView.style.display = 'block';
+        connectedView.style.display = 'none';
+        if (statusEl) statusEl.innerText = "Offline";
     }
 }
 
@@ -59,23 +73,20 @@ async function saveSettings() {
         if (res.ok) {
             status.style.display = 'block';
             setTimeout(() => status.style.display = 'none', 3000);
-            btn.innerText = "Save Profit Settings";
-            btn.disabled = false;
         } else {
-            throw new Error("Server responded with " + res.status);
+            throw new Error("Failed to save");
         }
     } catch(e) { 
-        console.error(e);
-        btn.innerText = "Error - Try Again";
+        alert("Error saving settings. Check your connection.");
+    } finally {
+        btn.innerText = "Save Profit Settings";
         btn.disabled = false;
-        status.style.color = "var(--red)";
-        status.innerText = "Failed to save. Check console.";
-        status.style.display = 'block';
     }
 }
 
 async function discoverRealCompetitors() {
     const container = document.getElementById('suggested-competitors-container');
+    if (!container) return;
     
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/discover');
@@ -83,65 +94,60 @@ async function discoverRealCompetitors() {
         
         if (data.suggested_competitors && data.suggested_competitors.length > 0) {
             container.innerHTML = data.suggested_competitors.map(domain => `
-                <div class="competitor-preview">
-                    <img class="comp-avatar" src="https://ui-avatars.com/api/?name=${domain}&background=000&color=fff">
-                    <div style="flex: 1; font-weight: 700; font-size: 13px;">${domain}</div>
-                    <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 11px;" onclick="matchCompetitor('${domain}', this)">+ Match</button>
+                <div class="cnx-product-row">
+                    <div class="cnx-product-title">${cnxEsc(domain)}</div>
+                    <button class="cnx-btn-small" onclick="matchCompetitor('${cnxEsc(domain)}', this)">+ Match</button>
                 </div>
             `).join('');
         } else {
-            container.innerHTML = '<div class="text-tertiary" style="font-size: 12px;">Could not auto-detect competitors. Try adding manually on the Competitors page.</div>';
+            container.innerHTML = '<div class="cnx-empty">No competitors found. Try adding manually on the Competitors page.</div>';
         }
     } catch(e) {
-        container.innerHTML = '<div class="text-red" style="font-size: 12px;">Failed to scan market.</div>';
+        container.innerHTML = '<div class="cnx-empty cnx-error">Failed to scan market.</div>';
     }
 }
 
-async function matchCompetitor(domain, btnElement) {
-    try {
-        btnElement.innerText = "Scraping...";
-        btnElement.disabled = true;
+async function matchCompetitor(domain, btn) {
+    btn.innerText = "Scraping...";
+    btn.disabled = true;
 
-        const res = await fetch(`https://vantix-my5f.onrender.com/api/competitors/add?domain=${domain}`);
+    try {
+        const res = await fetch(`https://vantix-my5f.onrender.com/api/competitors/add?domain=${encodeURIComponent(domain)}`);
         const data = await res.json();
         
         if (res.ok) {
-            btnElement.innerText = "✅ Matched!";
-            btnElement.style.color = "var(--green)";
-            btnElement.style.borderColor = "var(--green)";
+            btn.innerText = "✅ Matched";
+            btn.style.color = "var(--ov-green)";
+            btn.style.borderColor = "var(--ov-green)";
         } else {
-            btnElement.innerText = "Failed";
-            btnElement.style.color = "var(--red)";
-            btnElement.disabled = false;
+            throw new Error(data.detail || "Failed");
         }
-    } catch (e) {
-        console.error(e);
-        btnElement.innerText = "Error";
-        btnElement.disabled = false;
+    } catch(e) {
+        btn.innerText = "Error";
+        btn.disabled = false;
     }
 }
 
 async function checkTelegramStatus() {
     const btn = document.getElementById('telegram-btn');
     const statusText = document.getElementById('telegram-status-text');
-    if(!btn) return;
+    if(!btn || !statusText) return;
 
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/telegram/status');
         if (!res.ok) return;
-        
         const data = await res.json();
         
         if (data.linked) {
             btn.innerText = "✅ Telegram Connected";
-            btn.className = "btn btn-secondary";
+            btn.className = "cnx-btn-secondary";
             btn.disabled = true;
-            btn.style.borderColor = "var(--green)";
-            btn.style.color = "var(--green)";
+            btn.style.borderColor = "var(--ov-green)";
+            btn.style.color = "var(--ov-green)";
             statusText.innerHTML = "Your account is linked. You will receive daily briefings at 8:00 AM.";
         } else {
-            btn.innerText = "Activate Telegram Alerts →";
-            btn.className = "btn btn-primary";
+            btn.innerText = "Activate Telegram →";
+            btn.className = "cnx-btn-primary";
             btn.disabled = false;
             
             const { data: { session } } = await window.supabaseClient.auth.getSession();
@@ -167,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const updateLink = async () => {
             let domain = input.value.trim();
             if(!domain) {
-                link.href = "#";
+                link.onclick = () => {};
                 return;
             }
             domain = domain.replace("https://", "").replace("http://", "").replace("www.", "").replace(/\/$/, "");
@@ -177,14 +183,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const { data: { session } } = await window.supabaseClient.auth.getSession();
             if (session) {
-                link.href = `https://vantix-my5f.onrender.com/api/shopify/install?shop=${domain}&token=${session.access_token}`;
-                errorDiv.style.display = 'none';
-            } else {
-                link.href = "login.html";
+                link.onclick = () => {
+                    window.location.href = `https://vantix-my5f.onrender.com/api/shopify/install?shop=${domain}&token=${session.access_token}`;
+                };
+                if(errorDiv) errorDiv.style.display = 'none';
             }
         };
         input.addEventListener('input', updateLink);
         updateLink();
     }
 });
-
