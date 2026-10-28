@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Connect</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2081">
+<link rel="stylesheet" href="css/style.css?v=2083">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -46,8 +46,8 @@
         <a href="settings.html" class="tab">Settings</a>
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
-        <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">loading...</div>
-        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
+        <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none; background: #222 !important; color: #FFF !important; border-color: #333 !important;">Log Out</button>
         <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
     </div>
 </div>
@@ -58,9 +58,9 @@
         <!-- ROW A -->
         <div class="cnx-row-a">
             <div>
-                <div class="cnx-eyebrow">ONBOARDING</div>
-                <h1 class="cnx-title">Connect Your Store</h1>
-                <p class="cnx-sub">Link your Shopify store to unlock profit intelligence, competitor tracking, and AI strategies.</p>
+                <div class="cnx-eyebrow" style="color: #0284C7 !important;">ONBOARDING</div>
+                <h1 class="cnx-title" style="color: #111827 !important;">Connect Your Store</h1>
+                <p class="cnx-sub" style="color: #6B7280 !important;">Link your Shopify store to unlock profit intelligence, competitor tracking, and AI strategies.</p>
             </div>
             <div class="cnx-status-group">
                 <div class="cnx-chip" id="cnx-status">Checking…</div>
@@ -69,13 +69,13 @@
 
         <!-- UNCONNECTED VIEW -->
         <div id="view-unconnected" style="display: none;">
-            <div class="cnx-panel" style="max-width: 600px; margin: 0 auto; text-align: center; padding: 40px 24px;">
+            <div class="cnx-panel" style="max-width: 600px; margin: 0 auto; text-align: center; padding: 48px 24px;">
                 <div style="font-size: 48px; margin-bottom: 16px;">🛍️</div>
-                <div class="cnx-panel-title" style="font-size: 20px; margin-bottom: 8px;">Connect Shopify</div>
+                <div class="cnx-panel-title" style="font-size: 20px; margin-bottom: 8px; color: #111827 !important;">Connect Shopify</div>
                 <div class="cnx-panel-sub" style="margin-bottom: 24px;">Enter your myshopify domain to begin syncing your catalog and orders.</div>
                 
                 <div class="cnx-input-group" style="max-width: 400px; margin: 0 auto 16px;">
-                    <input type="text" id="shopify-domain" class="cnx-input" placeholder="your-store.myshopify.com">
+                    <input type="text" id="shopify-domain" class="cnx-input" placeholder="your-store.myshopify.com" style="text-align: center;">
                 </div>
                 <button id="direct-connect-link" class="cnx-btn-primary" style="max-width: 400px; margin: 0 auto;">
                     Connect Shopify Store →
@@ -89,10 +89,10 @@
             
             <div class="cnx-panel cnx-panel-success" style="margin-bottom: 24px;">
                 <div style="display: flex; align-items: center; gap: 16px;">
-                    <div class="cnx-success-icon">✓</div>
+                    <div class="cnx-success-icon" style="background: #DCFCE7; border-color: #22C55E; color: #16A34A;">✓</div>
                     <div>
-                        <div class="cnx-panel-title" style="color: var(--ov-green);">Store Connected</div>
-                        <div class="cnx-panel-sub" id="connected-domain">loading...</div>
+                        <div class="cnx-panel-title" style="color: #059669 !important;">Store Connected</div>
+                        <div class="cnx-panel-sub" id="connected-domain" style="color: #047857 !important;">loading...</div>
                     </div>
                 </div>
             </div>
@@ -102,8 +102,8 @@
                 <!-- STEP 1: PROFIT SETTINGS -->
                 <div class="cnx-panel">
                     <div class="cnx-panel-head">
-                        <div class="cnx-panel-title">1. Profit Settings</div>
-                        <div class="cnx-badge">REQUIRED</div>
+                        <div class="cnx-panel-title" style="color: #111827 !important;">1. Profit Settings</div>
+                        <div class="cnx-badge" style="background: #E5E7EB; color: #374151 !important; border-color: #D1D5DB;">REQUIRED</div>
                     </div>
                     <div class="cnx-panel-sub" style="margin-bottom: 16px;">We use this to calculate True Net Profit, not just revenue.</div>
                     
@@ -122,14 +122,14 @@
                     <button id="save-settings-btn" class="cnx-btn-secondary" onclick="saveSettings()" style="width: 100%; margin-top: 8px;">
                         Save Profit Settings
                     </button>
-                    <div id="settings-status" class="cnx-success-text" style="display: none;">✅ Settings saved successfully!</div>
+                    <div id="settings-status" class="cnx-success-text" style="display: none; color: #059669;">✅ Settings saved successfully!</div>
                 </div>
 
                 <!-- STEP 2: TELEGRAM ALERTS -->
                 <div class="cnx-panel">
                     <div class="cnx-panel-head">
-                        <div class="cnx-panel-title">2. Telegram Alerts</div>
-                        <div class="cnx-badge cnx-badge-cyan">RECOMMENDED</div>
+                        <div class="cnx-panel-title" style="color: #111827 !important;">2. Telegram Alerts</div>
+                        <div class="cnx-badge" style="background: #E0F2FE; color: #0284C7 !important; border-color: #BAE6FD;">RECOMMENDED</div>
                     </div>
                     <div class="cnx-panel-sub" style="margin-bottom: 16px;">Get instant price drop alerts and daily AI briefings sent to your phone.</div>
                     
@@ -147,12 +147,12 @@
             <!-- AUTO-DISCOVER COMPETITORS -->
             <div class="cnx-panel" style="margin-top: 24px;">
                 <div class="cnx-panel-head">
-                    <div class="cnx-panel-title">3. Auto-Discover Competitors</div>
-                    <div class="cnx-badge cnx-badge-violet">AI POWERED</div>
+                    <div class="cnx-panel-title" style="color: #111827 !important;">3. Auto-Discover Competitors</div>
+                    <div class="cnx-badge" style="background: #F3E8FF; color: #6D28D9 !important; border-color: #E9D5FF;">AI POWERED</div>
                 </div>
                 <div class="cnx-panel-sub" style="margin-bottom: 16px;">Based on your catalog, we found these stores selling similar items. Add them to track their prices.</div>
                 <div id="suggested-competitors-container" class="cnx-list">
-                    <div class="cnx-empty">Scanning market for competitors…</div>
+                    <div class="cnx-empty" style="color: #6B7280;">Scanning market for competitors…</div>
                 </div>
             </div>
 
@@ -161,14 +161,8 @@
     </div>
 </div>
 
-<script src="js/app.js?v=2069"></script>
-<script src="js/connect.js?v=2069"></script>
+<script src="js/app.js?v=2083"></script>
+<script src="js/connect.js?v=2083"></script>
 </body>
 </html>
-
-
-
-
-
-
 
