@@ -3027,3 +3027,58 @@ html, body {
     .set-grid-2 { grid-template-columns: 1fr; }
 }
 
+
+/* ==========================================
+   GLOBAL OVERRIDE — SHARP COLORS & TIGHTER SPACING
+   ========================================== */
+
+/* 1. Sharp Bold Colors (Original V1 Palette) */
+:root, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
+    --ov-bg: #000000;
+    --ov-panel: #111111; /* Sharp dark surface */
+    --ov-card: #1A1A1A;
+    --ov-border: rgba(255, 255, 255, 0.12); /* Sharper borders */
+    --ov-text: #FFFFFF; /* Pure white text */
+    --ov-cyan: #00E5FF;   /* Original Bright Cyan */
+    --ov-green: #00FF88;  /* Original Bright Green */
+    --ov-red: #FF2266;    /* Original Bright Red */
+    --ov-amber: #FFAA00;  /* Original Bright Amber */
+    --ov-violet: #8B7FFF; /* Original Bright Violet */
+}
+
+/* 2. Kill the huge vertical gap & tighten sections */
+.ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
+    padding-top: 8px !important; /* Reduced from 24px */
+    padding-bottom: 32px !important;
+}
+.ov-row-a, .st-row-a, .cmp-row-a, .trm-row-a, .dsc-row-a, .inv-row-a, .cnx-row-a, .set-row-a {
+    margin-bottom: 16px !important; /* Tighter gap below titles */
+}
+.ov-kpi-grid, .st-kpi-grid, .inv-kpi-grid {
+    margin-bottom: 16px !important;
+    gap: 12px !important;
+}
+.ov-grid-3, .st-grid-2-1, .st-grid-2-2, .cnx-grid-2, .set-grid-2 {
+    gap: 16px !important;
+    margin-bottom: 16px !important;
+}
+
+/* 3. Original Font Sizes (Bolder & Larger) */
+.ov-title, .st-title, .cmp-title, .trm-title, .dsc-title, .inv-title, .cnx-title, .set-title {
+    font-size: 32px !important; /* Back to V1 large size */
+    font-weight: 900 !important;
+    letter-spacing: -0.5px !important;
+}
+.ov-panel-title, .st-panel-title, .cmp-panel-title, .trm-panel-title {
+    font-size: 16px !important; /* Bolder panel headers */
+    font-weight: 800 !important;
+}
+.ov-kpi-value, .st-kpi-value, .inv-kpi-value {
+    font-size: 28px !important; /* Bigger numbers */
+}
+.ov-sub, .st-sub, .cmp-sub, .trm-sub, .dsc-sub, .inv-sub, .cnx-sub, .set-sub {
+    font-size: 14px !important;
+}
+.ov-kpi-label, .st-kpi-label, .inv-kpi-label {
+    font-size: 11px !important;
+}
