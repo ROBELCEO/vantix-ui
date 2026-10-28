@@ -58,9 +58,14 @@ async function checkConnectionStatus() {
 }
 
 async function saveSettings(btn) {
-    const goal = parseFloat(document.getElementById('profit-goal').value) || 0;
-    const shipping = parseFloat(document.getElementById('shipping-cost').value) || 0;
-    const gateway = parseFloat(document.getElementById('gateway-fee').value) || 0;
+    const goalVal = document.getElementById('profit-goal').value;
+    const shipVal = document.getElementById('shipping-cost').value;
+    const gateVal = document.getElementById('gateway-fee').value;
+
+    // Send null if empty, otherwise parse the float
+    const goal = goalVal ? parseFloat(goalVal) : null;
+    const shipping = shipVal ? parseFloat(shipVal) : null;
+    const gateway = gateVal ? parseFloat(gateVal) : null;
     const status = document.getElementById('settings-status');
 
     const originalText = btn.innerText;
@@ -187,3 +192,4 @@ document.addEventListener('DOMContentLoaded', () => {
         updateLink();
     }
 });
+
