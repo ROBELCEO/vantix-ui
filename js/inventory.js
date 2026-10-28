@@ -1,107 +1,72 @@
 ﻿async function loadInventory() {
-    const tbody = document.getElementById('inventory-body');
-    if(!tbody) return;
-
+    const list = document.getElementById('inventory-list');
+    if (!list) return;
+    
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/products');
-        
-        if (!res.ok) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-red" style="text-align: center; padding: 40px;">Failed to load inventory.</td></tr>';
-            return;
-        }
-
+        const res = await fetch('https://vantix-my5f.onrender.com/api/inventory/analytics');
         const data = await res.json();
-        
-        if(!data.products || data.products.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-tertiary" style="text-align: center; padding: 40px;">No products found. Sync your Shopify store to import products.</td></tr>';
+
+        if (data.error) {
+            list.innerHTML = `<div class="text-red" style="text-align: center;">${data.error}</div>`;
             return;
         }
 
-        let html = '';
-        data.products.forEach((p, index) => {
-            const price = parseFloat(p.price) || 0;
-            const cost = parseFloat(p.cost) || 0;
-            let margin = price > 0 ? ((price - cost) / price) * 100 : 0;
-            const stock = p.stock !== undefined ? p.stock : 0;
+        // Render KPIs
+        document.getElementById('kpi-cash').innerText = '$' + data.kpis.total_cash.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('kpi-restock').innerText = data.kpis.restock_alerts;
+        document.getElementById('kpi-dead').innerText = data.kpis.dead_stock;
+
+        if (data.inventory.length === 0) {
+            list.innerHTML = '<div class="text-tertiary" style="text-align: center;">No inventory found. Sync your Shopify store first.</div>';
+            return;
+        }
+
+        list.innerHTML = data.inventory.map(item => {
+            let statusBadge = '';
             
-            let statusBadge = '<span class="badge badge-green">HEALTHY</span>';
-            if(stock === 0) statusBadge = '<span class="badge badge-red">OUT OF STOCK</span>';
-            else if(stock < 10) statusBadge = '<span class="badge badge-amber">LOW STOCK</span>';
-
-            const hasVariants = p.variants_data && p.variants_data.length > 0;
-            const cursorStyle = hasVariants ? 'cursor: pointer;' : '';
-            const expandIcon = hasVariants ? '<span class="expand-icon">▼</span>' : '';
-
-            // Main Row
-            html += `
-                <tr onclick="toggleVariants(${index})" style="${cursorStyle}">
-                    <td>
-                        <div class="product-cell">
-                            ${expandIcon}
-                            <img src="${p.image_url || 'https://via.placeholder.com/40'}" class="product-img">
-                            <div>
-                                <div class="product-title">${p.title}</div>
-                                <div class="product-variants">${hasVariants ? p.variants_data.length + ' Variants' : '1 Variant'}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="mono ${stock === 0 ? 'text-red' : (stock < 10 ? 'text-amber' : '')}">${stock}</td>
-                    <td class="mono text-tertiary">$${cost.toFixed(2)}</td>
-                    <td class="mono">$${price.toFixed(2)}</td>
-                    <td class="mono text-green" style="font-weight:700;">${margin.toFixed(1)}%</td>
-                    <td>${statusBadge}</td>
-                </tr>
-            `;
-
-            // Hidden Variant Row
-            if (hasVariants) {
-                let variantHtml = `<div class="variant-container">`;
-                p.variants_data.forEach(v => {
-                    let locHtml = '';
-                    if (v.locations && v.locations.length > 0) {
-                        v.locations.forEach(l => {
-                            locHtml += `<span class="variant-loc">${l.location}: <b>${l.qty}</b></span>`;
-                        });
-                    }
-
-                    variantHtml += `
-                        <div class="variant-item">
-                            <div>
-                                <span style="font-weight:700; color:var(--text-primary);">${v.title}</span>
-                                ${locHtml}
-                            </div>
-                            <div style="text-align:right;">
-                                <div class="mono" style="font-size:12px;">$${v.price.toFixed(2)}</div>
-                                <div class="mono ${v.stock === 0 ? 'text-red' : 'text-green'}" style="font-size:10px; margin-top:2px;">${v.stock} in stock</div>
-                            </div>
-                        </div>
-                    `;
-                });
-                variantHtml += `</div>`;
-
-                html += `
-                    <tr class="variant-row" id="variant-row-${index}">
-                        <td colspan="6">${variantHtml}</td>
-                    </tr>
-                `;
+            if (item.days_remaining === null) {
+                statusBadge = '<div class="badge badge-red" style="margin-top: 4px;">Dead Stock (0 Sales)</div>';
+            } else if (item.days_remaining <= 14) {
+                statusBadge = `<div class="badge badge-amber" style="margin-top: 4px;">Runs out in ${item.days_remaining} days</div>`;
+            } else {
+                statusBadge = `<div class="badge badge-green" style="margin-top: 4px;">Healthy (${item.days_remaining} days left)</div>`;
             }
-        });
 
-        tbody.innerHTML = html;
+            const restockBtn = item.restock_qty > 0 
+                ? `<div class="mono text-amber" style="font-size: 11px; font-weight: 800; margin-top: 4px;">Order ${item.restock_qty} units</div>` 
+                : '';
+
+            return `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-btn);">
+                    
+                    <div style="display: flex; align-items: center; gap: 16px; flex: 2;">
+                        <img src="${item.image || 'https://via.placeholder.com/40'}" style="width: 48px; height: 48px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border);">
+                        <div>
+                            <div style="font-weight: 800; font-size: 14px;">${item.title}</div>
+                            <div class="text-tertiary" style="font-size: 11px;">${item.sold_60d} sold in last 60 days</div>
+                        </div>
+                    </div>
+
+                    <div style="flex: 1; text-align: center; border-left: 1px solid var(--border); border-right: 1px solid var(--border);">
+                        <div class="text-tertiary" style="font-size: 10px; text-transform: uppercase;">Stock</div>
+                        <div class="mono" style="font-size: 16px; font-weight: 800; color: var(--text-primary);">${item.stock}</div>
+                    </div>
+
+                    <div style="flex: 1; text-align: center; border-right: 1px solid var(--border);">
+                        <div class="text-tertiary" style="font-size: 10px; text-transform: uppercase;">Cash Value</div>
+                        <div class="mono text-green" style="font-size: 16px; font-weight: 800;">$${item.cash_value.toFixed(2)}</div>
+                    </div>
+
+                    <div style="flex: 1.5; display: flex; flex-direction: column; align-items: flex-end;">
+                        ${statusBadge}
+                        ${restockBtn}
+                    </div>
+                </div>
+            `;
+        }).join('');
 
     } catch(e) {
         console.error("Inventory error:", e);
-        tbody.innerHTML = '<tr><td colspan="6" class="text-red" style="text-align: center; padding: 40px;">Network error. Please refresh.</td></tr>';
+        list.innerHTML = '<div class="text-red" style="text-align: center;">Failed to load inventory. Backend might be asleep.</div>';
     }
-}
-
-function toggleVariants(index) {
-    const row = document.getElementById(`variant-row-${index}`);
-    if (row) {
-        row.classList.toggle('open');
-    }
-}
-
-if (window.location.pathname.includes('inventory.html')) {
-    loadInventory();
 }

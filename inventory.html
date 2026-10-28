@@ -7,19 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-    .product-cell { display: flex; align-items: center; gap: 12px; }
-    .product-img { width: 40px; height: 40px; border-radius: var(--r-btn); object-fit: cover; border: 1px solid var(--border); }
-    .product-title { font-weight: 700; font-size: 13px; color: var(--text-primary); }
-    .product-variants { font-size: 10px; color: var(--text-tertiary); }
-    .variant-row { display: none; background: #050505; }
-    .variant-row.open { display: table-row; }
-    .variant-row td { padding: 0 !important; border-bottom: 2px solid var(--border-strong); }
-    .variant-container { padding: 16px 24px; display: flex; flex-direction: column; gap: 12px; }
-    .variant-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-btn); }
-    .variant-loc { font-size: 10px; color: var(--text-tertiary); display: inline-block; margin-left: 8px; padding: 2px 6px; background: var(--bg-elevated); border-radius: 4px; }
-    .expand-icon { color: var(--accent); margin-right: 8px; font-size: 10px; }
-</style>
 </head>
 <body>
 
@@ -66,31 +53,37 @@
 </div>
 
 <div class="screen">
-    <div style="max-width: 1000px; margin: 0 auto;">
-        <div class="screen-title">Product Inventory</div>
-        <div class="screen-sub">Auto-imported from Shopify</div>
+    <div style="max-width: 1100px; margin: 0 auto;">
+        <div class="screen-title">Smart Warehouse</div>
+        <div class="screen-sub">Track inventory velocity, restock alerts, and trapped cash.</div>
 
-        <div class="panel" style="overflow-x: auto;">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Stock</th>
-                        <th>Cost</th>
-                        <th>Price</th>
-                        <th>Margin</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="inventory-body">
-                    <tr><td colspan="6" class="text-tertiary" style="text-align: center; padding: 40px;">Loading inventory...</td></tr>
-                </tbody>
-            </table>
+        <!-- KPIs -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+            <div class="kpi-card" style="border-color: rgba(0,255,136,0.3);">
+                <div class="kpi-label">Cash Tied Up in Stock</div>
+                <div class="kpi-value text-green" id="kpi-cash">$0.00</div>
+            </div>
+            <div class="kpi-card" style="border-color: rgba(255,170,0,0.3);">
+                <div class="kpi-label">Items to Restock (14 Days)</div>
+                <div class="kpi-value text-amber" id="kpi-restock">0</div>
+            </div>
+            <div class="kpi-card" style="border-color: rgba(255,34,102,0.3);">
+                <div class="kpi-label">Dead Stock Items (60 Days)</div>
+                <div class="kpi-value text-red" id="kpi-dead">0</div>
+            </div>
+        </div>
+
+        <!-- INVENTORY TABLE -->
+        <div class="panel">
+            <div class="panel-header">Inventory Velocity & Intelligence</div>
+            <div id="inventory-list" style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px;">
+                <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 20px;">Analyzing sales velocity...</div>
+            </div>
         </div>
     </div>
 </div>
 
-<script src="js/app.js?v=1100"></script>
-<script src="js/inventory.js"></script>
+<script src="js/app.js?v=2032"></script>
+<script src="js/inventory.js?v=2032"></script>
 </body>
 </html>
