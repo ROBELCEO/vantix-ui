@@ -37,8 +37,10 @@ async function loadInventory() {
             let statusBadge = '';
             
             // Status Logic based on backend days_remaining
-            if (item.days_remaining === null) {
-                statusBadge = '<div class="inv-badge inv-badge-red">DEAD STOCK</div>';
+            if (item.stock === 0) {
+                statusBadge = '<div class="inv-badge inv-badge-red">OUT OF STOCK</div>';
+            } else if (item.days_remaining === null) {
+                statusBadge = '<div class="inv-badge inv-badge-red">DEAD STOCK (0 SALES)</div>';
             } else if (item.days_remaining <= 14) {
                 statusBadge = `<div class="inv-badge inv-badge-amber">RUNS OUT IN ${item.days_remaining} DAYS</div>`;
             } else {
@@ -90,4 +92,5 @@ async function loadInventory() {
         if (statusEl) statusEl.innerText = "Offline";
     }
 }
+
 
