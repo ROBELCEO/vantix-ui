@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Login</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2078">
+<link rel="stylesheet" href="css/style.css?v=2079">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
     :root {
@@ -77,6 +77,7 @@
 
     .chat-messages {
         flex: 1;
+        min-height: 0; /* CRITICAL FIX: Stops the chat from pushing the right side */
         padding: 32px;
         overflow-y: auto;
         display: flex;
@@ -177,6 +178,7 @@
         justify-content: center;
         padding: 40px;
         background: var(--bg);
+        overflow-y: auto; /* Allows login box to scroll if screen is too short */
     }
     
     .login-box {
@@ -230,10 +232,33 @@
     }
 
     @media (max-width: 900px) {
-        body { flex-direction: column; overflow-y: auto; }
-        .chat-container { border-right: none; border-bottom: 1px solid var(--border); height: 60vh; }
+        body { 
+            flex-direction: column; 
+            height: auto; 
+            overflow-y: auto; 
+        }
+        .chat-container { 
+            border-right: none; 
+            border-bottom: 1px solid var(--border); 
+            height: 50vh; 
+            min-height: 400px;
+        }
         .chat-messages { padding: 16px; }
-        .login-container { min-height: 40vh; padding: 24px; }
+        .login-container { 
+            min-height: 50vh; 
+            padding: 40px 20px; 
+        }
+        .msg { max-width: 100%; }
+    }
+        .login-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+        background: var(--bg);
+        overflow-y: auto; /* Allows login box to scroll if screen is too short */
+    }
         .msg { max-width: 100%; }
     }
 </style>
@@ -410,4 +435,6 @@
 </script>
 </body>
 </html>
+
+
 
