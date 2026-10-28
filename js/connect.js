@@ -29,6 +29,12 @@ async function checkConnectionStatus() {
             if (statusEl) statusEl.innerText = "Connected";
             document.getElementById('connected-domain').innerText = data.domain;
             
+            // AUTO-SYNC IN THE BACKGROUND
+            fetch('https://vantix-my5f.onrender.com/api/shopify/sync')
+                .then(r => r.json())
+                .then(syncData => console.log("Background sync complete:", syncData))
+                .catch(err => console.error("Background sync failed:", err));
+            
             // Load saved settings without flashing
             try {
                 const settingsRes = await fetch('https://vantix-my5f.onrender.com/api/store/settings');
@@ -97,34 +103,7 @@ async function saveSettings(btn) {
     }
 }
 
-async function triggerSync(btn) {
-    const originalText = btn.innerText;
-    btn.innerText = "Syncing...";
-    btn.disabled = true;
 
-    try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/shopify/sync');
-        const data = await res.json();
-        
-        if (res.ok) {
-            btn.innerText = "✅ Sync Complete";
-            btn.style.background = "#DCFCE7";
-            btn.style.color = "#16A34A";
-        } else {
-            throw new Error(data.message || "Sync failed");
-        }
-    } catch(e) {
-        alert("Sync failed: " + e.message);
-        btn.innerText = "❌ Error";
-    } finally {
-        setTimeout(() => {
-            btn.innerText = originalText;
-            btn.style.background = "#FFF";
-            btn.style.color = "#16A34A";
-            btn.disabled = false;
-        }, 3000);
-    }
-}
 
 async function checkTelegramStatus() {
     const btn = document.getElementById('telegram-btn');
@@ -217,4 +196,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 800);
     }
 });
+
 
