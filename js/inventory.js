@@ -1,65 +1,81 @@
-﻿async function loadInventory() {
+﻿function invEsc(str) {
+    return String(str ?? "").replace(/[&<>"']/g, s => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[s]));
+}
+
+function invMoney(n) {
+    const v = Number(n);
+    if (!Number.isFinite(v)) return "—";
+    return "$" + v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+async function loadInventory() {
     const list = document.getElementById('inventory-list');
+    const statusEl = document.getElementById('inv-status');
     if (!list) return;
-    
+
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/inventory/analytics');
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        
         const data = await res.json();
-
-        if (data.error) {
-            list.innerHTML = `<div class="text-red" style="text-align: center;">${data.error}</div>`;
-            return;
-        }
+        if (statusEl) statusEl.innerText = "Live Data";
 
         // Render KPIs
-        document.getElementById('kpi-cash').innerText = '$' + data.kpis.total_cash.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-        document.getElementById('kpi-restock').innerText = data.kpis.restock_alerts;
-        document.getElementById('kpi-dead').innerText = data.kpis.dead_stock;
+        document.getElementById('kpi-cash').innerText = invMoney(data.kpis.total_cash || 0);
+        document.getElementById('kpi-restock').innerText = data.kpis.restock_alerts || 0;
+        document.getElementById('kpi-dead').innerText = data.kpis.dead_stock || 0;
 
-        if (data.inventory.length === 0) {
-            list.innerHTML = '<div class="text-tertiary" style="text-align: center;">No inventory found. Sync your Shopify store first.</div>';
+        if (!data.inventory || data.inventory.length === 0) {
+            list.innerHTML = '<div class="inv-empty">No inventory found. Connect your Shopify store to sync products.</div>';
             return;
         }
 
+        // Render List
         list.innerHTML = data.inventory.map(item => {
             let statusBadge = '';
             
+            // Status Logic based on backend days_remaining
             if (item.days_remaining === null) {
-                statusBadge = '<div class="badge badge-red" style="margin-top: 4px;">Dead Stock (0 Sales)</div>';
+                statusBadge = '<div class="inv-badge inv-badge-red">DEAD STOCK</div>';
             } else if (item.days_remaining <= 14) {
-                statusBadge = `<div class="badge badge-amber" style="margin-top: 4px;">Runs out in ${item.days_remaining} days</div>`;
+                statusBadge = `<div class="inv-badge inv-badge-amber">RUNS OUT IN ${item.days_remaining} DAYS</div>`;
             } else {
-                statusBadge = `<div class="badge badge-green" style="margin-top: 4px;">Healthy (${item.days_remaining} days left)</div>`;
+                statusBadge = `<div class="inv-badge inv-badge-green">${item.days_remaining} DAYS LEFT</div>`;
             }
 
-            const restockBtn = item.restock_qty > 0 
-                ? `<div class="mono text-amber" style="font-size: 11px; font-weight: 800; margin-top: 4px;">Order ${item.restock_qty} units</div>` 
+            const restockHtml = item.restock_qty > 0 
+                ? `<div class="inv-restock-text">Order ${item.restock_qty} units</div>` 
                 : '';
 
             return `
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-btn);">
-                    
-                    <div style="display: flex; align-items: center; gap: 16px; flex: 2;">
-                        <img src="${item.image || 'https://via.placeholder.com/40'}" style="width: 48px; height: 48px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border);">
+                <div class="inv-product-row">
+                    <!-- Product Info -->
+                    <div class="inv-col-info">
+                        <img class="inv-product-img" src="${invEsc(item.image || '')}" onerror="this.style.visibility='hidden'">
                         <div>
-                            <div style="font-weight: 800; font-size: 14px;">${item.title}</div>
-                            <div class="text-tertiary" style="font-size: 11px;">${item.sold_60d} sold in last 60 days</div>
+                            <div class="inv-product-title">${invEsc(item.title)}</div>
+                            <div class="inv-product-meta">${item.sold_60d} sold in last 60 days</div>
                         </div>
                     </div>
-
-                    <div style="flex: 1; text-align: center; border-left: 1px solid var(--border); border-right: 1px solid var(--border);">
-                        <div class="text-tertiary" style="font-size: 10px; text-transform: uppercase;">Stock</div>
-                        <div class="mono" style="font-size: 16px; font-weight: 800; color: var(--text-primary);">${item.stock}</div>
+                    
+                    <!-- Stock -->
+                    <div class="inv-col-stat">
+                        <div class="inv-stat-label">Stock</div>
+                        <div class="inv-stat-value">${item.stock}</div>
                     </div>
 
-                    <div style="flex: 1; text-align: center; border-right: 1px solid var(--border);">
-                        <div class="text-tertiary" style="font-size: 10px; text-transform: uppercase;">Cash Value</div>
-                        <div class="mono text-green" style="font-size: 16px; font-weight: 800;">$${item.cash_value.toFixed(2)}</div>
+                    <!-- Cash Value -->
+                    <div class="inv-col-stat">
+                        <div class="inv-stat-label">Cash Value</div>
+                        <div class="inv-stat-value inv-text-green">${invMoney(item.cash_value)}</div>
                     </div>
 
-                    <div style="flex: 1.5; display: flex; flex-direction: column; align-items: flex-end;">
+                    <!-- Status -->
+                    <div class="inv-col-status">
                         ${statusBadge}
-                        ${restockBtn}
+                        ${restockHtml}
                     </div>
                 </div>
             `;
@@ -67,6 +83,7 @@
 
     } catch(e) {
         console.error("Inventory error:", e);
-        list.innerHTML = '<div class="text-red" style="text-align: center;">Failed to load inventory. Backend might be asleep.</div>';
+        list.innerHTML = '<div class="inv-empty inv-text-red">Network error. Failed to load inventory data.</div>';
+        if (statusEl) statusEl.innerText = "Offline";
     }
 }
