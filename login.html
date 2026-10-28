@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Login</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=2078">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
     :root {
@@ -80,20 +81,25 @@
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        gap: 24px;
+        gap: 20px;
+        scroll-behavior: smooth;
     }
 
     /* Message Bubbles */
     .msg {
-        display: flex;
+        display: none; /* Hidden by default, JS reveals them */
         flex-direction: column;
         gap: 6px;
         max-width: 85%;
-        animation: fadeUp 0.5s ease-out forwards;
         opacity: 0;
         transform: translateY(10px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
     }
-    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    .msg.show {
+        display: flex;
+        opacity: 1;
+        transform: translateY(0);
+    }
     
     .msg-sender {
         font-size: 10px;
@@ -139,12 +145,29 @@
     }
     .mock-val { font-family: 'JetBrains Mono', monospace; font-weight: 800; }
 
-    /* Delays for chat sequence */
-    .msg:nth-child(1) { animation-delay: 0.1s; }
-    .msg:nth-child(2) { animation-delay: 0.8s; }
-    .msg:nth-child(3) { animation-delay: 1.8s; }
-    .msg:nth-child(4) { animation-delay: 3.0s; }
-    .msg:nth-child(5) { animation-delay: 4.2s; }
+    /* Typing Indicator */
+    .typing-indicator {
+        display: none;
+        gap: 4px;
+        padding: 12px 16px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        width: fit-content;
+    }
+    .typing-indicator.show { display: flex; }
+    .typing-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--text2);
+        border-radius: 50%;
+        animation: typing 1.4s infinite ease-in-out both;
+    }
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes typing {
+        0%, 80%, 100% { transform: scale(0); }
+        40% { transform: scale(1); }
+    }
 
     /* RIGHT SIDE - LOGIN */
     .login-container {
@@ -154,7 +177,6 @@
         justify-content: center;
         padding: 40px;
         background: var(--bg);
-        position: relative;
     }
     
     .login-box {
@@ -163,14 +185,12 @@
         background: var(--panel);
         border: 1px solid var(--border);
         padding: 40px;
-        text-align: left;
     }
     
     .login-box h1 {
         font-size: 22px;
         font-weight: 900;
         margin-bottom: 8px;
-        letter-spacing: -0.5px;
     }
     .login-box p {
         font-size: 13px;
@@ -200,7 +220,6 @@
         box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
     }
     .google-btn img { width: 18px; height: 18px; }
-    .google-btn:disabled { opacity: 0.7; cursor: wait; }
 
     .error-msg {
         color: var(--red);
@@ -212,9 +231,9 @@
 
     @media (max-width: 900px) {
         body { flex-direction: column; overflow-y: auto; }
-        .chat-container { border-right: none; border-bottom: 1px solid var(--border); height: 50vh; }
-        .chat-messages { padding: 16px; gap: 16px; }
-        .login-container { min-height: 50vh; padding: 24px; }
+        .chat-container { border-right: none; border-bottom: 1px solid var(--border); height: 60vh; }
+        .chat-messages { padding: 16px; }
+        .login-container { min-height: 40vh; padding: 24px; }
         .msg { max-width: 100%; }
     }
 </style>
@@ -226,12 +245,11 @@
         <div class="chat-header">
             <svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg>
             <div class="chat-header-title">VANTIX <span>SYSTEM</span></div>
-            <div class="chat-status">ONLINE</div>
+            <div class="chat-status">CONNECTING</div>
         </div>
 
-        <div class="chat-messages">
-            <!-- Msg 1 -->
-            <div class="msg">
+        <div class="chat-messages" id="chat-box">
+            <div class="msg" id="msg-1">
                 <div class="msg-sender system">Vantix System</div>
                 <div class="msg-bubble">
                     Welcome, Shopify Owner. <br><br>
@@ -239,64 +257,49 @@
                 </div>
             </div>
 
-            <!-- Msg 2 -->
-            <div class="msg">
+            <div class="msg" id="msg-2">
                 <div class="msg-sender system">Vantix System</div>
                 <div class="msg-bubble">
                     Vantix fixes that. We monitor your rivals 24/7. When they make a move, you know instantly.
-                    
-                    <!-- Mock Image 1: Alert -->
                     <div class="mock-ui">
-                        <div class="mock-header" style="color: var(--red);">
-                            <span>🚨 Competitor Alert</span>
-                            <span>Just Now</span>
-                        </div>
-                        <div class="mock-row">
-                            <span style="color: var(--text2);">Boandtee Shorts</span>
-                            <span class="mock-val" style="color: var(--green);">$35.00</span>
-                        </div>
-                        <div class="mock-row">
-                            <span style="color: var(--text2);">Previous Price</span>
-                            <span class="mock-val" style="text-decoration: line-through;">$45.00</span>
-                        </div>
+                        <div class="mock-header" style="color: var(--red);"><span>🚨 Competitor Alert</span><span>Just Now</span></div>
+                        <div class="mock-row"><span style="color: var(--text2);">Boandtee Shorts</span><span class="mock-val" style="color: var(--green);">$35.00</span></div>
+                        <div class="mock-row"><span style="color: var(--text2);">Previous Price</span><span class="mock-val" style="text-decoration: line-through;">$45.00</span></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Msg 3 -->
-            <div class="msg">
+            <div class="msg" id="msg-3">
                 <div class="msg-sender system">Vantix System</div>
                 <div class="msg-bubble">
                     But we don't just spy. We protect your money. Our <strong>AI Margin Advisor</strong> does the math so you don't accidentally destroy your profit.
-                    
-                    <!-- Mock Image 2: AI -->
                     <div class="mock-ui">
-                        <div class="mock-header" style="color: var(--violet);">
-                            <span>🧠 AI Strategy</span>
-                            <span>Groq</span>
-                        </div>
-                        <div style="font-size: 11px; color: #fff; line-height: 1.5;">
-                            "HOLD—matching their $35 price will wipe out your margin. Instead, bundle with a Gym Bag to justify your $45 price."
-                        </div>
+                        <div class="mock-header" style="color: var(--violet);"><span>🧠 AI Strategy</span><span>Groq</span></div>
+                        <div style="font-size: 11px; color: #fff; line-height: 1.5;">"HOLD—matching their $35 price will wipe out your margin. Instead, bundle with a Gym Bag to justify your $45 price."</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Msg 4 -->
-            <div class="msg">
+            <div class="msg" id="msg-4">
                 <div class="msg-sender system">Vantix System</div>
                 <div class="msg-bubble">
                     When you're ready to expand, our <strong>Global Catalog Search</strong> finds high-demand products before they saturate the market.
                 </div>
             </div>
 
-            <!-- Msg 5 -->
-            <div class="msg">
+            <div class="msg" id="msg-5">
                 <div class="msg-sender system">Vantix System</div>
                 <div class="msg-bubble" style="border-color: var(--cyan); background: rgba(0, 229, 255, 0.05);">
                     <strong style="color: var(--cyan);">SYSTEM READY.</strong><br>
                     Authenticate with Google to initiate your dashboard.
                 </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typing">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
             </div>
         </div>
     </div>
@@ -317,6 +320,51 @@
     </div>
 
 <script>
+    // --- 1. AUTO-SCROLL CHAT LOGIC ---
+    const messages = [1, 2, 3, 4, 5];
+    const chatBox = document.getElementById('chat-box');
+    const typingIndicator = document.getElementById('typing');
+    const chatStatus = document.querySelector('.chat-status');
+
+    function scrollToBottom() {
+        chatBox.scrollTo({
+            top: chatBox.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+
+    async function playChatSequence() {
+        // Initial delay
+        await new Promise(r => setTimeout(r, 800));
+        chatStatus.innerText = "ONLINE";
+
+        for (let i = 0; i < messages.length; i++) {
+            const msgId = messages[i];
+            const msgEl = document.getElementById('msg-' + msgId);
+            
+            // Show typing indicator
+            typingIndicator.classList.add('show');
+            scrollToBottom();
+
+            // Wait for "typing" duration based on message length
+            await new Promise(r => setTimeout(r, 1200 + (i * 200)));
+
+            // Hide typing indicator, show message
+            typingIndicator.classList.remove('show');
+            msgEl.classList.add('show');
+            
+            // Scroll to bottom to show the new message
+            scrollToBottom();
+
+            // Pause before next message
+            await new Promise(r => setTimeout(r, 1500));
+        }
+    }
+
+    // Start chat on load
+    window.addEventListener('load', playChatSequence);
+
+    // --- 2. SUPABASE AUTH LOGIC ---
     document.addEventListener("DOMContentLoaded", () => {
         const btn = document.getElementById('login-btn');
         const btnText = document.getElementById('btn-text');
@@ -325,7 +373,7 @@
 
         if (!window.supabase) {
             errorMsg.style.display = 'block';
-            errorMsg.innerText = "Error: Supabase failed to load. Check your internet connection.";
+            errorMsg.innerText = "Error: Supabase failed to load.";
             return;
         }
 
@@ -362,3 +410,4 @@
 </script>
 </body>
 </html>
+

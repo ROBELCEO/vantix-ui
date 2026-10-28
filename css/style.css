@@ -3273,3 +3273,26 @@ html, body {
     padding-top: 8px !important; /* Only a tiny 8px gap below the header */
     margin-top: 0px !important;
 }
+
+/* ==========================================
+   CUSTOM DARK SCROLLBAR (GLOBAL)
+   ========================================== */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #000000; 
+}
+::-webkit-scrollbar-thumb {
+    background: #333333; 
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555555; 
+}
+/* For Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #333333 #000000;
+}
