@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Discovery</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2063">
+<link rel="stylesheet" href="css/style.css?v=2065">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -55,7 +55,6 @@
 <div class="screen dsc-screen">
     <div class="dsc-wrap">
         
-        <!-- ROW A -->
         <div class="dsc-row-a">
             <div>
                 <div class="dsc-eyebrow">GOLDMINE ENGINE</div>
@@ -67,13 +66,11 @@
             </div>
         </div>
 
-        <!-- SEARCH BAR -->
         <div class="dsc-search-wrap">
             <input type="text" id="dsc-search-input" class="dsc-search-input" placeholder="Search any niche globally (e.g. gaming chairs, skincare, dog toys)…" onkeypress="handleSearch(event)">
             <button onclick="triggerSearch()" class="dsc-search-btn">Search</button>
         </div>
 
-        <!-- CATEGORY PILLS -->
         <div class="dsc-pills" id="dsc-pills">
             <div class="dsc-pill active" onclick="switchCategory('', this)">Auto-Detect</div>
             <div class="dsc-pill" onclick="switchCategory('jeans', this)">Jeans</div>
@@ -83,7 +80,6 @@
             <div class="dsc-pill" onclick="switchCategory('bags', this)">Bags</div>
         </div>
 
-        <!-- RESULTS GRID -->
         <div id="discovery-container" class="dsc-grid">
             <div class="dsc-empty" style="grid-column: 1 / -1;">
                 <div class="dsc-spinner"></div>
@@ -94,8 +90,7 @@
     </div>
 </div>
 
-<script src="js/app.js?v=2062"></script>
-<script src="js/discovery.js?v=2062"></script>
+<script src="js/app.js?v=2065"></script>
+<script src="js/discovery.js?v=2065"></script>
 </body>
 </html>
-

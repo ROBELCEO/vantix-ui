@@ -57,7 +57,6 @@ async function loadDiscovery(category = '') {
         currentDiscoveryItems = allOpps;
 
         container.innerHTML = allOpps.map((opp, index) => {
-            // Use real data from backend
             const margin = opp.retail > 0 ? ((opp.retail - opp.wholesale) / opp.retail) * 100 : 0;
             const sourceClass = opp.supplier && opp.supplier.includes('AliExpress') ? 'dsc-badge-green' : 'dsc-badge-cyan';
             const bullets = Array.isArray(opp.bullets) ? opp.bullets : [opp.reason || "High demand signal detected."];
@@ -91,7 +90,7 @@ async function loadDiscovery(category = '') {
 
                     <div class="dsc-card-reason">
                         <div class="dsc-reason-label">⚡ AI Goldmine Signals</div>
-                        <ul style="margin: 0; padding-left: 16px; font-size: 12px; color: var(--ov-text2); line-height: 1.5;">
+                        <ul style="margin: 0; padding-left: 16px; font-size: 11px; color: var(--ov-text2); line-height: 1.4;">
                             ${bullets.map(b => `<li>${dscEsc(b)}</li>`).join('')}
                         </ul>
                     </div>
@@ -134,7 +133,7 @@ async function pushToShopify(index, btn) {
     const item = currentDiscoveryItems[index];
     if (!item) return;
 
-    btn.innerText = "Pushing to Shopify...";
+    btn.innerText = "Pushing...";
     btn.disabled = true;
 
     try {
@@ -146,14 +145,14 @@ async function pushToShopify(index, btn) {
                 price: item.retail,
                 image_url: item.image,
                 description: item.reason,
-                product_type: "Apparel" // Basic fallback
+                product_type: "Apparel"
             })
         });
 
         const data = await res.json();
 
         if (res.ok) {
-            btn.innerText = "✅ Pushed to Shopify Drafts!";
+            btn.innerText = "✅ Pushed!";
             btn.style.background = "var(--ov-green)";
             btn.style.color = "#000";
         } else {
@@ -161,7 +160,7 @@ async function pushToShopify(index, btn) {
         }
     } catch(e) {
         console.error("Push error:", e);
-        btn.innerText = "❌ " + e.message;
+        btn.innerText = "❌ Error";
         btn.style.background = "var(--ov-red)";
         btn.style.color = "#fff";
 
@@ -170,6 +169,6 @@ async function pushToShopify(index, btn) {
             btn.style.background = "var(--ov-cyan)";
             btn.style.color = "#000";
             btn.disabled = false;
-        }, 5000);
+        }, 3000);
     }
 }
