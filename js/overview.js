@@ -244,6 +244,7 @@ function renderInsights(alerts) {
 }
 
 function renderTopProducts(products) {
+    window.ovAllProducts = products || [];
     const el = document.getElementById("ov-top-products");
     if (!el) return;
     if (!Array.isArray(products) || products.length === 0) {
@@ -295,3 +296,41 @@ function initOverviewRealtime() {
             }
         });
 }
+
+// ==========================================
+// TOP PRODUCTS MODAL LOGIC
+// ==========================================
+function showTopProductsModal() {
+    const modal = document.getElementById("ov-modal");
+    const list = document.getElementById("ov-modal-product-list");
+    if (!modal || !list) return;
+
+    if (!window.ovAllProducts || window.ovAllProducts.length === 0) {
+        list.innerHTML = '<div class="ov-empty">No products found.</div>';
+    } else {
+        list.innerHTML = window.ovAllProducts.map((p, i) => `
+            <div class="ov-product-row">
+                <div class="ov-product-rank">${i + 1}</div>
+                <img class="ov-product-img" src="${escapeAttr(p.image || 'https://via.placeholder.com/40')}" alt="">
+                <div class="ov-product-info">
+                    <div class="ov-product-title">${escapeHtml(p.title || "Product")}</div>
+                    <div class="ov-product-meta">${ovNum(p.units || 0)} sold</div>
+                </div>
+                <div class="ov-product-revenue">${ovMoney(p.revenue || 0)}</div>
+            </div>
+        `).join("");
+    }
+    modal.style.display = "flex";
+}
+
+function closeTopProductsModal() {
+    const modal = document.getElementById("ov-modal");
+    if (modal) modal.style.display = "none";
+}
+
+// Close modal when clicking outside the panel
+document.getElementById("ov-modal")?.addEventListener("click", function(e) {
+    if (e.target === this) {
+        closeTopProductsModal();
+    }
+});

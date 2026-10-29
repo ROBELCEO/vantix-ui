@@ -162,7 +162,7 @@
                         <div class="ov-panel-title">Top Products</div>
                         <div class="ov-panel-sub">By revenue, last 30 days</div>
                     </div>
-                    <a href="store.html" class="ov-link">View all →</a>
+                    <a href="#" onclick="showTopProductsModal(); return false;" class="ov-link">View all →</a>
                 </div>
                 <div id="ov-top-products" class="ov-list">
                     <div class="ov-empty">Loading products…</div>
@@ -184,14 +184,29 @@
                 <div class="ov-ai-note" id="ov-ai-assistant-note">AI status: standby</div>
             </div>
         </div>
-
+    <!-- TOP PRODUCTS OVERLAY MODAL -->
+    <div id="ov-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px;">
+        <div class="ov-panel" style="width: 100%; max-width: 600px; max-height: 80vh; display: flex; flex-direction: column; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+            <div class="ov-panel-head" style="margin-bottom: 16px;">
+                <div>
+                    <div class="ov-panel-title" style="font-size: 18px;">All Top Products</div>
+                    <div class="ov-panel-sub">Full revenue breakdown (Last 30 Days)</div>
+                </div>
+                <button onclick="closeTopProductsModal()" style="background: none; border: 1px solid #E5E7EB; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 800; color: #111827;">✕ Close</button>
+            </div>
+            <div id="ov-modal-product-list" class="ov-list" style="overflow-y: auto; flex: 1; padding-right: 8px;">
+                <!-- Products injected here -->
+            </div>
+        </div>
     </div>
-</div>
 
+</div>
+</div>
 <script src="js/app.js?v=2142"></script>
-<script src="js/overview.js?v=2145"></script>
+<script src="js/overview.js?v=2170"></script>
 </body>
 </html>
+
 
 
 
