@@ -153,7 +153,7 @@ async function loadOverview() {
             `).join('');
         }
     } else {
-        ovEmpty("ov-category", "No category data yet.");
+        ovEmpty("ov-category", "Waiting for your first order to calculate category revenue.");
     }
 
     const aiNote = document.getElementById("ov-ai-assistant-note");
@@ -272,4 +272,5 @@ function escapeHtml(str) {
 function escapeAttr(str) {
     return escapeHtml(str).replace(/`/g, "&#96;");
 }
+
 
