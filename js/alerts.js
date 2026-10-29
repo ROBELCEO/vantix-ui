@@ -76,7 +76,7 @@ async function waitForSession() {
 }
 
 async function initAlertsRealtime() {
-    if (alertsChannel) return;
+    if (alertsChannel && alertsChannel.state === "joined") return;
 
     const session = await waitForSession();
     if (!session || !window.supabaseClient) return;
@@ -162,3 +162,4 @@ async function loadAlerts() {
         if (statusEl) statusEl.innerText = "Offline";
     }
 }
+

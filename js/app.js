@@ -34,7 +34,13 @@ window.addEventListener('load', async () => {
     if (emailEl) emailEl.innerText = session.user.email;
     if (logoutBtn) logoutBtn.style.display = 'block';
 
-    // Silently trigger page-specific functions if they exist
+    // SPA mode: only load the current view
+    if (document.getElementById('view-root') && typeof window.routerInit === 'function') {
+        window.routerInit();
+        return;
+    }
+
+    // Legacy multi-page fallback
     setTimeout(() => {
         if (typeof checkConnectionStatus === 'function') checkConnectionStatus();
         if (typeof fetchCompetitors === 'function') fetchCompetitors();
@@ -65,6 +71,7 @@ function toggleMenu() {
         overlay.style.display = drawer.classList.contains('open') ? 'block' : 'none';
     }
 }
+
 
 
 
