@@ -342,23 +342,53 @@ function escapeAttr(str) {
 
 
 
-// LIVE REALTIME LISTENER
-async function initOverviewRealtime() {
+
+// ==========================================
+// MASTER OVERVIEW REALTIME LISTENER
+// Listens to Shopify Webhooks AND Competitor Alerts
+// ==========================================
+let ovChannel = null;
+let ovDebounceTimer = null;
+
+function initOverviewRealtime() {
     if (!window.supabaseClient || !window.currentSession) return;
     const userId = window.currentSession.user.id;
-    if (window.ovChannel) window.supabaseClient.removeChannel(window.ovChannel);
+    
+    if (ovChannel) {
+        window.supabaseClient.removeChannel(ovChannel);
+        ovChannel = null;
+    }
 
-    window.ovChannel = window.supabaseClient.channel('overview-live-' + userId)
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'shopify_events', filter: `user_id=eq.${userId}` }, () => {
-            console.log("Live event: Re-fetching Overview KPIs...");
-            // Silently reload the overview data
-            window.__vxSilent = true;
-            loadOverview().then(() => window.__vxSilent = false);
+    console.log("🎧 Attaching Master Overview Realtime Listener for user:", userId);
+
+    ovChannel = window.supabaseClient.channel('overview-master-' + userId)
+        // 1. Listen for Shopify Webhooks (Orders, Inventory)
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'shopify_events', filter: `user_id=eq.${userId}` }, (payload) => {
+            console.log("🔴 Live Shopify Event:", payload.new.topic);
+            triggerSilentOverviewReload();
         })
-        .subscribe();
+        // 2. Listen for Competitor Alerts (Price Drops)
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'alerts', filter: `user_id=eq.${userId}` }, (payload) => {
+            console.log("🔴 Live Alert Received:", payload.new.title);
+            triggerSilentOverviewReload();
+        })
+        .subscribe((status) => {
+            console.log("Master Overview Realtime Status:", status);
+        });
 }
 
-// Auto-start listener when page loads
-window.addEventListener('load', () => {
-    setTimeout(initOverviewRealtime, 1000);
-});
+function triggerSilentOverviewReload() {
+    // Debounce: If multiple webhooks hit at once, wait 500ms and only refresh once
+    if (ovDebounceTimer) clearTimeout(ovDebounceTimer);
+    ovDebounceTimer = setTimeout(() => {
+        window.__vxSilent = true;
+        loadOverview().then(() => window.__vxSilent = false);
+    }, 500);
+}
+
+// Override the original loadOverview to attach the listener
+const originalLoadOverview = loadOverview;
+window.loadOverview = async function() {
+    await originalLoadOverview();
+    initOverviewRealtime();
+};
