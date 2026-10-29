@@ -228,5 +228,18 @@ async function fetchAIAdvice(productName) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(loadTerminal, 500);
+    // Wait for app.js to initialize the session
+    const checkSession = setInterval(() => {
+        if (window.currentSession && window.currentSession.access_token) {
+            clearInterval(checkSession);
+            loadTerminal();
+        }
+    }, 200);
+    
+    // Fallback just in case
+    setTimeout(() => {
+        clearInterval(checkSession);
+        if (allComparisons.length === 0) loadTerminal();
+    }, 3000);
 });
+
