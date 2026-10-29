@@ -25,18 +25,37 @@ function ovEmpty(id, text) {
     if (el) el.innerHTML = `<div class="ov-empty">${text}</div>`;
 }
 async function ovFetchJson(url) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
     try {
-        const res = await fetch(url);
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeoutId);
         if (!res.ok) return { ok: false, status: res.status, data: null };
         const data = await res.json();
         return { ok: true, status: res.status, data };
     } catch (e) {
+        clearTimeout(timeoutId);
         return { ok: false, status: 0, data: null, error: e };
     }
 }
 
 async function loadOverview() {
     ovSet("ov-last-updated", "Updated: " + new Date().toLocaleTimeString());
+
+    // Default state while loading
+    if (!window.__vxSilent) {
+        const kpiIds = ["ov-revenue", "ov-net-profit", "ov-orders", "ov-price-index", "ov-leaks"];
+        kpiIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.innerText = "…";
+                el.classList.add("vx-skeleton");
+            }
+        });
+        ovEmpty("ov-opportunities", "Analyzing store data...");
+        ovEmpty("ov-insights", "Loading insights...");
+        ovEmpty("ov-top-products", "Loading products...");
+    }
 
     // If we are not using cached data, show skeletons
     if (!window.__vxSilent) {
@@ -59,7 +78,7 @@ async function loadOverview() {
         ovFetchJson("https://vantix-my5f.onrender.com/api/alerts/list")
     ]);
 
-    // Remove skeletons
+    // Remove skeletons on success
     ["ov-revenue", "ov-net-profit", "ov-orders", "ov-price-index", "ov-leaks"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.remove("vx-skeleton");
@@ -67,11 +86,13 @@ async function loadOverview() {
 
     // If the summary fetch failed completely (e.g. Render asleep or 401)
     if (!summaryRes.ok) {
-        ovSet("ov-revenue", "Err");
-        ovSet("ov-net-profit", "Err");
-        ovSet("ov-orders", "Err");
-        ovSet("ov-price-index", "Err");
-        ovSet("ov-leaks", "Err");
+        ["ov-revenue", "ov-net-profit", "ov-orders", "ov-price-index", "ov-leaks"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.innerText = "—";
+                el.classList.remove("vx-skeleton");
+            }
+        });
         ovError("ov-opportunities", "Could not connect to backend. Render may be waking up.", "loadOverview()");
         ovError("ov-insights", "Could not load insights.", "loadOverview()");
         ovError("ov-top-products", "Could not load products.", "loadOverview()");
@@ -315,6 +336,7 @@ function escapeHtml(str) {
 function escapeAttr(str) {
     return escapeHtml(str).replace(/`/g, "&#96;");
 }
+
 
 
 
