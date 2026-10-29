@@ -6229,22 +6229,19 @@ body, .screen, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .a
 
 
 
+
 /* ==========================================
-   PANNING FIX (No UI Changes)
+   THE ONLY SCROLL FIX NEEDED
    ========================================== */
 body {
     height: 100vh !important;
     display: flex !important;
     flex-direction: column !important;
     overflow: hidden !important;
+    margin: 0 !important;
 }
 .screen {
     flex: 1 !important;
-    min-height: 0 !important;
-    overflow: auto !important; /* Enables panning in all directions */
-}
-/* This forces the app to maintain its desktop width when zoomed, 
-   so it doesn't squish and allows you to scroll horizontally. */
-.screen {
-    min-width: 1200px !important; 
+    min-height: 0 !important; 
+    overflow: auto !important; 
 }
