@@ -6226,3 +6226,36 @@ body, .screen, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .a
     .ov-kpi-grid { grid-template-columns: 1fr; }
     .ov-wrap { padding: 18px 14px 40px; }
 }
+
+/* ==========================================
+   BULLETPROOF SCROLLING FIX
+   ========================================== */
+body {
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.header {
+    flex-shrink: 0 !important;
+    height: 56px !important;
+}
+
+/* Force the screen container to take up exactly the remaining height and scroll */
+.screen, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .alrt-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
+    height: calc(100vh - 56px) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    flex: none !important;
+    min-height: 0 !important;
+}
+
+/* Ensure wrappers don't block the scroll */
+.ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
+    height: auto !important;
+    min-height: min-content !important;
+    overflow: visible !important;
+}
