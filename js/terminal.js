@@ -51,7 +51,7 @@ function renderWatchlist() {
                 <img src="${c.my_image || 'https://via.placeholder.com/40'}" style="width: 40px; height: 40px; border-radius: 2px; object-fit: cover; border: 1px solid #E4E4E7;">
                 <div style="flex: 1; min-width: 0;">
                     <div style="font-weight: 700; font-size: 13px; color: #09090B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${c.my_product}</div>
-                    <div class="mono ${diffClass}" style="font-size: 11px;">${diff > 0 ? '+' : ''}$${diff.toFixed(2)} vs Comp</div>
+                    <div class="mono ${diffClass}" style="font-size: 11px;">${diffStr}</div>
                 </div>
                 <div class="mono trm-text-green" style="font-weight: 800; font-size: 14px;">$${c.my_price}</div>
             </div>
@@ -242,4 +242,5 @@ document.addEventListener('DOMContentLoaded', () => {
         if (allComparisons.length === 0) loadTerminal();
     }, 3000);
 });
+
 
