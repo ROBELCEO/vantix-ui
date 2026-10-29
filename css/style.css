@@ -6710,3 +6710,18 @@ html, body, .screen,
     .trm-layout { grid-template-columns: 1fr !important; }
     .trm-grid-2 { grid-template-columns: 1fr !important; }
 }
+
+/* ==========================================
+   TERMINAL — REDUCE GAP & STYLE EXPAND
+   ========================================== */
+/* Pull the content closer to the header */
+.trm-wrap { padding-top: 12px !important; }
+.trm-row-a { margin-bottom: 16px !important; padding-top: 0 !important; }
+.trm-screen { padding-top: 0 !important; }
+
+/* Ensure the list container doesn't get too huge when expanded */
+#watchlist-container {
+    max-height: 450px !important;
+    overflow-y: auto !important;
+    padding-right: 4px !important;
+}

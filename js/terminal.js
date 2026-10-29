@@ -1,4 +1,5 @@
-﻿let chartInstance = null;
+﻿let watchlistExpanded = false;
+let chartInstance = null;
 let allComparisons = [];
 let activeIndex = 0;
 
@@ -37,8 +38,10 @@ async function loadTerminal() {
 function renderWatchlist() {
     const container = document.getElementById('watchlist-container');
     
-    // LIMIT TO 7 ITEMS HERE
-    container.innerHTML = allComparisons.slice(0, 7).map((c, index) => {
+    // Show 4 items by default, or all if expanded
+    const displayItems = window.watchlistExpanded ? allComparisons : allComparisons.slice(0, 4);
+    
+    let html = displayItems.map((c, index) => {
         const isActive = index === activeIndex ? 'active' : '';
         const bg = isActive ? '#E0F2FE' : '#F8FAFC';
         const border = isActive ? '#0284C7' : '#F1F5F9';
@@ -67,6 +70,22 @@ function renderWatchlist() {
             </div>
         `;
     }).join('');
+
+    // Add Expand/Collapse Button
+    if (allComparisons.length > 4) {
+        html += `
+            <button onclick="toggleWatchlist()" style="width: 100%; padding: 8px; margin-top: 8px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 2px; font-weight: 700; font-size: 11px; color: #0284C7; cursor: pointer; transition: 0.2s;">
+                ${window.watchlistExpanded ? 'Show Less' : 'Show All (' + allComparisons.length + ')'}
+            </button>
+        `;
+    }
+    
+    container.innerHTML = html;
+}
+
+function toggleWatchlist() {
+    window.watchlistExpanded = !window.watchlistExpanded;
+    renderWatchlist();
 }
 
 function selectProduct(index) {
@@ -252,3 +271,4 @@ async function fetchAIAdvice(productName) {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(loadTerminal, 500);
 });
+
