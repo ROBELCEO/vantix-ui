@@ -1,4 +1,5 @@
-﻿let chartInstance = null;
+﻿window.chartOrientation = localStorage.getItem('vantix_chart_orientation') || 'vertical';
+let chartInstance = null;
 let allComparisons = [];
 let activeIndex = 0;
 let watchlistExpanded = false; // NEW: Controls 4 vs All
@@ -114,6 +115,21 @@ function selectProduct(index) {
     fetchAIAdvice(product.my_product);
 }
 
+function toggleChartOrientation() {
+    window.chartOrientation = window.chartOrientation === 'vertical' ? 'horizontal' : 'vertical';
+    localStorage.setItem('vantix_chart_orientation', window.chartOrientation);
+    updateToggleButtonText();
+    if (allComparisons.length > 0) {
+        renderChart(allComparisons[activeIndex]);
+    }
+}
+
+function updateToggleButtonText() {
+    const btn = document.getElementById('chart-toggle-btn');
+    if (btn) {
+        btn.innerText = window.chartOrientation === 'vertical' ? 'Switch to Horizontal' : 'Switch to Vertical';
+    }
+}
 function renderChart(product) {
     if(chartInstance) chartInstance.destroy();
     const canvas = document.getElementById('terminalChart');
@@ -296,7 +312,8 @@ async function fetchAIAdvice(productName) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(loadTerminal, 500);
+    setTimeout(() => { updateToggleButtonText(); loadTerminal(); }, 500);
 });
+
 
 

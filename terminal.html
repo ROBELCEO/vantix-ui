@@ -108,7 +108,10 @@
                             <div class="trm-panel-title" id="chart-product-name">Select a product</div>
                             <img id="chart-product-img" style="width: 28px; height: 28px; border-radius: 2px; border: 1px solid #E4E4E7; display: none;">
                         </div>
-                        <div class="trm-badge trm-badge-cyan">PRICE COMPARISON</div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <button id="chart-toggle-btn" onclick="toggleChartOrientation()" style="background: #FFFFFF; border: 1px solid #E4E4E7; padding: 4px 8px; font-size: 10px; font-weight: 800; color: #52525B; cursor: pointer; border-radius: 2px; transition: 0.2s;">Switch to Horizontal</button>
+                            <div class="trm-badge trm-badge-cyan">PRICE COMPARISON</div>
+                        </div>
                     </div>
                     <div class="trm-chart-wrap">
                         <canvas id="terminalChart"></canvas>
@@ -149,9 +152,10 @@
 </div>
 
 <script src="js/app.js?v=9999"></script>
-<script src="js/terminal.js?v=10005"></script>
+<script src="js/terminal.js?v=10010"></script>
 </body>
 </html>
+
 
 
 
