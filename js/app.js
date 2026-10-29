@@ -77,3 +77,13 @@ function toggleMenu() {
 
 
 
+
+// Stable DOM patch — no write if identical
+window.vxPatch = function (elOrId, html) {
+    const el = typeof elOrId === "string" ? document.getElementById(elOrId) : elOrId;
+    if (!el) return false;
+    if (el.__vxLast === html) return false;
+    el.__vxLast = html;
+    el.innerHTML = html;
+    return true;
+};

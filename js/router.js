@@ -11,9 +11,15 @@
     settings:    { html: "settings.html",    init: ["loadProfile"] }
 };
 
+const viewRenderedCache = {};
+const viewHTMLCache = {};
 let currentRoute = null;
 
 function cleanupPreviousView() {
+    if (currentRoute) {
+        const root = document.getElementById("view-root");
+        if (root) viewRenderedCache[currentRoute] = root.innerHTML;
+    }
     if (window.supabaseClient && typeof window.supabaseClient.getChannels === "function") {
         try {
             window.supabaseClient.getChannels().forEach(ch => {
@@ -43,6 +49,32 @@ function getRouteFromHash() {
     return VIEW_ROUTES[hash] ? hash : "connect";
 }
 
+function runInits(routeName) {
+    for (const fn of VIEW_ROUTES[routeName].init) {
+        if (typeof window[fn] === "function") {
+            try { window[fn](); } catch (err) { console.error("View init error:", fn, err); }
+        }
+    }
+}
+
+async function fetchShellHTML(routeName) {
+    const cfg = VIEW_ROUTES[routeName];
+    if (viewHTMLCache[routeName]) return viewHTMLCache[routeName];
+    const res = await fetch(cfg.html, { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status + " loading " + cfg.html);
+    const text = await res.text();
+    viewHTMLCache[routeName] = text;
+    return text;
+}
+
+async function prefetchShells(exceptRoute) {
+    for (const routeName of Object.keys(VIEW_ROUTES)) {
+        if (routeName === exceptRoute) continue;
+        if (viewHTMLCache[routeName]) continue;
+        try { await fetchShellHTML(routeName); } catch (e) { /* ignore */ }
+    }
+}
+
 async function loadView(routeName) {
     if (!VIEW_ROUTES[routeName]) routeName = "connect";
     if (currentRoute === routeName) return;
@@ -51,28 +83,36 @@ async function loadView(routeName) {
     if (!root) return;
 
     cleanupPreviousView();
+    setActiveTab(routeName);
+    document.title = "Vantix — " + routeName.charAt(0).toUpperCase() + routeName.slice(1);
+    window.__vxRoute = routeName;
+
+    // 1. Instant restore from last rendered snapshot — no loading flash
+    if (viewRenderedCache[routeName]) {
+        root.innerHTML = viewRenderedCache[routeName];
+        currentRoute = routeName;
+        window.__vxSilent = true;
+        runInits(routeName);
+        window.__vxSilent = false;
+        return;
+    }
+
+    // 2. First-ever mount: fetch shell, inject, run inits with loading allowed
     root.innerHTML = '<div style="padding:60px;text-align:center;color:#6B7280;font-family:Inter,sans-serif;">Loading…</div>';
 
     try {
-        const res = await fetch(VIEW_ROUTES[routeName].html, { cache: "no-store" });
-        if (!res.ok) throw new Error("HTTP " + res.status + " loading " + VIEW_ROUTES[routeName].html);
-        const text = await res.text();
+        const text = await fetchShellHTML(routeName);
         const doc = new DOMParser().parseFromString(text, "text/html");
         const screenEl = doc.querySelector(".screen");
         if (!screenEl) throw new Error("No .screen in " + VIEW_ROUTES[routeName].html);
 
         root.innerHTML = "";
         root.appendChild(screenEl);
-
-        setActiveTab(routeName);
         currentRoute = routeName;
-        document.title = "Vantix — " + routeName.charAt(0).toUpperCase() + routeName.slice(1);
+        window.__vxSilent = false;
+        runInits(routeName);
 
-        for (const fn of VIEW_ROUTES[routeName].init) {
-            if (typeof window[fn] === "function") {
-                try { window[fn](); } catch (err) { console.error("View init error:", fn, err); }
-            }
-        }
+        prefetchShells(routeName);
     } catch (e) {
         console.error("Route load error:", e);
         root.innerHTML = '<div style="padding:60px;text-align:center;color:#E11D48;font-family:Inter,sans-serif;">Failed to load view: ' + e.message + '</div>';

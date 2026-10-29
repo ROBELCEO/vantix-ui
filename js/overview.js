@@ -227,7 +227,10 @@ function renderTopProducts(products) {
 function renderChart(chart) {
     const canvas = document.getElementById("ov-profit-chart");
     if (!canvas || typeof Chart === "undefined") return;
-    if (ovChartInstance) ovChartInstance.destroy();
+    const sig = JSON.stringify({ labels: chart.labels || [], data: chart.data || [] });
+        if (window.__ovChartSig === sig && ovChartInstance) return;
+        window.__ovChartSig = sig;
+        if (ovChartInstance) ovChartInstance.destroy();
 
     const labels = Array.isArray(chart.labels) && chart.labels.length ? chart.labels : ["No data"];
     const data = Array.isArray(chart.data) && chart.data.length ? chart.data : [0];
@@ -272,5 +275,6 @@ function escapeHtml(str) {
 function escapeAttr(str) {
     return escapeHtml(str).replace(/`/g, "&#96;");
 }
+
 
 
