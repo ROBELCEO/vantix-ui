@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — My Store</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2133">
+<link rel="stylesheet" href="css/style.css?v=2134">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -48,7 +48,7 @@
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
         <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
-        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none; background: #222 !important; color: #FFF !important; border-color: #333 !important;">Log Out</button>
         <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
     </div>
 </div>
@@ -83,7 +83,7 @@
                 <div class="st-kpi-label">Net Profit (30d)</div>
                 <div class="st-kpi-value st-green" id="kpi-net-profit">—</div>
                 <div class="st-kpi-meta" id="kpi-net-profit-meta">Revenue − COGS</div>
-                <a href="index.html?setup=fees" id="kpi-net-profit-setup" style="display: none; margin-top: 6px; padding: 4px 8px; font-size: 10px; background: #E11D48; color: #FFF; text-align: center; border-radius: 4px; text-decoration: none; font-weight: 800;">Setup Fees →</a>
+                <a href="index.html?setup=fees" id="kpi-net-profit-setup" style="display: none; margin-top: 8px; padding: 4px 8px; font-size: 10px; background: #E11D48; color: #FFF; text-align: center; border-radius: 2px !important; text-decoration: none; font-weight: 800;">Setup Fees →</a>
             </div>
             <div class="st-kpi">
                 <div class="st-kpi-label">Orders (30d)</div>
@@ -133,7 +133,7 @@
 
         <!-- ROW D: 4 PROFIT ENGINE PANELS -->
         <div class="st-grid-2-2">
-            <div class="st-panel st-panel-amber">
+            <div class="st-panel">
                 <div class="st-panel-head">
                     <div>
                         <div class="st-panel-title">Abandoned Cart ROI</div>
@@ -146,7 +146,7 @@
                 </div>
             </div>
 
-            <div class="st-panel st-panel-red">
+            <div class="st-panel">
                 <div class="st-panel-head">
                     <div>
                         <div class="st-panel-title">Dead Stock Cash Trap</div>
@@ -159,7 +159,7 @@
                 </div>
             </div>
 
-            <div class="st-panel st-panel-violet">
+            <div class="st-panel">
                 <div class="st-panel-head">
                     <div>
                         <div class="st-panel-title">AOV Bundle Suggester</div>
@@ -172,7 +172,7 @@
                 </div>
             </div>
 
-            <div class="st-panel st-panel-cyan">
+            <div class="st-panel">
                 <div class="st-panel-head">
                     <div>
                         <div class="st-panel-title">VIP Customer LTV</div>
@@ -186,7 +186,7 @@
             </div>
         </div>
 
-        <!-- ROW E: LOW STOCK + CUSTOMER STATS (HONEST) -->
+        <!-- ROW E: LOW STOCK + CUSTOMER STATS -->
         <div class="st-grid-2-2">
             <div class="st-panel">
                 <div class="st-panel-head">
@@ -212,7 +212,7 @@
                     <div class="st-empty">Loading customer data…</div>
                 </div>
                 <div class="st-note">
-                    Full New vs Returning segmentation requires Shopify Analytics access, which is not yet connected. This panel shows only verified customer data.
+                    Full New vs Returning segmentation requires Shopify Analytics access, which is not yet connected.
                 </div>
             </div>
         </div>
@@ -220,30 +220,7 @@
     </div>
 </div>
 
-<script src="js/app.js?v=2093"></script>
-<script src="js/store.js?v=2122"></script>
+<script src="js/app.js?v=2134"></script>
+<script src="js/store.js?v=2134"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
