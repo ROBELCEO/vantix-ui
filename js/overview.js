@@ -14,12 +14,6 @@ function ovSet(id, text) {
     const el = document.getElementById(id);
     if (el) el.innerText = text;
 }
-function ovError(id, text, retryFn) {
-    const el = document.getElementById(id);
-    if (el) {
-        el.innerHTML = `<div class="vx-error-box">${text}<br><button class="vx-retry-btn" onclick="${retryFn}">Retry</button></div>`;
-    }
-}
 function ovEmpty(id, text) {
     const el = document.getElementById(id);
     if (el) el.innerHTML = `<div class="ov-empty">${text}</div>`;
@@ -42,63 +36,12 @@ async function ovFetchJson(url) {
 async function loadOverview() {
     ovSet("ov-last-updated", "Updated: " + new Date().toLocaleTimeString());
 
-    // Default state while loading
-    if (!window.__vxSilent) {
-        const kpiIds = ["ov-revenue", "ov-net-profit", "ov-orders", "ov-price-index", "ov-leaks"];
-        kpiIds.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.innerText = "…";
-                el.classList.add("vx-skeleton");
-            }
-        });
-        ovEmpty("ov-opportunities", "Analyzing store data...");
-        ovEmpty("ov-insights", "Loading insights...");
-        ovEmpty("ov-top-products", "Loading products...");
-    }
-
-    // If we are not using cached data, show skeletons
-    if (!window.__vxSilent) {
-        ovSet("ov-revenue", "");
-        document.getElementById("ov-revenue").classList.add("vx-skeleton");
-        ovSet("ov-net-profit", "");
-        document.getElementById("ov-net-profit").classList.add("vx-skeleton");
-        ovSet("ov-orders", "");
-        document.getElementById("ov-orders").classList.add("vx-skeleton");
-        ovSet("ov-price-index", "");
-        document.getElementById("ov-price-index").classList.add("vx-skeleton");
-        ovSet("ov-leaks", "");
-        document.getElementById("ov-leaks").classList.add("vx-skeleton");
-    }
-
     const [summaryRes, storeStatusRes, storeDetailedRes, alertsRes] = await Promise.all([
         ovFetchJson("https://vantix-my5f.onrender.com/api/overview/summary"),
         ovFetchJson("https://vantix-my5f.onrender.com/api/shopify/status"),
-        ovFetchJson("https://vantix-my5f.onrender.com/api/store/detailed?t=" + Date.now()),
+        ovFetchJson("https://vantix-my5f.onrender.com/api/store/detailed?t=" + Date.now()), // Cache buster
         ovFetchJson("https://vantix-my5f.onrender.com/api/alerts/list")
     ]);
-
-    // Remove skeletons on success
-    ["ov-revenue", "ov-net-profit", "ov-orders", "ov-price-index", "ov-leaks"].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.remove("vx-skeleton");
-    });
-
-    // If the summary fetch failed completely (e.g. Render asleep or 401)
-    if (!summaryRes.ok) {
-        ["ov-revenue", "ov-net-profit", "ov-orders", "ov-price-index", "ov-leaks"].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.innerText = "—";
-                el.classList.remove("vx-skeleton");
-            }
-        });
-        ovError("ov-opportunities", "Could not connect to backend. Render may be waking up.", "loadOverview()");
-        ovError("ov-insights", "Could not load insights.", "loadOverview()");
-        ovError("ov-top-products", "Could not load products.", "loadOverview()");
-        ovSet("ov-store-status", "Store: Offline");
-        return;
-    }
 
     if (storeStatusRes.ok && storeStatusRes.data && storeStatusRes.data.connected) {
         ovSet("ov-store-status", "Store: " + (storeStatusRes.data.domain || "connected"));
@@ -125,24 +68,13 @@ async function loadOverview() {
 
         ovSet("ov-revenue", Number.isFinite(gross) ? ovMoney(gross) : "—");
         
-        // Handle Missing Fees & Missing COGS
         const netEl = document.getElementById("ov-net-profit");
-        const metaEl = document.getElementById("ov-net-profit-meta");
-        const setupEl = document.getElementById("ov-net-profit-setup");
-
-        if (kpis.profit_status === "MISSING_COGS") {
-            if (netEl) { netEl.innerText = "MISSING"; netEl.style.color = "#E11D48"; netEl.style.fontSize = "16px"; }
-            if (metaEl) metaEl.innerText = "COGS not set in Shopify";
-            if (setupEl) setupEl.style.display = "none";
-        } else if (kpis.profit_status === "MISSING_FEES") {
-            if (netEl) { netEl.innerText = "—"; netEl.style.color = "#9CA3AF"; netEl.style.fontSize = "24px"; }
-            if (metaEl) metaEl.innerText = "Fees not configured";
-            if (setupEl) setupEl.style.display = "block";
-        } else {
-            if (netEl) { netEl.style.fontSize = "24px"; netEl.style.color = "#059669"; }
-            if (metaEl) metaEl.innerText = "Revenue minus costs";
-            if (setupEl) setupEl.style.display = "none";
-            ovSet("ov-net-profit", Number.isFinite(net) ? ovMoney(net) : "—");
+        if (netEl) {
+            if (Number.isFinite(net)) {
+                netEl.innerText = ovMoney(net);
+                if (net < 0) { netEl.classList.remove("ov-text-green"); netEl.classList.add("ov-text-red"); } 
+                else { netEl.classList.remove("ov-text-red"); netEl.classList.add("ov-text-green"); }
+            } else { netEl.innerText = "—"; }
         }
 
         ovSet("ov-orders", Number.isFinite(orders) ? ovNum(orders) : "—");
@@ -153,11 +85,9 @@ async function loadOverview() {
             if (Number.isFinite(priceIndex)) {
                 priceEl.innerText = (priceIndex > 0 ? "+" : "") + priceIndex + "%";
                 priceEl.className = "ov-kpi-value " + (priceIndex > 0 ? "ov-text-red" : priceIndex < 0 ? "ov-text-green" : "");
-                ovSet("ov-price-index-meta", priceIndex > 0 ? "You are higher than market" : priceIndex < 0 ? "You are lower than market" : "In line with market");
             } else {
                 priceEl.innerText = "—";
                 priceEl.className = "ov-kpi-value";
-                ovSet("ov-price-index-meta", "vs competitors");
             }
         }
 
@@ -172,21 +102,14 @@ async function loadOverview() {
 
     let detailed = storeDetailedRes.ok ? storeDetailedRes.data : null;
     if (detailed) {
-        console.log("CHART DATA RECEIVED:", detailed.chart); renderChart(detailed.chart || { labels: [], data: [] });
+        console.log("CHART DATA RECEIVED:", detailed.chart);
+        renderChart(detailed.chart || { labels: [], data: [] });
         const dk = detailed.kpis || {};
         ovSet("ov-chart-revenue", Number.isFinite(Number(dk.total_revenue)) ? ovMoney(dk.total_revenue) : "—");
-        
-        if (kpis && kpis.profit_status === "MISSING_COGS") {
-            const cp = document.getElementById("ov-chart-profit");
-            if (cp) { cp.innerText = "MISSING"; cp.style.color = "#E11D48"; }
-        } else {
-            ovSet("ov-chart-profit", Number.isFinite(Number(dk.net_profit)) ? ovMoney(dk.net_profit) : "—");
-        }
-        
+        ovSet("ov-chart-profit", Number.isFinite(Number(dk.net_profit)) ? ovMoney(dk.net_profit) : "—");
         ovSet("ov-chart-orders", Number.isFinite(Number(dk.order_count)) ? ovNum(dk.order_count) : "—");
         renderTopProducts(detailed.top_products || []);
     } else {
-        console.error("❌ Failed to load /api/store/detailed. Status:", storeDetailedRes.status, "Data:", storeDetailedRes.data);
         renderChart({ labels: [], data: [] });
         ovSet("ov-chart-revenue", "—"); ovSet("ov-chart-profit", "—"); ovSet("ov-chart-orders", "—");
         ovEmpty("ov-top-products", "Product data unavailable. Connect Shopify and sync products.");
@@ -198,32 +121,63 @@ async function loadOverview() {
         ovEmpty("ov-insights", "No insights available yet.");
     }
 
-    // Render Sales by Category
-    if (summary && summary.categories && summary.categories.length > 0) {
-        const catEl = document.getElementById("ov-category");
-        if (catEl) {
-            catEl.innerHTML = summary.categories.map(c => `
-                <div style="margin-bottom: 12px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #09090B; margin-bottom: 6px;">
-                        <span>${escapeHtml(c.name)}</span>
-                        <span class="mono">$${c.revenue.toFixed(2)} (${c.percent}%)</span>
-                    </div>
-                    <div style="width: 100%; background: #F1F5F9; height: 6px; border-radius: 2px !important; overflow: hidden;">
-                        <div style="width: ${c.percent}%; background: #0284C7; height: 100%;"></div>
-                    </div>
-                </div>
-            `).join('');
-        }
-    } else {
-        ovEmpty("ov-category", "Waiting for your first order to calculate category revenue.");
-    }
-
     const aiNote = document.getElementById("ov-ai-assistant-note");
     if (aiNote) {
         aiNote.innerText = (summary && summary.actions && summary.actions.length)
             ? "AI status: recommendations generated from your current store data."
             : "AI status: standby. Add products and competitors to unlock recommendations.";
     }
+
+    initOverviewRealtime();
+}
+
+function renderChart(chart) {
+    const canvas = document.getElementById("ov-profit-chart");
+    if (!canvas || typeof Chart === "undefined") return;
+    if (ovChartInstance) ovChartInstance.destroy();
+
+    let labels = Array.isArray(chart.labels) && chart.labels.length ? chart.labels : ["No data"];
+    let data = Array.isArray(chart.data) && chart.data.length ? chart.data : [0];
+
+    const ctx = canvas.getContext("2d");
+
+    ovChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Net Profit",
+                data: data,
+                backgroundColor: data.map(v => v < 0 ? "#E11D48" : "#059669"),
+                borderRadius: 2,
+                barPercentage: 0.9
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let v = context.parsed.y;
+                            return "Profit: " + new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(v);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: "#6B7280", font: { size: 9 }, maxTicksLimit: 8 } },
+                y: { 
+                    grid: { color: "#E5E7EB" }, 
+                    ticks: { color: "#6B7280", font: { size: 10 } },
+                    min: -8000,
+                    max: 1000
+                }
+            }
+        }
+    });
 }
 
 function renderOpportunities(actions, badgeText) {
@@ -286,101 +240,6 @@ function renderTopProducts(products) {
     `).join("");
 }
 
-function renderChart(chart) {
-    const canvas = document.getElementById("ov-profit-chart");
-    if (!canvas || typeof Chart === "undefined") return;
-    if (ovChartInstance) ovChartInstance.destroy();
-
-    let labels = Array.isArray(chart.labels) && chart.labels.length ? chart.labels : ["No data"];
-    let data = Array.isArray(chart.data) && chart.data.length ? chart.data : [0];
-
-    const ctx = canvas.getContext("2d");
-
-    ovChartInstance = new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "Net Profit",
-                data: data,
-                backgroundColor: function(context) {
-                    const value = context.raw;
-                    // Red if negative, Green if positive
-                    return value < 0 ? "#E11D48" : "#059669";
-                },
-                borderRadius: 4,
-                barPercentage: 0.8
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) { label += ': '; }
-                            if (context.parsed.y !== null) {
-                                // Show exact dollar amount on hover
-                                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
-                            }
-                            return label;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: { grid: { display: false }, ticks: { color: "#6B7280", font: { size: 10 }, maxTicksLimit: 10 } },
-                y: { grid: { color: "#E5E7EB" }, ticks: { color: "#6B7280", font: { size: 10 } } }
-            }
-        }
-    });
-}
-function _renderChart(chart) {
-    const canvas = document.getElementById("ov-profit-chart");
-    if (!canvas || typeof Chart === "undefined") return;
-    const sig = JSON.stringify({ labels: chart.labels || [], data: chart.data || [] });
-        if (window.__ovChartSig === sig && ovChartInstance) return;
-        window.__ovChartSig = sig;
-        if (ovChartInstance) ovChartInstance.destroy();
-
-    const labels = Array.isArray(chart.labels) && chart.labels.length ? chart.labels : ["No data"];
-    const data = Array.isArray(chart.data) && chart.data.length ? chart.data : [0];
-
-    const ctx = canvas.getContext("2d");
-    const gradient = ctx.createLinearGradient(0, 0, 0, 260);
-    gradient.addColorStop(0, "rgba(2, 132, 199, 0.15)");
-    gradient.addColorStop(1, "rgba(2, 132, 199, 0)");
-
-    ovChartInstance = new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels,
-            datasets: [{
-                label: "Revenue",
-                data,
-                backgroundColor: "#0284C7",
-                backgroundColor: gradient,
-                borderRadius: 4,
-                
-                
-                pointRadius: 3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { grid: { display: false }, ticks: { color: "#6B7280", font: { size: 10 } } },
-                y: { grid: { color: "#E5E7EB" }, ticks: { color: "#6B7280", font: { size: 10 } } }
-            }
-        }
-    });
-}
-
 function escapeHtml(str) {
     return String(str ?? "").replace(/[&<>"']/g, s => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -390,64 +249,26 @@ function escapeAttr(str) {
     return escapeHtml(str).replace(/`/g, "&#96;");
 }
 
-
-
-
-
-
-
-// ==========================================
-// MASTER OVERVIEW REALTIME LISTENER
-// Listens to Shopify Webhooks AND Competitor Alerts
-// ==========================================
 let ovChannel = null;
-let ovDebounceTimer = null;
-
 function initOverviewRealtime() {
     if (!window.supabaseClient || !window.currentSession) return;
+    if (ovChannel) { window.supabaseClient.removeChannel(ovChannel); ovChannel = null; }
     const userId = window.currentSession.user.id;
-    
-    if (ovChannel) {
-        window.supabaseClient.removeChannel(ovChannel);
-        ovChannel = null;
-    }
-
-    console.log("🎧 Attaching Master Overview Realtime Listener for user:", userId);
+    const statusEl = document.getElementById("ov-ai-status");
+    if (statusEl) statusEl.innerHTML = '<span style="color: #D97706;">● Connecting…</span>';
 
     ovChannel = window.supabaseClient.channel('overview-master-' + userId)
-        // 1. Listen for Shopify Webhooks (Orders, Inventory)
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'shopify_events', filter: `user_id=eq.${userId}` }, (payload) => {
-            console.log("🔴 Live Shopify Event:", payload.new.topic);
-            triggerSilentOverviewReload();
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'shopify_events', filter: `user_id=eq.${userId}` }, () => {
+            window.__vxSilent = true; loadOverview().then(() => window.__vxSilent = false);
         })
-        // 2. Listen for Competitor Alerts (Price Drops)
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'alerts', filter: `user_id=eq.${userId}` }, (payload) => {
-            console.log("🔴 Live Alert Received:", payload.new.title);
-            triggerSilentOverviewReload();
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'alerts', filter: `user_id=eq.${userId}` }, () => {
+            window.__vxSilent = true; loadOverview().then(() => window.__vxSilent = false);
         })
         .subscribe((status) => {
-            console.log("Master Overview Realtime Status:", status);
+            if (status === 'SUBSCRIBED') {
+                if (statusEl) statusEl.innerHTML = '<span style="color: #059669;">● Live Sync Active</span>';
+            } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+                if (statusEl) statusEl.innerHTML = '<span style="color: #E11D48;">● Disconnected</span>';
+            }
         });
 }
-
-function triggerSilentOverviewReload() {
-    // Debounce: If multiple webhooks hit at once, wait 500ms and only refresh once
-    if (ovDebounceTimer) clearTimeout(ovDebounceTimer);
-    ovDebounceTimer = setTimeout(() => {
-        window.__vxSilent = true;
-        loadOverview().then(() => window.__vxSilent = false);
-    }, 500);
-}
-
-// Override the original loadOverview to attach the listener
-const originalLoadOverview = loadOverview;
-window.loadOverview = async function() {
-    await originalLoadOverview();
-    initOverviewRealtime();
-};
-
-
-
-
-
-
