@@ -38,7 +38,7 @@ async function loadTerminal() {
 function renderWatchlist() {
     const container = document.getElementById('watchlist-container');
     
-    container.innerHTML = allComparisons.slice(0, 7).map((c, index) => {
+    container.innerHTML = allComparisons.slice(0, 10).map((c, index) => {
         const isActive = index === activeIndex ? 'active' : '';
         const bg = isActive ? '#E0F2FE' : '#F8FAFC';
         const border = isActive ? '#0284C7' : '#F1F5F9';
@@ -252,4 +252,3 @@ async function fetchAIAdvice(productName) {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(loadTerminal, 500);
 });
-

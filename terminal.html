@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Terminal</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2270">
+<link rel="stylesheet" href="css/style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -17,16 +17,17 @@
         <div class="brand"><div>VANTI<span>X</span></div></div>
         <button class="drawer-close" onclick="toggleMenu()">✕</button>
     </div>
-    <a href="index.html" class="drawer-tab">Connect</a>
-    <a href="overview.html" class="drawer-tab">Overview</a>
-    <a href="store.html" class="drawer-tab">My Store</a>
-    <a href="competitors.html" class="drawer-tab">Competitors</a>
+    <a href="index.html" class="drawer-tab ">Connect</a>
+    <a href="overview.html" class="drawer-tab ">Overview</a>
+    <a href="store.html" class="drawer-tab ">My Store</a>
+    <a href="competitors.html" class="drawer-tab ">Competitors</a>
     <a href="terminal.html" class="drawer-tab active">Terminal</a>
-    <a href="discovery.html" class="drawer-tab">Discovery</a>
-    <a href="alerts.html" class="drawer-tab">Alerts</a>
-    <a href="inventory.html" class="drawer-tab">Inventory</a>
-    <a href="membership.html" class="drawer-tab">Membership</a>
-    <a href="settings.html" class="drawer-tab">Settings</a>
+    <a href="discovery.html" class="drawer-tab ">Discovery</a>
+    <a href="alerts.html" class="drawer-tab ">Alerts</a>
+    <a href="inventory.html" class="drawer-tab ">Inventory</a>
+    <a href="membership.html" class="drawer-tab ">Membership</a>
+    <a href="settings.html" class="drawer-tab ">Settings</a>
+    
 </div>
 
 <div class="header">
@@ -35,112 +36,83 @@
         <div>VANTI<span>X</span></div>
     </a>
     <div class="tabs">
-        <a href="index.html" class="tab">Connect</a>
-        <a href="overview.html" class="tab">Overview</a>
-        <a href="store.html" class="tab">My Store</a>
-        <a href="competitors.html" class="tab">Competitors</a>
+        <a href="index.html" class="tab ">Connect</a>
+        <a href="overview.html" class="tab ">Overview</a>
+        <a href="store.html" class="tab ">My Store</a>
+        <a href="competitors.html" class="tab ">Competitors</a>
         <a href="terminal.html" class="tab active">Terminal</a>
-        <a href="discovery.html" class="tab">Discovery</a>
-        <a href="alerts.html" class="tab">Alerts</a>
-        <a href="inventory.html" class="tab">Inventory</a>
-        <a href="membership.html" class="tab">Membership</a>
-        <a href="settings.html" class="tab">Settings</a>
+        <a href="discovery.html" class="tab ">Discovery</a>
+        <a href="alerts.html" class="tab ">Alerts</a>
+        <a href="inventory.html" class="tab ">Inventory</a>
+        <a href="membership.html" class="tab ">Membership</a>
+        <a href="settings.html" class="tab ">Settings</a>
+        
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
-        <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
-        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none; background: #222 !important; color: #FFF !important; border-color: #333 !important;">Log Out</button>
+        <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">loading...</div>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
         <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
     </div>
 </div>
 
-<div class="screen trm-screen">
-    <div class="trm-wrap">
+<div class="screen">
+    <div style="max-width: 1100px; margin: 0 auto; padding-top: 20px;">
         
-        <!-- ROW A: HEADER -->
-        <div class="trm-row-a">
-            <div>
-                <div class="trm-eyebrow">TACTICAL PRICING</div>
-                <h1 class="trm-title">Terminal</h1>
-                <p class="trm-sub">Analyze margins, simulate price drops, and consult the AI advisor.</p>
-            </div>
-            <div class="trm-status-group">
-                <div class="trm-chip" id="trm-status">Connecting…</div>
+        <!-- LEFT SIDEBAR: WATCHLIST -->
+        <div>
+            <div class="screen-title" style="font-size: 20px; margin-bottom: 16px;">Watchlist</div>
+            <div id="watchlist-container" style="display: flex; flex-direction: column; gap: 8px;">
+                <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 20px;">Loading products...</div>
             </div>
         </div>
 
-        <!-- MAIN GRID: LEFT & RIGHT COLUMNS -->
-        <div class="trm-layout">
-            
-            <!-- LEFT COL: WATCHLIST & AI -->
-            <div class="trm-left-col">
-                <div class="trm-panel">
-                    <div class="trm-panel-head">
-                        <div>
-                            <div class="trm-panel-title">Watchlist</div>
-                            <div class="trm-panel-sub">Your products vs competitors</div>
-                        </div>
-                        <div class="trm-badge trm-badge-green">LIVE</div>
+        <!-- RIGHT MAIN AREA -->
+        <div>
+            <!-- PRICE HISTORY CHART -->
+            <div class="panel" style="margin-bottom: 24px;">
+                <div class="panel-header" style="display: flex; justify-content: space-between;">
+                    <!-- THE IMAGE TAG IS GUARANTEED TO BE HERE NOW -->
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        Price History — 
+                        <img id="chart-product-img" src="" style="width: 28px; height: 28px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border); display: none;"> 
+                        <span id="chart-product-name" style="color: var(--accent);">SELECT A PRODUCT</span>
                     </div>
-                    <div id="watchlist-container" class="trm-list">
-                        <div class="trm-empty">Loading products…</div>
-                    </div>
+                    <div class="badge badge-violet">30 Days</div>
                 </div>
-
-                <div class="trm-panel trm-panel-violet">
-                    <div class="trm-panel-head">
-                        <div>
-                            <div class="trm-panel-title">AI Margin Advisor</div>
-                            <div class="trm-panel-sub">Profit-aware strategy</div>
-                        </div>
-                        <div class="trm-badge trm-badge-violet">GROQ AI</div>
-                    </div>
-                    <div id="ai-advisor-content" style="font-size: 13px; color: #52525B; line-height: 1.6;">
-                        Select a product to generate a strategy.
-                    </div>
+                <div style="height: 250px;">
+                    <canvas id="terminalChart"></canvas>
                 </div>
             </div>
 
-            <!-- RIGHT COL: CHART, SAFE FLOOR, SIMULATOR -->
-            <div class="trm-right-col">
-                <div class="trm-panel trm-panel-chart">
-                    <div class="trm-panel-head">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <div class="trm-panel-title" id="chart-product-name">Select a product</div>
-                            <img id="chart-product-img" style="width: 28px; height: 28px; border-radius: 2px; border: 1px solid #E4E4E7; display: none;">
-                        </div>
-                        <div class="trm-badge trm-badge-cyan">PRICE COMPARISON</div>
-                    </div>
-                    <div class="trm-chart-wrap">
-                        <canvas id="terminalChart"></canvas>
+            <!-- TACTICAL GRID: SAFE FLOOR & SIMULATOR -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                
+                <!-- PRICE WAR SAFE FLOOR -->
+                <div class="panel" style="border-color: rgba(255, 170, 0, 0.4); background: linear-gradient(180deg, rgba(255,170,0,0.05), transparent);">
+                    <div class="panel-header" style="color: var(--amber);">⚔️ Price War Safe Floor</div>
+                    <div id="safe-floor-content">
+                        <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 20px;">Select a product to analyze margins.</div>
                     </div>
                 </div>
 
-                <div class="trm-grid-2">
-                    <div class="trm-panel trm-panel-amber">
-                        <div class="trm-panel-head">
-                            <div>
-                                <div class="trm-panel-title">Price War Safe Floor</div>
-                                <div class="trm-panel-sub">Lowest price before losing money</div>
-                            </div>
-                            <div class="trm-badge trm-badge-amber">MARGIN</div>
-                        </div>
-                        <div id="safe-floor-content">
-                            <div class="trm-empty">Select a product to analyze.</div>
-                        </div>
+                <!-- PROFIT FORECAST SIMULATOR -->
+                <div class="panel" style="border-color: rgba(0, 229, 255, 0.4); background: linear-gradient(180deg, rgba(0,229,255,0.05), transparent);">
+                    <div class="panel-header" style="color: var(--accent);">🔮 Profit Forecast Simulator</div>
+                    <div id="simulator-content">
+                        <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 20px;">Select a product to simulate pricing.</div>
                     </div>
+                </div>
 
-                    <div class="trm-panel">
-                        <div class="trm-panel-head">
-                            <div>
-                                <div class="trm-panel-title">Profit Forecast Simulator</div>
-                                <div class="trm-panel-sub">Volume needed for same profit</div>
-                            </div>
-                            <div class="trm-badge trm-badge-cyan">SIMULATE</div>
-                        </div>
-                        <div id="simulator-content">
-                            <div class="trm-empty">Select a product to simulate.</div>
-                        </div>
-                    </div>
+            </div>
+
+            <!-- AI MARGIN ADVISOR -->
+            <div class="panel" style="margin-top: 24px; border-color: rgba(139, 127, 255, 0.4);">
+                <div class="panel-header" style="color: var(--violet); display: flex; justify-content: space-between;">
+                    <div>🧠 AI Margin Advisor</div>
+                    <div class="badge badge-violet">Groq</div>
+                </div>
+                <div id="ai-advisor-content">
+                    <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 20px;">Select a product to generate AI strategy.</div>
                 </div>
             </div>
 
@@ -148,7 +120,14 @@
     </div>
 </div>
 
-<script src="js/app.js?v=2270"></script>
-<script src="js/terminal.js?v=2270"></script>
+<script src="js/app.js?v=2050"></script>
+<script src="js/terminal.js?v=2275"></script>
 </body>
 </html>
+
+
+
+
+
+
+
