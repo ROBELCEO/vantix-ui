@@ -186,6 +186,7 @@ async function loadOverview() {
         ovSet("ov-chart-orders", Number.isFinite(Number(dk.order_count)) ? ovNum(dk.order_count) : "—");
         renderTopProducts(detailed.top_products || []);
     } else {
+        console.error("❌ Failed to load /api/store/detailed. Status:", storeDetailedRes.status, "Data:", storeDetailedRes.data);
         renderChart({ labels: [], data: [] });
         ovSet("ov-chart-revenue", "—"); ovSet("ov-chart-profit", "—"); ovSet("ov-chart-orders", "—");
         ovEmpty("ov-top-products", "Product data unavailable. Connect Shopify and sync products.");
@@ -395,4 +396,5 @@ window.loadOverview = async function() {
     await originalLoadOverview();
     initOverviewRealtime();
 };
+
 
