@@ -6381,3 +6381,18 @@ body {
     overflow: visible !important;
     padding-bottom: 80px !important; /* Ensures you can scroll past the last card */
 }
+
+/* ==========================================
+   GLOBAL BACKGROUND RESTORE (Distinct Gray)
+   ========================================== */
+html, body, .screen, 
+.ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, 
+.alrt-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
+    background-color: #F4F4F5 !important; /* Zinc-100 for clear contrast */
+}
+
+/* Ensure the content wraps don't have their own background */
+.ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, 
+.alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
+    background-color: transparent !important;
+}
