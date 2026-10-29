@@ -286,6 +286,9 @@ function renderTopProducts(products) {
 }
 
 function renderChart(chart) {
+    setTimeout(() => { _renderChart(chart); }, 50);
+}
+function _renderChart(chart) {
     const canvas = document.getElementById("ov-profit-chart");
     if (!canvas || typeof Chart === "undefined") return;
     const sig = JSON.stringify({ labels: chart.labels || [], data: chart.data || [] });
@@ -313,7 +316,7 @@ function renderChart(chart) {
                 borderWidth: 2,
                 tension: 0.35,
                 fill: true,
-                pointRadius: 0
+                pointRadius: 3
             }]
         },
         options: {
@@ -392,3 +395,4 @@ window.loadOverview = async function() {
     await originalLoadOverview();
     initOverviewRealtime();
 };
+
