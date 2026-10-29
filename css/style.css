@@ -6348,3 +6348,76 @@ body {
     .st-kpi-grid { grid-template-columns: 1fr; }
     .st-wrap { padding: 18px 14px 40px; }
 }
+
+/* ==========================================
+   ULTIMATE SCROLL ENFORCEMENT
+   ========================================== */
+body {
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.header {
+    flex-shrink: 0 !important;
+    height: 56px !important;
+}
+
+/* Force the screen to be the scrollable container */
+.screen, .st-screen, .ov-screen, .cmp-screen, .trm-screen, .dsc-screen, .alrt-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
+    flex: 1 1 0% !important; 
+    min-height: 0 !important; /* CRITICAL: forces flex child to shrink and scroll */
+    overflow-y: auto !important;
+    overflow-x: auto !important; /* Allows horizontal scroll when zoomed */
+}
+
+/* Ensure the wrappers do not restrict the scroll */
+.st-wrap, .ov-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
+    min-height: min-content !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding-bottom: 80px !important; /* Ensures you can scroll past the last card */
+}
+
+/* ==========================================
+   GLOBAL BACKGROUND RESTORE (Distinct Gray)
+   ========================================== */
+html, body, .screen, 
+.ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, 
+.alrt-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
+    background-color: #F4F4F5 !important; /* Zinc-100 for clear contrast */
+}
+
+/* Ensure the content wraps don't have their own background */
+.ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, 
+.alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
+    background-color: transparent !important;
+}
+
+/* ==========================================
+   FIX PAGE WIDTHS & HEADER GAP
+   ========================================== */
+
+/* 1. Restore specific widths and tighten the top gap */
+.cnx-wrap { max-width: 900px !important; padding-top: 16px !important; }
+.ov-wrap { max-width: 1400px !important; padding-top: 16px !important; }
+.st-wrap { max-width: 1400px !important; padding-top: 16px !important; }
+.cmp-wrap { max-width: 1200px !important; padding-top: 16px !important; }
+.trm-wrap { max-width: 1400px !important; padding-top: 16px !important; }
+.dsc-wrap { max-width: 1400px !important; padding-top: 16px !important; }
+.alrt-wrap { max-width: 1100px !important; padding-top: 16px !important; }
+.inv-wrap { max-width: 1400px !important; padding-top: 16px !important; }
+.mem-wrap { max-width: 1000px !important; padding-top: 16px !important; }
+.set-wrap { max-width: 1000px !important; padding-top: 16px !important; }
+
+/* 2. Ensure the wrappers remain centered and don't stretch */
+.ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
+    margin: 0 auto !important;
+    padding-bottom: 64px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    min-width: 0 !important; 
+}
