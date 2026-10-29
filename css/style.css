@@ -6624,3 +6624,55 @@ html, body, .screen,
     .trm-layout { grid-template-columns: 1fr !important; }
     .trm-grid-2 { grid-template-columns: 1fr !important; }
 }
+
+/* ==========================================
+   FORCE TERMINAL GRID LAYOUT (2 COLUMNS)
+   ========================================== */
+.trm-wrap { 
+    max-width: 1400px !important; 
+    margin: 0 auto !important; 
+    padding: 32px 20px 64px !important; 
+}
+
+.trm-layout {
+    display: grid !important;
+    grid-template-columns: 340px 1fr !important;
+    gap: 24px !important;
+    align-items: start !important;
+}
+
+.trm-left-col, .trm-right-col {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    width: 100% !important;
+}
+
+.trm-grid-2 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 20px !important;
+    width: 100% !important;
+}
+
+/* Ensure Watchlist items don't stretch */
+.trm-list {
+    max-height: 480px !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+}
+
+.trm-product-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+@media (max-width: 1024px) {
+    .trm-layout { grid-template-columns: 1fr !important; }
+    .trm-grid-2 { grid-template-columns: 1fr !important; }
+}
