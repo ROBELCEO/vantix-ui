@@ -334,3 +334,4 @@ document.getElementById("ov-modal")?.addEventListener("click", function(e) {
         closeTopProductsModal();
     }
 });
+
