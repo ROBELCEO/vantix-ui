@@ -6226,3 +6226,46 @@ body, .screen, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .a
     .ov-kpi-grid { grid-template-columns: 1fr; }
     .ov-wrap { padding: 18px 14px 40px; }
 }
+
+/* ==========================================
+   GLOBAL SCROLL FIX (Fixes Zoom Lock)
+   ========================================== */
+
+/* Ensure the app shell acts as a proper flex column */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden !important;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* The header must not shrink */
+.header {
+    flex-shrink: 0;
+}
+
+/* FORCE the screen to scroll properly at any zoom level */
+.screen {
+    flex: 1 1 0% !important;
+    min-height: 0 !important; /* THE CRITICAL FIX: Allows flex item to shrink and scroll */
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Remove any hardcoded heights or overflows on specific page screens */
+.ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .alrt-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
+    height: auto !important;
+    overflow: visible !important;
+}
+
+/* Ensure the inner wrappers can extend downward */
+.ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
+    min-height: min-content !important;
+    padding-bottom: 80px !important; /* Extra breathing room at the bottom */
+}
