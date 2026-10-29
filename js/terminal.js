@@ -2,7 +2,6 @@
 let allComparisons = [];
 let activeIndex = 0;
 
-// Bulletproof money formatter
 function fmtMoney(val) {
     if (val === null || val === undefined || isNaN(val)) return "N/A";
     return "$" + Number(val).toFixed(2);
@@ -25,7 +24,7 @@ async function loadTerminal() {
             renderWatchlist();
             selectProduct(0); 
         } else {
-            container.innerHTML = '<div class="trm-empty">No matching products found. Add more competitors or ensure your products have similar names.</div>';
+            container.innerHTML = '<div class="trm-empty">No matching products found.</div>';
             if(statusEl) statusEl.innerText = "Empty";
         }
     } catch(e) {
@@ -38,7 +37,8 @@ async function loadTerminal() {
 function renderWatchlist() {
     const container = document.getElementById('watchlist-container');
     
-    container.innerHTML = allComparisons.slice(0, 10).map((c, index) => {
+    // LIMIT TO 7 ITEMS HERE
+    container.innerHTML = allComparisons.slice(0, 7).map((c, index) => {
         const isActive = index === activeIndex ? 'active' : '';
         const bg = isActive ? '#E0F2FE' : '#F8FAFC';
         const border = isActive ? '#0284C7' : '#F1F5F9';
