@@ -2,12 +2,6 @@
 let allComparisons = [];
 let activeIndex = 0;
 
-function trmEsc(str) {
-    return String(str ?? "").replace(/[&<>"']/g, s => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[s]));
-}
-
 async function loadTerminal() {
     const container = document.getElementById('watchlist-container');
     const statusEl = document.getElementById('trm-status');
@@ -15,56 +9,51 @@ async function loadTerminal() {
 
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison');
-        if(!res.ok) {
-            container.innerHTML = '<div class="trm-empty trm-text-red">Failed to load data.</div>';
-            if(statusEl) statusEl.innerText = "Connection error";
-            return;
-        }
-
+        if(!res.ok) throw new Error("HTTP " + res.status);
+        
         const data = await res.json();
-        if(statusEl) statusEl.innerText = "Connected";
         
         if(data.comparisons && data.comparisons.length > 0) {
             allComparisons = data.comparisons;
+            if(statusEl) statusEl.innerText = "Connected";
             renderWatchlist();
             selectProduct(0); 
         } else {
-            container.innerHTML = '<div class="trm-empty">No matching products found. Add competitors to compare.</div>';
+            container.innerHTML = '<div class="trm-empty">No matching products found. Add more competitors or ensure your products have similar names.</div>';
+            if(statusEl) statusEl.innerText = "Empty";
         }
     } catch(e) {
-        container.innerHTML = '<div class="trm-empty trm-text-red">Network error.</div>';
-        if(statusEl) statusEl.innerText = "Offline";
+        console.error("Terminal error:", e);
+        container.innerHTML = `<div class="trm-empty trm-text-red">Failed: ${e.message}</div>`;
+        if(statusEl) statusEl.innerText = "Error";
     }
 }
 
 function renderWatchlist() {
     const container = document.getElementById('watchlist-container');
     
-    container.innerHTML = allComparisons.map((c, index) => {
+    container.innerHTML = allComparisons.slice(0, 10).map((c, index) => {
         const isActive = index === activeIndex ? 'active' : '';
+        const bg = isActive ? '#E0F2FE' : '#F8FAFC';
+        const border = isActive ? '#0284C7' : '#F1F5F9';
         
         let diff = 0;
         let diffClass = 'trm-text-muted';
-        let diffSign = '';
-
+        
         if (c.competitor_matches && c.competitor_matches.length > 0) {
             const cheapest = c.competitor_matches.reduce((prev, curr) => (prev.comp_price < curr.comp_price) ? prev : curr);
             diff = c.my_price - cheapest.comp_price;
             diffClass = diff > 0 ? 'trm-text-red' : (diff < 0 ? 'trm-text-green' : 'trm-text-muted');
-            diffSign = diff > 0 ? '+' : '';
         }
 
         return `
-            <div class="trm-watch-item ${isActive}" onclick="selectProduct(${index})">
-                <img class="trm-watch-img" src="${trmEsc(c.my_image || 'https://via.placeholder.com/40')}" onerror="this.style.visibility='hidden'">
-                <div class="trm-watch-body">
-                    <div class="trm-watch-title">${trmEsc(c.my_product)}</div>
-                    <div class="trm-watch-meta">${c.competitor_matches.length} Competitors</div>
+            <div onclick="selectProduct(${index})" style="cursor: pointer; padding: 12px; background: ${bg}; border: 1px solid ${border}; border-radius: 2px !important; display: flex; align-items: center; gap: 12px; transition: 0.2s;">
+                <img src="${c.my_image || 'https://via.placeholder.com/40'}" style="width: 40px; height: 40px; border-radius: 2px; object-fit: cover; border: 1px solid #E4E4E7;">
+                <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: 700; font-size: 13px; color: #09090B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${c.my_product}</div>
+                    <div class="mono ${diffClass}" style="font-size: 11px;">${diff > 0 ? '+' : ''}$${diff.toFixed(2)} vs Comp</div>
                 </div>
-                <div class="trm-watch-pricing">
-                    <div class="trm-watch-price">$${Number(c.my_price).toFixed(2)}</div>
-                    <div class="trm-watch-diff ${diffClass}">${diffSign}$${Math.abs(diff).toFixed(2)}</div>
-                </div>
+                <div class="mono trm-text-green" style="font-weight: 800; font-size: 14px;">$${c.my_price}</div>
             </div>
         `;
     }).join('');
@@ -75,7 +64,9 @@ function selectProduct(index) {
     const product = allComparisons[index];
     
     renderWatchlist();
-    document.getElementById('chart-product-name').innerText = product.my_product;
+    
+    const nameEl = document.getElementById('chart-product-name');
+    if(nameEl) nameEl.innerText = product.my_product.toUpperCase();
 
     const imgEl = document.getElementById('chart-product-img');
     if (imgEl) {
@@ -99,37 +90,23 @@ function renderChart(product) {
     if(!canvas) return;
 
     const ctx = canvas.getContext('2d');
-    const dates = ['-30d', '-20d', '-10d', 'Today'];
-    const myPrice = Number(product.my_price);
-    
-    // Plot today's price (since historical data is not stored yet)
-    const myPriceData = [myPrice, myPrice, myPrice, myPrice];
+    const dates = ['6d ago', '5d ago', '4d ago', '3d ago', '2d ago', 'Yesterday', 'Today'];
+    const myPrice = parseFloat(product.my_price);
+    const myPriceData = [myPrice, myPrice, myPrice, myPrice, myPrice, myPrice, myPrice];
 
     let datasets = [{
-        label: 'Your Price',
-        data: myPriceData,
-        borderColor: '#059669',
-        borderWidth: 2,
-        tension: 0,
-        pointRadius: 0
+        label: 'Your Price', data: myPriceData, borderColor: '#059669', borderWidth: 2, tension: 0.4, pointRadius: 3
     }];
 
+    const colors = ['#E11D48', '#D97706', '#7C3AED'];
+
     if (product.competitor_matches && product.competitor_matches.length > 0) {
-        const colors = ['#E11D48', '#D97706', '#6D28D9'];
         product.competitor_matches.slice(0, 3).forEach((match, i) => {
-            const compPrice = Number(match.comp_price);
-            const compData = [compPrice, compPrice, compPrice, compPrice];
+            const compPrice = parseFloat(match.comp_price);
+            const compData = [compPrice, compPrice, compPrice, compPrice, compPrice, compPrice, compPrice];
             
             datasets.push({
-                label: match.competitor_name,
-                data: compData,
-                borderColor: colors[i % colors.length],
-                borderWidth: 2,
-                tension: 0.4,
-                pointRadius: 2,
-                pointBackgroundColor: '#FFFFFF',
-                pointBorderColor: colors[i % colors.length],
-                pointBorderWidth: 2
+                label: match.competitor_name, data: compData, borderColor: colors[i % colors.length], borderWidth: 2, tension: 0.4, pointRadius: 3
             });
         });
     }
@@ -139,78 +116,62 @@ function renderChart(product) {
         data: { labels: dates, datasets: datasets },
         options: {
             responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: true, labels: { color: '#4B5563', font: { size: 10 } } } },
-            scales: {
-                y: { grid: { color: '#E5E7EB' }, ticks: { color: '#6B7280', font: { size: 10 } } },
-                x: { grid: { display: false }, ticks: { color: '#6B7280', font: { size: 10 } } }
-            }
+            plugins: { legend: { display: true, labels: { color: '#52525B', font: { family: 'JetBrains Mono', size: 11 } } } },
+            scales: { y: { grid: { color: '#F1F5F9' }, ticks: { color: '#71717A' } }, x: { grid: { display: false }, ticks: { color: '#71717A' } } }
         }
     });
 }
 
 function renderSafeFloor(product) {
     const div = document.getElementById('safe-floor-content');
-    if (!product.competitor_matches || product.competitor_matches.length === 0) {
-        div.innerHTML = '<div class="trm-empty">No competitor matches.</div>';
-        return;
-    }
-    
+    if (!product.competitor_matches || product.competitor_matches.length === 0) return;
     const match = product.competitor_matches[0];
-    let badgeColor = "trm-text-green";
-    let statusText = "SAFE TO HOLD";
-    let actionText = "You can safely drop to match them.";
-    
-    if (match.war_status === "UNKNOWN_COST") {
-        badgeColor = "trm-text-red";
-        statusText = "COGS MISSING";
-        actionText = "You MUST add your product cost in Shopify to calculate a Safe Floor.";
-    } else if (match.war_status === "DANGER") {
-        badgeColor = "trm-text-red";
-        statusText = "DO NOT MATCH";
-        actionText = "Matching drops below your safe floor.";
-    } else if (match.war_status === "WARNING") {
-        badgeColor = "trm-text-amber";
-        statusText = "PROCEED WITH CAUTION";
-    }
 
-    const costDisplay = product.my_cost !== null && product.my_cost > 0 ? `$${Number(product.my_cost).toFixed(2)}` : "MISSING";
-    const floorDisplay = match.safe_floor !== null ? `$${Number(match.safe_floor).toFixed(2)}` : "UNKNOWN";
+    let badgeColor = "#059669";
+    let statusText = "SAFE TO HOLD";
+    
+    if (match.war_status === "DANGER") {
+        badgeColor = "#E11D48";
+        statusText = "DO NOT MATCH";
+    } else if (match.war_status === "WARNING") {
+        badgeColor = "#D97706";
+        statusText = "CAUTION";
+    }
 
     div.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-            <div style="font-size: 18px; font-weight: 900;" class="${badgeColor}">${statusText}</div>
-        </div>
-        
+        <div style="font-size: 20px; font-weight: 900; color: ${badgeColor}; margin-bottom: 16px;">${statusText}</div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
             <div class="trm-stat-box">
-                <div class="trm-stat-label">Your Cost</div>
-                <div class="trm-stat-value ${product.my_cost ? '' : 'trm-text-red'}">${costDisplay}</div>
+                <div class="trm-stat-label">Your Cost (COGS)</div>
+                <div class="trm-stat-value">$${product.my_cost.toFixed(2)}</div>
             </div>
-            <div class="trm-stat-box">
+            <div class="trm-stat-box" style="border-color: ${badgeColor};">
                 <div class="trm-stat-label">Safe Floor</div>
-                <div class="trm-stat-value ${match.safe_floor ? '' : 'trm-text-red'}">${floorDisplay}</div>
+                <div class="trm-stat-value" style="color: ${badgeColor};">$${match.safe_floor.toFixed(2)}</div>
             </div>
         </div>
-
         <div class="trm-advice-box">
-            Competitor price: <b>$${Number(match.comp_price).toFixed(2)}</b>. 
-            ${actionText}
+            Competitor price: <b>$${match.comp_price.toFixed(2)}</b>. 
+            ${match.war_status === 'DANGER' ? 'If you match them, you drop below your 15% margin floor.' : 'You can safely drop your price to match them.'}
         </div>
     `;
 }
 
 function renderSimulator(product) {
     const div = document.getElementById('simulator-content');
-    const cost = Number(product.my_cost || 0);
-    const origPrice = Number(product.my_price || 0);
     
     div.innerHTML = `
-        <div class="trm-input-group">
-            <label class="trm-stat-label" style="margin-bottom: 6px; display: block;">New Price ($)</label>
-            <input type="number" id="sim-price" class="trm-input" value="${origPrice}" oninput="calculateSimulation(${cost}, ${origPrice})">
+        <div style="font-size: 12px; color: #52525B; margin-bottom: 12px;">
+            If you lower your price, how many more units do you need to sell to maintain your <b>current profit</b>?
         </div>
-        <div id="sim-result" class="trm-advice-box">
-            Adjust the price above to see required volume.
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div style="flex: 1;">
+                <label class="trm-stat-label">New Price ($)</label>
+                <input type="number" id="sim-price" class="trm-input" value="${product.my_price}" min="0" step="1" oninput="calculateSimulation(${product.my_cost}, ${product.my_price})">
+            </div>
+        </div>
+        <div id="sim-result" class="trm-stat-box" style="text-align: center; font-size: 12px;">
+            Adjust the price to see the required volume.
         </div>
     `;
 }
@@ -249,25 +210,23 @@ async function fetchAIAdvice(productName) {
     
     try {
         const res = await fetch(`https://vantix-my5f.onrender.com/api/ai/advisor?product_name=${encodeURIComponent(productName)}`);
+        
         if (!res.ok) {
-            const err = await res.json();
-            div.innerHTML = `<div class="trm-empty trm-text-red">${trmEsc(err.detail || 'No AI advice available.')}</div>`;
+            const errData = await res.json();
+            div.innerHTML = `<div class="trm-text-red">${errData.detail || 'No AI advice available.'}</div>`;
             return;
         }
 
         const data = await res.json();
+        
         if(data.status === "success") {
-            div.innerHTML = `
-                <div class="trm-advice-box" style="border-left-color: #6D28D9;">
-                    <div style="font-size: 10px; text-transform: uppercase; color: #9CA3AF; margin-bottom: 6px;">Groq Analysis</div>
-                    <div style="font-size: 13px; line-height: 1.6; color: #111827;">${trmEsc(data.advice)}</div>
-                </div>
-            `;
+            div.innerHTML = `${data.advice}`;
         }
     } catch(e) {
-        div.innerHTML = `<div class="trm-empty trm-text-red">Backend asleep. Try again.</div>`;
+        div.innerHTML = `<div class="trm-text-red">Backend asleep. Try again.</div>`;
     }
 }
 
-
-
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(loadTerminal, 500);
+});
