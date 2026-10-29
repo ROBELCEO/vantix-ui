@@ -341,3 +341,24 @@ function escapeAttr(str) {
 
 
 
+
+// LIVE REALTIME LISTENER
+async function initOverviewRealtime() {
+    if (!window.supabaseClient || !window.currentSession) return;
+    const userId = window.currentSession.user.id;
+    if (window.ovChannel) window.supabaseClient.removeChannel(window.ovChannel);
+
+    window.ovChannel = window.supabaseClient.channel('overview-live-' + userId)
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'shopify_events', filter: `user_id=eq.${userId}` }, () => {
+            console.log("Live event: Re-fetching Overview KPIs...");
+            // Silently reload the overview data
+            window.__vxSilent = true;
+            loadOverview().then(() => window.__vxSilent = false);
+        })
+        .subscribe();
+}
+
+// Auto-start listener when page loads
+window.addEventListener('load', () => {
+    setTimeout(initOverviewRealtime, 1000);
+});
