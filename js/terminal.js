@@ -151,16 +151,16 @@ function renderSafeFloor(product) {
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
             <div style="background: var(--bg-surface); padding: 12px; border-radius: 6px;">
                 <div class="text-tertiary" style="font-size: 10px; text-transform: uppercase;">Your Cost (COGS)</div>
-                <div class="mono" style="font-size: 16px; font-weight: 700;">$${product.my_cost.toFixed(2)}</div>
+                <div class="mono" style="font-size: 16px; font-weight: 700;">${product.my_cost !== null && product.my_cost !== undefined ? product.my_cost.toFixed(2) : "MISSING"}</div>
             </div>
             <div style="background: var(--bg-surface); padding: 12px; border-radius: 6px; border: 1px solid ${badgeColor};">
                 <div class="text-tertiary" style="font-size: 10px; text-transform: uppercase;">Safe Floor</div>
-                <div class="mono" style="font-size: 16px; font-weight: 700; color: ${badgeColor};">$${match.safe_floor.toFixed(2)}</div>
+                <div class="mono" style="font-size: 16px; font-weight: 700; color: ${badgeColor};">${match.safe_floor !== null && match.safe_floor !== undefined ? match.safe_floor.toFixed(2) : "N/A"}</div>
             </div>
         </div>
 
         <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 4px;">
-            Competitor price: <b>$${match.comp_price.toFixed(2)}</b>. 
+            Competitor price: <b>${match.comp_price !== null && match.comp_price !== undefined ? match.comp_price.toFixed(2) : "N/A"}</b>. 
             ${match.war_status === 'DANGER' ? 'If you match them, you drop below your 15% margin floor.' : 'You can safely drop your price to match them.'}
         </div>
     `;
@@ -241,4 +241,5 @@ async function fetchAIAdvice(productName) {
         div.innerHTML = `<div class="text-red" style="font-size: 12px; padding: 12px;">Backend asleep. Try again.</div>`;
     }
 }
+
 
