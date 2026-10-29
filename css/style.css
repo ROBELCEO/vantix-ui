@@ -6227,8 +6227,9 @@ body, .screen, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .a
     .ov-wrap { padding: 18px 14px 40px; }
 }
 
+
 /* ==========================================
-   BULLETPROOF SCROLLING FIX
+   PERFECT SCROLL FIX (No Stretch)
    ========================================== */
 body {
     height: 100vh !important;
@@ -6236,7 +6237,6 @@ body {
     flex-direction: column !important;
     overflow: hidden !important;
     margin: 0 !important;
-    padding: 0 !important;
 }
 
 .header {
@@ -6244,53 +6244,23 @@ body {
     height: 56px !important;
 }
 
-/* Force the screen container to take up exactly the remaining height and scroll */
-.screen, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .alrt-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
-    height: calc(100vh - 56px) !important;
+.screen {
+    flex: 1 !important;
+    min-height: 0 !important; /* Crucial for flex scrolling */
     overflow-y: auto !important;
-    overflow-x: hidden !important;
-    flex: none !important;
-    min-height: 0 !important;
+    overflow-x: auto !important; /* Allow horizontal scroll when zoomed */
 }
 
-/* Ensure wrappers don't block the scroll */
+/* Keep UI perfectly centered and prevent any horizontal stretching */
 .ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
-    height: auto !important;
-    min-height: min-content !important;
-    overflow: visible !important;
-}
-
-/* ==========================================
-   HORIZONTAL & DIAGONAL SCROLL FIX
-   ========================================== */
-.screen, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .alrt-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
-    overflow-x: auto !important; /* Allow horizontal scrolling when zoomed */
-    overflow-y: auto !important;
-}
-
-/* Make sure the wrappers stretch to fit their content when zoomed */
-.ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
-    min-width: max-content !important; /* Forces the container to expand instead of squishing */
-}
-
-/* ==========================================
-   REVERT UI STRETCH & FIX HORIZONTAL SCROLL
-   ========================================== */
-
-/* 1. Undo the full-screen stretch */
-.ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
-    min-width: 0 !important; /* Reverts the max-content stretch */
-    max-width: 1400px !important; 
-    margin: 0 auto !important;
-}
-
-/* 2. Allow horizontal scroll ONLY when zoomed in, without breaking the layout */
-.screen, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .alrt-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
-    overflow-x: auto !important;
-    overflow-y: auto !important;
-}
-
-/* 3. Make sure the grids don't break or overflow weirdly */
-.ov-kpi-grid, .st-kpi-grid, .cnx-grid-2, .cmp-grid-2, .ov-grid-3, .st-grid-2-1, .st-grid-2-2, .trm-grid-2 {
+    max-width: 1400px !important;
     min-width: 0 !important;
+    margin: 0 auto !important;
+    padding: 32px 20px 64px !important;
+}
+
+/* Ensure the page screens don't block the main scroll */
+.ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .alrt-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
+    height: auto !important;
+    overflow: visible !important;
 }
