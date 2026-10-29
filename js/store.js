@@ -1,335 +1,11 @@
 ﻿let revChartInstance = null;
+let custChartInstance = null;
 
-function stMoney(n) {
-    const v = Number(n);
-    if (!Number.isFinite(v)) return "—";
-    return "$" + v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-function stNum(n) {
-    const v = Number(n);
-    if (!Number.isFinite(v)) return "—";
-    return v.toLocaleString();
-}
-function stSet(id, text) {
-    const el = document.getElementById(id);
-    if (el) el.innerText = text;
-}
-function stEmpty(id, text) {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML = `<div class="st-empty">${text}</div>`;
-}
-function stEsc(str) {
-    return String(str ?? "").replace(/[&<>"']/g, s => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[s]));
-}
+window.stAllProducts = [];
+window.stAllCarts = [];
+window.stAllDeadStock = [];
+window.stAllLowStock = [];
 
-async function loadStoreData() {
-    const nameEl = document.getElementById("store-name");
-    if (!nameEl) return;
-
-    nameEl.innerText = "Loading store…";
-
-    try {
-        const res = await fetch("https://vantix-my5f.onrender.com/api/store/detailed");
-        if (!res.ok) {
-            if (res.status === 404) {
-                nameEl.innerText = "Store Not Connected";
-                stSet("store-domain", "Go to Connect to link Shopify");
-                stSet("st-shopify-status", "Shopify: not connected");
-                stEmpty("top-products-list", "No store connected.");
-                stEmpty("carts-list", "No store connected.");
-                stEmpty("dead-stock-list", "No store connected.");
-                stEmpty("ltv-list", "No store connected.");
-                stEmpty("low-stock-list", "No store connected.");
-                stEmpty("bundle-container", "No store connected.");
-                stEmpty("customer-snapshot", "No store connected.");
-                return;
-            }
-            throw new Error("HTTP " + res.status);
-        }
-
-        const data = await res.json();
-        const profile = data.profile || {};
-        const kpis = data.kpis || {};
-
-        const storeName = profile.name || "My Store";
-        nameEl.innerText = storeName;
-        stSet("store-domain", profile.domain || "");
-        stSet("store-monogram", (storeName.split(/\s+/).map(w => w[0] || "").join("").slice(0, 2) || "ST").toUpperCase());
-        stSet("st-shopify-status", "Shopify: connected");
-        stSet("st-last-synced", "Updated: " + new Date().toLocaleTimeString());
-
-        const rev = Number(kpis.total_revenue ?? NaN);
-        const net = Number(kpis.net_profit ?? NaN);
-        const orders = Number(kpis.order_count ?? NaN);
-        const aov = Number(kpis.aov ?? NaN);
-        const abandoned = Number(kpis.abandoned_value ?? NaN);
-
-        stSet("kpi-revenue", Number.isFinite(rev) ? stMoney(rev) : "—");
-        stSet("kpi-orders", Number.isFinite(orders) ? stNum(orders) : "—");
-        stSet("kpi-aov", Number.isFinite(aov) ? stMoney(aov) : "—");
-        stSet("kpi-abandoned", Number.isFinite(abandoned) ? stMoney(abandoned) : "—");
-
-        // Handle Net Profit Setup Link
-        const netEl = document.getElementById("kpi-net-profit");
-        const metaEl = document.getElementById("kpi-net-profit-meta");
-        const setupEl = document.getElementById("kpi-net-profit-setup");
-
-        if (kpis.profit_status === "MISSING_COGS") {
-            if (netEl) { netEl.innerText = "MISSING"; netEl.style.color = "#E11D48"; netEl.style.fontSize = "16px"; }
-            if (metaEl) metaEl.innerText = "COGS not set in Shopify";
-            if (setupEl) setupEl.style.display = "none";
-        } else if (kpis.profit_status === "MISSING_FEES") {
-            if (netEl) { netEl.innerText = "—"; netEl.style.color = "#9CA3AF"; netEl.style.fontSize = "24px"; }
-            if (metaEl) metaEl.innerText = "Fees not configured";
-            if (setupEl) setupEl.style.display = "block";
-        } else {
-            if (netEl) { netEl.style.fontSize = "24px"; netEl.style.color = "#059669"; }
-            if (metaEl) metaEl.innerText = "Revenue − COGS";
-            if (setupEl) setupEl.style.display = "none";
-            stSet("kpi-net-profit", Number.isFinite(net) ? stMoney(net) : "—");
-        }
-
-        renderRevenueChart(data.chart || { labels: [], data: [] });
-        renderTopProducts(Array.isArray(data.top_products) ? data.top_products : []);
-        renderCarts(Array.isArray(data.carts) ? data.carts : []);
-        renderLowStock(Array.isArray(data.low_stock) ? data.low_stock : []);
-
-        // Fire the secondary panels independently so one failure does not block the rest
-        loadDeadStock();
-        loadBundleSuggestion();
-        loadCustomerLTV();
-
-    } catch (e) {
-        console.error("Store load error", e);
-        nameEl.innerText = "Error Loading Store";
-        stSet("store-domain", String(e.message || e));
-    }
-}
-
-function renderRevenueChart(chartData) {
-    if (revChartInstance) revChartInstance.destroy();
-    const canvas = document.getElementById("revenueChart");
-    if (!canvas || typeof Chart === "undefined") return;
-
-    const labels = Array.isArray(chartData.labels) && chartData.labels.length ? chartData.labels : ["No data"];
-    const data = Array.isArray(chartData.data) && chartData.data.length ? chartData.data : [0];
-
-    const ctx = canvas.getContext("2d");
-    const gradient = ctx.createLinearGradient(0, 0, 0, 260);
-    gradient.addColorStop(0, "rgba(2, 132, 199, 0.15)");
-    gradient.addColorStop(1, "rgba(2, 132, 199, 0)");
-
-    revChartInstance = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels,
-            datasets: [{
-                label: "Revenue",
-                data,
-                borderColor: "#0284C7",
-                backgroundColor: gradient,
-                borderWidth: 2,
-                tension: 0.35,
-                fill: true,
-                pointRadius: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { grid: { display: false }, ticks: { color: "#6B7280", font: { size: 10 } } },
-                y: { grid: { color: "#E5E7EB" }, ticks: { color: "#6B7280", font: { size: 10 } } }
-            }
-        }
-    });
-}
-
-function renderTopProducts(products) {
-    window.stAllProducts = products || [];
-    const el = document.getElementById("top-products-list");
-    if (!el) return;
-    if (!products.length) { el.innerHTML = '<div class="st-empty">No sales data yet.</div>'; return; }
-    el.innerHTML = products.slice(0, 6).map((p, i) => `
-        <div class="st-product-row">
-            <div class="st-row-rank">${i + 1}</div>
-            <img class="st-product-img" src="${stEsc(p.image || "")}" onerror="this.style.visibility='hidden'">
-            <div class="st-row-body">
-                <div class="st-row-title">${stEsc(p.title || "Product")}</div>
-                <div class="st-row-meta">${stNum(p.units || 0)} sold</div>
-            </div>
-            <div class="st-row-amount st-green">${stMoney(p.revenue || 0)}</div>
-        </div>
-    `).join("");
-}
-
-function renderCarts(carts) {
-    window.stAllCarts = carts || [];
-    const el = document.getElementById("carts-list");
-    if (!el) return;
-    if (!carts.length) { el.innerHTML = '<div class="st-empty st-empty-good">No abandoned carts right now.</div>'; return; }
-    el.innerHTML = carts.slice(0, 5).map(c => `
-        <div class="st-product-row">
-            <div class="st-row-body">
-                <div class="st-row-title">${stEsc(c.item || "Cart")}</div>
-                <div class="st-row-meta">${stEsc(c.email || "Guest")}</div>
-            </div>
-            <div class="st-row-amount st-amber">${stMoney(c.value || 0)}</div>
-            ${c.url ? `<a class="st-row-action" href="${stEsc(c.url)}" target="_blank">Recover</a>` : ""}
-        </div>
-    `).join("");
-}
-
-function renderLowStock(stock) {
-    window.stAllLowStock = stock || [];
-    const el = document.getElementById("low-stock-list");
-    if (!el) return;
-    if (!stock.length) { el.innerHTML = '<div class="st-empty st-empty-good">Stock is healthy.</div>'; return; }
-    el.innerHTML = stock.slice(0, 6).map(s => `
-        <div class="st-product-row">
-            <img class="st-product-img" src="${stEsc(s.image || "")}" onerror="this.style.visibility='hidden'">
-            <div class="st-row-body">
-                <div class="st-row-title">${stEsc(s.title || "Product")}</div>
-                <div class="st-row-meta">Low inventory</div>
-            </div>
-            <div class="st-row-amount st-red">${stNum(s.qty || 0)} left</div>
-        </div>
-    `).join("");
-}
-
-async function loadDeadStock() {
-    const el = document.getElementById("dead-stock-list");
-    if (!el) return;
-    try {
-        const res = await fetch("https://vantix-my5f.onrender.com/api/store/dead-stock");
-        if (!res.ok) { el.innerHTML = '<div class="st-empty">Unavailable.</div>'; return; }
-        const data = await res.json();
-        const items = Array.isArray(data.dead_items) ? data.dead_items : [];
-        if (!items.length) { el.innerHTML = '<div class="st-empty st-empty-good">No dead stock detected.</div>'; return; }
-        const total = Number(data.total_cash_trapped || 0);
-        el.innerHTML = `
-            <div class="st-hero-amount st-red">${stMoney(total)}</div>
-            <div class="st-hero-label">Cash trapped across ${items.length} items</div>
-            ${items.slice(0, 4).map(item => `
-                <div class="st-product-row">
-                    <img class="st-product-img" src="${stEsc(item.image || "")}" onerror="this.style.visibility='hidden'">
-                    <div class="st-row-body">
-                        <div class="st-row-title">${stEsc(item.title || "Product")}</div>
-                        <div class="st-row-meta">${stNum(item.stock || 0)} units · 60d+ no sales</div>
-                    </div>
-                    <div class="st-row-amount st-red">${stMoney(item.cash_trapped || 0)}</div>
-                </div>
-            `).join("")}
-        `;
-    } catch (e) {
-        el.innerHTML = '<div class="st-empty">Failed to load dead stock.</div>';
-    }
-}
-
-async function loadBundleSuggestion() {
-    const el = document.getElementById("bundle-container");
-    if (!el) return;
-    try {
-        const res = await fetch("https://vantix-my5f.onrender.com/api/store/bundles");
-        if (!res.ok) { el.innerHTML = '<div class="st-empty">Unavailable.</div>'; return; }
-        const data = await res.json();
-        if (data.error) { el.innerHTML = `<div class="st-empty">${stEsc(data.error)}</div>`; return; }
-        const ai = data.ai || {};
-        el.innerHTML = `
-            <div class="st-bundle">
-                <div class="st-bundle-top">
-                    <div>
-                        <div class="st-bundle-title">${stEsc(ai.bundle_name || "Suggested bundle")}</div>
-                        <div class="st-row-meta">Bought together ${stNum(data.frequency || 0)}×</div>
-                    </div>
-                    <div class="st-bundle-pricing">
-                        <div class="st-bundle-orig">${stMoney(data.original_total || 0)}</div>
-                        <div class="st-bundle-new">${stMoney(ai.suggested_price || 0)}</div>
-                    </div>
-                </div>
-                <div class="st-bundle-pitch">${stEsc(ai.pitch || "")}</div>
-            </div>
-        `;
-    } catch (e) {
-        el.innerHTML = '<div class="st-empty">Failed to analyze bundles.</div>';
-    }
-}
-
-async function loadCustomerLTV() {
-    const ltvEl = document.getElementById("ltv-list");
-    const snapEl = document.getElementById("customer-snapshot");
-
-    try {
-        const res = await fetch("https://vantix-my5f.onrender.com/api/store/customers");
-        if (!res.ok) {
-            if (ltvEl) ltvEl.innerHTML = '<div class="st-empty">Unavailable.</div>';
-            if (snapEl) snapEl.innerHTML = '<div class="st-empty">Customer data unavailable.</div>';
-            return;
-        }
-        const data = await res.json();
-        const customers = Array.isArray(data.customers) ? data.customers : [];
-
-        // LTV panel
-        if (ltvEl) {
-            if (!customers.length) {
-                ltvEl.innerHTML = '<div class="st-empty">No customer data yet.</div>';
-            } else {
-                ltvEl.innerHTML = customers.slice(0, 5).map(c => `
-                    <div class="st-product-row">
-                        <div class="st-row-body">
-                            <div class="st-row-title">${stEsc(c.name || "Customer")}</div>
-                            <div class="st-row-meta">${stNum(c.orders || 0)} orders</div>
-                        </div>
-                        <div class="st-row-amount st-cyan">${stMoney(c.spent || 0)}</div>
-                    </div>
-                `).join("");
-            }
-        }
-
-        // Snapshot panel — honest, only real stats
-        if (snapEl) {
-            if (!customers.length) {
-                snapEl.innerHTML = '<div class="st-empty">No customer data to summarize yet.</div>';
-            } else {
-                const totalSpent = customers.reduce((a, c) => a + Number(c.spent || 0), 0);
-                const totalOrders = customers.reduce((a, c) => a + Number(c.orders || 0), 0);
-                const avgLTV = customers.length ? totalSpent / customers.length : 0;
-                snapEl.innerHTML = `
-                    <div class="st-cust-grid">
-                        <div class="st-cust-stat">
-                            <div class="st-kpi-label">Top Customers Tracked</div>
-                            <div class="st-kpi-value">${customers.length}</div>
-                        </div>
-                        <div class="st-cust-stat">
-                            <div class="st-kpi-label">Avg VIP LTV</div>
-                            <div class="st-kpi-value st-cyan">${stMoney(avgLTV)}</div>
-                        </div>
-                        <div class="st-cust-stat">
-                            <div class="st-kpi-label">Total Orders (top set)</div>
-                            <div class="st-kpi-value">${stNum(totalOrders)}</div>
-                        </div>
-                        <div class="st-cust-stat">
-                            <div class="st-kpi-label">Total Spent (top set)</div>
-                            <div class="st-kpi-value st-green">${stMoney(totalSpent)}</div>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-    } catch (e) {
-        if (ltvEl) ltvEl.innerHTML = '<div class="st-empty">Failed to load VIPs.</div>';
-        if (snapEl) snapEl.innerHTML = '<div class="st-empty">Failed to summarize customers.</div>';
-    }
-}
-
-
-
-// ==========================================
-// MY STORE MODAL LOGIC
-// ==========================================
 function stEsc(str) {
     return String(str ?? "").replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
 }
@@ -339,6 +15,176 @@ function stMoney(n) {
     return "$" + v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+async function loadStoreData() {
+    const nameEl = document.getElementById('store-name');
+    if(!nameEl) return;
+    nameEl.innerText = "Loading...";
+
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/store/detailed');
+        if (!res.ok) throw new Error("API Error");
+        const data = await res.json();
+
+        nameEl.innerText = data.profile.name;
+        document.getElementById('store-domain').innerText = data.profile.domain;
+        document.getElementById('store-monogram').innerText = data.profile.name.substring(0,2).toUpperCase();
+
+        document.getElementById('kpi-revenue').innerText = stMoney(data.kpis.total_revenue);
+        const npEl = document.getElementById('kpi-net-profit');
+        npEl.innerText = stMoney(data.kpis.net_profit);
+        npEl.className = data.kpis.net_profit < 0 ? "st-kpi-value st-red" : "st-kpi-value st-green";
+        
+        document.getElementById('kpi-orders').innerText = data.kpis.order_count;
+        document.getElementById('kpi-aov').innerText = stMoney(data.kpis.aov);
+        document.getElementById('kpi-abandoned').innerText = stMoney(data.kpis.abandoned_value);
+
+        renderRevenueChart(data.chart);
+        renderTopProducts(data.top_products);
+        renderCarts(data.carts);
+        renderLowStock(data.low_stock);
+        
+        loadDeadStock();
+        loadBundleSuggestion();
+        loadCustomerLTV();
+
+    } catch(e) {
+        console.error("Failed to load store data", e);
+        nameEl.innerText = "Error Loading Store";
+    }
+}
+
+function renderRevenueChart(chartData) {
+    if(revChartInstance) revChartInstance.destroy();
+    const canvas = document.getElementById('revenueChart');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(2, 132, 199, 0.15)');
+    gradient.addColorStop(1, 'rgba(2, 132, 199, 0)');
+
+    revChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.labels.length ? chartData.labels : ['No Data'],
+            datasets: [{ label: 'Profit', data: chartData.data.length ? chartData.data : [0], borderColor: '#0284C7', backgroundColor: gradient, borderWidth: 2, tension: 0.2, fill: true, pointRadius: 3, pointBackgroundColor: '#0284C7' }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#E5E7EB' }, ticks: { color: '#6B7280' } }, x: { grid: { display: false }, ticks: { color: '#6B7280' } } } }
+    });
+}
+
+function renderTopProducts(products) {
+    window.stAllProducts = products || [];
+    const list = document.getElementById('top-products-list');
+    if(!list) return;
+    if (products.length === 0) {
+        list.innerHTML = '<div class="st-empty">No sales data yet.</div>';
+        return;
+    }
+    list.innerHTML = products.map((p, i) => `
+        <div class="st-product-row">
+            <div class="st-row-rank">#${i+1}</div>
+            <img class="st-product-img" src="${stEsc(p.image || 'https://via.placeholder.com/40')}">
+            <div class="st-row-body">
+                <div class="st-row-title">${stEsc(p.title)}</div>
+                <div class="st-row-meta">${p.units} sold</div>
+            </div>
+            <div class="st-row-amount st-green">${stMoney(p.revenue)}</div>
+        </div>
+    `).join('');
+}
+
+function renderCarts(carts) {
+    window.stAllCarts = carts || [];
+    const list = document.getElementById('carts-list');
+    if(!list) return;
+    if (carts.length === 0) { list.innerHTML = '<div class="st-empty">No abandoned carts.</div>'; return; }
+    list.innerHTML = carts.map(c => `
+        <div class="st-product-row">
+            <div class="st-row-body">
+                <div class="st-row-title">${stEsc(c.item)}</div>
+                <div class="st-row-meta">${stEsc(c.email || 'Guest')}</div>
+            </div>
+            <div class="st-row-amount st-amber" style="margin-right: 12px;">${stMoney(c.value)}</div>
+            ${c.url ? `<a href="${c.url}" target="_blank" class="st-row-action">Recover</a>` : ''}
+        </div>
+    `).join('');
+}
+
+function renderLowStock(stock) {
+    window.stAllLowStock = stock || [];
+    const list = document.getElementById('low-stock-list');
+    if(!list) return;
+    if (stock.length === 0) { list.innerHTML = '<div class="st-empty">✅ Stock is healthy.</div>'; return; }
+    list.innerHTML = stock.map(s => `
+        <div class="st-product-row">
+            <img class="st-product-img" src="${stEsc(s.image || 'https://via.placeholder.com/32')}">
+            <div class="st-row-body">
+                <div class="st-row-title">${stEsc(s.title)}</div>
+                <div class="st-row-meta">Running out soon</div>
+            </div>
+            <div class="st-row-amount st-red">${s.qty} left</div>
+        </div>
+    `).join('');
+}
+
+async function loadDeadStock() {
+    const list = document.getElementById('dead-stock-list');
+    if (!list) return;
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/store/dead-stock');
+        const data = await res.json();
+        window.stAllDeadStock = data.dead_items || [];
+        
+        if (data.dead_items.length === 0) { list.innerHTML = '<div class="st-empty">✅ No dead stock!</div>'; return; }
+        list.innerHTML = data.dead_items.map(item => `
+            <div class="st-product-row">
+                <img class="st-product-img" src="${stEsc(item.image || 'https://via.placeholder.com/32')}">
+                <div class="st-row-body">
+                    <div class="st-row-title">${stEsc(item.title)}</div>
+                    <div class="st-row-meta">${item.stock} units sitting</div>
+                </div>
+                <div class="st-row-amount st-red">${stMoney(item.cash_trapped)}</div>
+            </div>
+        `).join('');
+    } catch(e) { list.innerHTML = '<div class="st-empty st-red">Failed to load.</div>'; }
+}
+
+async function loadBundleSuggestion() {
+    const container = document.getElementById('bundle-container');
+    if (!container) return;
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/store/bundles');
+        const data = await res.json();
+        if (data.error) { container.innerHTML = `<div class="st-empty">${data.error}</div>`; return; }
+        container.innerHTML = `
+            <div class="st-bundle">
+                <div class="st-bundle-top">
+                    <div><div class="st-bundle-title">${data.ai.bundle_name}</div><div class="st-row-meta">Bought together ${data.frequency}x</div></div>
+                    <div class="st-bundle-pricing"><div class="st-bundle-orig">${stMoney(data.original_total)}</div><div class="st-bundle-new">${stMoney(data.ai.suggested_price)}</div></div>
+                </div>
+                <div class="st-bundle-pitch">${data.ai.pitch}</div>
+            </div>
+        `;
+    } catch(e) { container.innerHTML = '<div class="st-empty st-red">Failed to analyze.</div>'; }
+}
+
+async function loadCustomerLTV() {
+    const list = document.getElementById('ltv-list');
+    if (!list) return;
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/store/customers');
+        const data = await res.json();
+        if (data.customers.length === 0) { list.innerHTML = '<div class="st-empty">No customer data yet.</div>'; return; }
+        list.innerHTML = data.customers.map(c => `
+            <div class="st-product-row">
+                <div class="st-row-body"><div class="st-row-title">${stEsc(c.name)}</div><div class="st-row-meta">${c.orders} orders</div></div>
+                <div class="st-row-amount st-cyan">${stMoney(c.spent)}</div>
+            </div>
+        `).join('');
+    } catch(e) { list.innerHTML = '<div class="st-empty st-red">Failed to load VIPs.</div>'; }
+}
+
+// MODAL LOGIC
 function openStoreModal(type) {
     const modal = document.getElementById("st-modal");
     const list = document.getElementById("st-modal-body");
@@ -346,71 +192,50 @@ function openStoreModal(type) {
     if (!modal || !list) return;
 
     let html = "";
-
     if (type === 'products') {
         title.innerText = "All Top Selling Products";
-        if (!window.stAllProducts || window.stAllProducts.length === 0) html = '<div class="st-empty">No products found.</div>';
-        else {
-            html = window.stAllProducts.map((p, i) => `
-                <div class="st-product-row">
-                    <div class="st-row-rank">${i + 1}</div>
-                    <img class="st-product-img" src="${stEsc(p.image || 'https://via.placeholder.com/40')}" alt="">
-                    <div class="st-row-body">
-                        <div class="st-row-title">${stEsc(p.title || "Product")}</div>
-                        <div class="st-row-meta">${p.units || 0} sold</div>
-                    </div>
-                    <div class="st-row-amount st-green">${stMoney(p.revenue || 0)}</div>
-                </div>
-            `).join("");
-        }
+        if (window.stAllProducts.length === 0) html = '<div class="st-empty">No products found.</div>';
+        else html = window.stAllProducts.map((p, i) => `
+            <div class="st-product-row">
+                <div class="st-row-rank">${i + 1}</div>
+                <img class="st-product-img" src="${stEsc(p.image || 'https://via.placeholder.com/40')}">
+                <div class="st-row-body"><div class="st-row-title">${stEsc(p.title)}</div><div class="st-row-meta">${p.units} sold</div></div>
+                <div class="st-row-amount st-green">${stMoney(p.revenue)}</div>
+            </div>
+        `).join("");
     } 
     else if (type === 'carts') {
         title.innerText = "All Abandoned Carts";
-        if (!window.stAllCarts || window.stAllCarts.length === 0) html = '<div class="st-empty">No abandoned carts found.</div>';
-        else {
-            html = window.stAllCarts.map(c => `
-                <div class="st-product-row">
-                    <div class="st-row-body">
-                        <div class="st-row-title">${stEsc(c.item)}</div>
-                        <div class="st-row-meta">${stEsc(c.email || 'Guest')}</div>
-                    </div>
-                    <div class="st-row-amount st-amber" style="margin-right: 12px;">${stMoney(c.value)}</div>
-                    ${c.url ? `<a href="${c.url}" target="_blank" class="st-row-action">Recover →</a>` : ''}
-                </div>
-            `).join("");
-        }
+        if (window.stAllCarts.length === 0) html = '<div class="st-empty">No abandoned carts found.</div>';
+        else html = window.stAllCarts.map(c => `
+            <div class="st-product-row">
+                <div class="st-row-body"><div class="st-row-title">${stEsc(c.item)}</div><div class="st-row-meta">${stEsc(c.email || 'Guest')}</div></div>
+                <div class="st-row-amount st-amber" style="margin-right: 12px;">${stMoney(c.value)}</div>
+                ${c.url ? `<a href="${c.url}" target="_blank" class="st-row-action">Recover →</a>` : ''}
+            </div>
+        `).join("");
     }
     else if (type === 'dead') {
         title.innerText = "All Dead Stock Items";
-        if (!window.stAllDeadStock || window.stAllDeadStock.length === 0) html = '<div class="st-empty">No dead stock detected.</div>';
-        else {
-            html = window.stAllDeadStock.map(item => `
-                <div class="st-product-row">
-                    <img class="st-product-img" src="${stEsc(item.image || 'https://via.placeholder.com/32')}" alt="">
-                    <div class="st-row-body">
-                        <div class="st-row-title">${stEsc(item.title)}</div>
-                        <div class="st-row-meta">${item.stock} units sitting</div>
-                    </div>
-                    <div class="st-row-amount st-red">${stMoney(item.cash_trapped)}</div>
-                </div>
-            `).join("");
-        }
+        if (window.stAllDeadStock.length === 0) html = '<div class="st-empty">No dead stock detected.</div>';
+        else html = window.stAllDeadStock.map(item => `
+            <div class="st-product-row">
+                <img class="st-product-img" src="${stEsc(item.image || 'https://via.placeholder.com/32')}">
+                <div class="st-row-body"><div class="st-row-title">${stEsc(item.title)}</div><div class="st-row-meta">${item.stock} units sitting</div></div>
+                <div class="st-row-amount st-red">${stMoney(item.cash_trapped)}</div>
+            </div>
+        `).join("");
     }
     else if (type === 'low') {
         title.innerText = "All Low Stock Items";
-        if (!window.stAllLowStock || window.stAllLowStock.length === 0) html = '<div class="st-empty">No low stock items found.</div>';
-        else {
-            html = window.stAllLowStock.map(s => `
-                <div class="st-product-row">
-                    <img class="st-product-img" src="${stEsc(s.image || 'https://via.placeholder.com/32')}" alt="">
-                    <div class="st-row-body">
-                        <div class="st-row-title">${stEsc(s.title)}</div>
-                        <div class="st-row-meta">Running out soon</div>
-                    </div>
-                    <div class="st-row-amount st-red">${s.qty} left</div>
-                </div>
-            `).join("");
-        }
+        if (window.stAllLowStock.length === 0) html = '<div class="st-empty">No low stock items found.</div>';
+        else html = window.stAllLowStock.map(s => `
+            <div class="st-product-row">
+                <img class="st-product-img" src="${stEsc(s.image || 'https://via.placeholder.com/32')}">
+                <div class="st-row-body"><div class="st-row-title">${stEsc(s.title)}</div><div class="st-row-meta">Running out soon</div></div>
+                <div class="st-row-amount st-red">${s.qty} left</div>
+            </div>
+        `).join("");
     }
 
     list.innerHTML = html;
@@ -422,7 +247,6 @@ function closeStoreModal() {
     if (modal) modal.style.display = "none";
 }
 
-// Close on clicking outside
 document.getElementById("st-modal")?.addEventListener("click", function(e) {
     if (e.target === this) closeStoreModal();
 });

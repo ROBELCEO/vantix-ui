@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — My Store</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2138">
+<link rel="stylesheet" href="css/style.css?v=2185">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -83,7 +83,6 @@
                 <div class="st-kpi-label">Net Profit (30d)</div>
                 <div class="st-kpi-value st-green" id="kpi-net-profit">—</div>
                 <div class="st-kpi-meta" id="kpi-net-profit-meta">Revenue − COGS</div>
-                <a href="index.html?setup=fees" id="kpi-net-profit-setup" style="display: none; margin-top: 8px; padding: 4px 8px; font-size: 10px; background: #E11D48; color: #FFF; text-align: center; border-radius: 2px !important; text-decoration: none; font-weight: 800;">Setup Fees →</a>
             </div>
             <div class="st-kpi">
                 <div class="st-kpi-label">Orders (30d)</div>
@@ -123,7 +122,7 @@
                         <div class="st-panel-title">Top Selling Products</div>
                         <div class="st-panel-sub">By revenue, last 30 days</div>
                     </div>
-                    <a href="inventory.html" class="st-link">Inventory →</a>
+                    <button class="st-link" style="background:none; border:none; cursor:pointer; padding:0;" onclick="openStoreModal('products')">View all →</button>
                 </div>
                 <div id="top-products-list" class="st-list">
                     <div class="st-empty">Loading products…</div>
@@ -139,7 +138,10 @@
                         <div class="st-panel-title">Abandoned Cart ROI</div>
                         <div class="st-panel-sub">Money sitting on the table</div>
                     </div>
-                    <div class="st-badge st-badge-amber">RECOVER</div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button class="st-link" style="background:none; border:none; cursor:pointer; padding:0; font-size:11px;" onclick="openStoreModal('carts')">View all →</button>
+                        <div class="st-badge st-badge-amber">RECOVER</div>
+                    </div>
                 </div>
                 <div id="carts-list" class="st-list">
                     <div class="st-empty">Loading abandoned carts…</div>
@@ -152,7 +154,10 @@
                         <div class="st-panel-title">Dead Stock Cash Trap</div>
                         <div class="st-panel-sub">Cash stuck in slow inventory</div>
                     </div>
-                    <div class="st-badge st-badge-red">CASH TRAPPED</div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button class="st-link" style="background:none; border:none; cursor:pointer; padding:0; font-size:11px;" onclick="openStoreModal('dead')">View all →</button>
+                        <div class="st-badge st-badge-red">CASH TRAPPED</div>
+                    </div>
                 </div>
                 <div id="dead-stock-list" class="st-list">
                     <div class="st-empty">Analyzing inventory…</div>
@@ -194,7 +199,10 @@
                         <div class="st-panel-title">Low Stock Alerts</div>
                         <div class="st-panel-sub">Items under 15 units</div>
                     </div>
-                    <div class="st-badge st-badge-red">RESTOCK</div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button class="st-link" style="background:none; border:none; cursor:pointer; padding:0; font-size:11px;" onclick="openStoreModal('low')">View all →</button>
+                        <div class="st-badge st-badge-red">RESTOCK</div>
+                    </div>
                 </div>
                 <div id="low-stock-list" class="st-list">
                     <div class="st-empty">Loading stock…</div>
@@ -216,31 +224,27 @@
                 </div>
             </div>
         </div>
-    <!-- MY STORE OVERLAY MODAL -->
-    <div id="st-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px;">
-        <div class="st-panel" style="width: 100%; max-width: 650px; max-height: 80vh; display: flex; flex-direction: column; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
-            <div class="st-panel-head" style="margin-bottom: 16px;">
-                <div>
-                    <div class="st-panel-title" id="st-modal-title" style="font-size: 18px;">Full List</div>
-                    <div class="st-panel-sub">View all details</div>
-                </div>
-                <button onclick="closeStoreModal()" style="background: none; border: 1px solid #E4E4E7; padding: 6px 12px; border-radius: 2px; cursor: pointer; font-weight: 800; color: #09090B;">✕ Close</button>
+
+    </div>
+</div>
+
+<!-- MY STORE OVERLAY MODAL -->
+<div id="st-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px;">
+    <div class="st-panel" style="width: 100%; max-width: 650px; max-height: 80vh; display: flex; flex-direction: column; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+        <div class="st-panel-head" style="margin-bottom: 16px;">
+            <div>
+                <div class="st-panel-title" id="st-modal-title" style="font-size: 18px;">Full List</div>
+                <div class="st-panel-sub">View all details</div>
             </div>
-            <div id="st-modal-body" class="st-list" style="overflow-y: auto; flex: 1; padding-right: 8px;">
-                <!-- Content injected here -->
-            </div>
+            <button onclick="closeStoreModal()" style="background: none; border: 1px solid #E4E4E7; padding: 6px 12px; border-radius: 2px; cursor: pointer; font-weight: 800; color: #09090B;">✕ Close</button>
+        </div>
+        <div id="st-modal-body" class="st-list" style="overflow-y: auto; flex: 1; padding-right: 8px;">
+            <!-- Content injected here -->
         </div>
     </div>
+</div>
 
-</div>
-</div>
-<script src="js/app.js?v=2142"></script>
-<script src="js/store.js?v=2184"></script>
+<script src="js/app.js?v=2185"></script>
+<script src="js/store.js?v=2185"></script>
 </body>
 </html>
-
-
-
-
-
-
