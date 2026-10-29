@@ -202,8 +202,7 @@ function renderChart(chart) {
                 y: { 
                     grid: { color: "#E5E7EB" }, 
                     ticks: { color: "#6B7280", font: { size: 10 } },
-                    min: -8000,
-                    max: 1000
+                    
                 }
             }
         }
@@ -341,5 +340,6 @@ document.getElementById("ov-modal")?.addEventListener("click", function(e) {
         closeTopProductsModal();
     }
 });
+
 
 
