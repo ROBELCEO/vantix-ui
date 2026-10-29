@@ -8,16 +8,7 @@ async function loadTerminal() {
     if(!container) return;
 
     try {
-        // 1. Explicitly get the fresh token
-        const { data: { session } } = await window.supabaseClient.auth.getSession();
-        if (!session) throw new Error("Not logged in");
-
-        // 2. Pass the token directly in the header
-        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison', {
-            headers: {
-                'Authorization': `Bearer ${session.access_token}`
-            }
-        });
+        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison');
         if(!res.ok) throw new Error("HTTP " + res.status);
         
         const data = await res.json();
@@ -251,5 +242,4 @@ document.addEventListener('DOMContentLoaded', () => {
         if (allComparisons.length === 0) loadTerminal();
     }, 3000);
 });
-
 
