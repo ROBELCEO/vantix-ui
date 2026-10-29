@@ -287,7 +287,56 @@ function renderTopProducts(products) {
 }
 
 function renderChart(chart) {
-    setTimeout(() => { _renderChart(chart); }, 50);
+    const canvas = document.getElementById("ov-profit-chart");
+    if (!canvas || typeof Chart === "undefined") return;
+    if (ovChartInstance) ovChartInstance.destroy();
+
+    let labels = Array.isArray(chart.labels) && chart.labels.length ? chart.labels : ["No data"];
+    let data = Array.isArray(chart.data) && chart.data.length ? chart.data : [0];
+
+    const ctx = canvas.getContext("2d");
+
+    ovChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Net Profit",
+                data: data,
+                backgroundColor: function(context) {
+                    const value = context.raw;
+                    // Red if negative, Green if positive
+                    return value < 0 ? "#E11D48" : "#059669";
+                },
+                borderRadius: 4,
+                barPercentage: 0.8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) { label += ': '; }
+                            if (context.parsed.y !== null) {
+                                // Show exact dollar amount on hover
+                                label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: "#6B7280", font: { size: 10 }, maxTicksLimit: 10 } },
+                y: { grid: { color: "#E5E7EB" }, ticks: { color: "#6B7280", font: { size: 10 } } }
+            }
+        }
+    });
 }
 function _renderChart(chart) {
     const canvas = document.getElementById("ov-profit-chart");
@@ -396,6 +445,7 @@ window.loadOverview = async function() {
     await originalLoadOverview();
     initOverviewRealtime();
 };
+
 
 
 
