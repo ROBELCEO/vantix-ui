@@ -26,3 +26,41 @@ body {
 /* 3. Tell the content it is NOT allowed to squish */
 .ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .inv-wrap { min-width: 1100px !important; }
 .alrt-wrap, .mem-wrap, .set-wrap, .cnx-wrap { min-width: 900px !important; }
+
+/* ==========================================
+   THE BULLETPROOF NATIVE SCROLL FIX
+   ========================================== */
+
+/* 1. Let the body scroll naturally like a normal website */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    overflow: visible !important; 
+    background-color: #F4F4F5 !important;
+}
+
+/* 2. Pin the header to the top smoothly */
+.header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 9999 !important;
+    background-color: #000000 !important; 
+    margin-bottom: 0 !important;
+}
+
+/* 3. Remove all restrictions on the screen wrapper */
+.screen, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .alrt-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background-color: transparent !important;
+    padding-top: 24px !important; /* Puts back the standard top gap */
+}
+
+/* 4. Ensure the layouts remain centered and un-stretched */
+.ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
+    margin: 0 auto !important;
+    padding-bottom: 64px !important;
+    min-width: 0 !important;
+}
