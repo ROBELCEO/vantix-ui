@@ -6272,3 +6272,25 @@ body {
 .ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
     min-width: max-content !important; /* Forces the container to expand instead of squishing */
 }
+
+/* ==========================================
+   REVERT UI STRETCH & FIX HORIZONTAL SCROLL
+   ========================================== */
+
+/* 1. Undo the full-screen stretch */
+.ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
+    min-width: 0 !important; /* Reverts the max-content stretch */
+    max-width: 1400px !important; 
+    margin: 0 auto !important;
+}
+
+/* 2. Allow horizontal scroll ONLY when zoomed in, without breaking the layout */
+.screen, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .alrt-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+}
+
+/* 3. Make sure the grids don't break or overflow weirdly */
+.ov-kpi-grid, .st-kpi-grid, .cnx-grid-2, .cmp-grid-2, .ov-grid-3, .st-grid-2-1, .st-grid-2-2, .trm-grid-2 {
+    min-width: 0 !important;
+}
