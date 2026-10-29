@@ -6396,3 +6396,28 @@ html, body, .screen,
 .alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
     background-color: transparent !important;
 }
+
+/* ==========================================
+   FIX PAGE WIDTHS & HEADER GAP
+   ========================================== */
+
+/* 1. Restore specific widths and tighten the top gap */
+.cnx-wrap { max-width: 900px !important; padding-top: 16px !important; }
+.ov-wrap { max-width: 1400px !important; padding-top: 16px !important; }
+.st-wrap { max-width: 1400px !important; padding-top: 16px !important; }
+.cmp-wrap { max-width: 1200px !important; padding-top: 16px !important; }
+.trm-wrap { max-width: 1400px !important; padding-top: 16px !important; }
+.dsc-wrap { max-width: 1400px !important; padding-top: 16px !important; }
+.alrt-wrap { max-width: 1100px !important; padding-top: 16px !important; }
+.inv-wrap { max-width: 1400px !important; padding-top: 16px !important; }
+.mem-wrap { max-width: 1000px !important; padding-top: 16px !important; }
+.set-wrap { max-width: 1000px !important; padding-top: 16px !important; }
+
+/* 2. Ensure the wrappers remain centered and don't stretch */
+.ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
+    margin: 0 auto !important;
+    padding-bottom: 64px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    min-width: 0 !important; 
+}
