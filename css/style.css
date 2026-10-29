@@ -6725,3 +6725,26 @@ html, body, .screen,
     overflow-y: auto !important;
     padding-right: 4px !important;
 }
+
+/* ==========================================
+   KILL VERTICAL GAP
+   ========================================== */
+.screen, .trm-screen { 
+    padding-top: 0 !important; 
+    margin-top: 0 !important; 
+}
+.trm-wrap { 
+    padding-top: 12px !important; 
+}
+.trm-row-a { 
+    margin-top: 0 !important; 
+    padding-top: 0 !important;
+    margin-bottom: 16px !important;
+}
+
+/* Ensure the list container scrolls beautifully when expanded */
+#watchlist-container {
+    max-height: 450px !important;
+    overflow-y: auto !important;
+    padding-right: 4px !important;
+}

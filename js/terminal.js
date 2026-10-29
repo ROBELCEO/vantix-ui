@@ -1,7 +1,7 @@
-﻿let watchlistExpanded = false;
-let chartInstance = null;
+﻿let chartInstance = null;
 let allComparisons = [];
 let activeIndex = 0;
+let watchlistExpanded = false; // NEW: Controls 4 vs All
 
 function fmtMoney(val) {
     if (val === null || val === undefined || isNaN(val)) return "N/A";
@@ -37,9 +37,10 @@ async function loadTerminal() {
 
 function renderWatchlist() {
     const container = document.getElementById('watchlist-container');
+    if(!container) return;
     
-    // Show 4 items by default, or all if expanded
-    const displayItems = window.watchlistExpanded ? allComparisons : allComparisons.slice(0, 4);
+    // Show 4 items by default, or ALL if expanded
+    const displayItems = watchlistExpanded ? allComparisons : allComparisons.slice(0, 4);
     
     let html = displayItems.map((c, index) => {
         const isActive = index === activeIndex ? 'active' : '';
@@ -71,11 +72,11 @@ function renderWatchlist() {
         `;
     }).join('');
 
-    // Add Expand/Collapse Button
+    // ADD EXPAND BUTTON
     if (allComparisons.length > 4) {
         html += `
-            <button onclick="toggleWatchlist()" style="width: 100%; padding: 8px; margin-top: 8px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 2px; font-weight: 700; font-size: 11px; color: #0284C7; cursor: pointer; transition: 0.2s;">
-                ${window.watchlistExpanded ? 'Show Less' : 'Show All (' + allComparisons.length + ')'}
+            <button onclick="toggleWatchlist()" style="width: 100%; padding: 10px; margin-top: 4px; background: #FFFFFF; border: 1px dashed #D1D5DB; border-radius: 2px; font-weight: 800; font-size: 11px; color: #0284C7; cursor: pointer; transition: 0.2s;">
+                ${watchlistExpanded ? 'Show Less ↑' : `Show All ${allComparisons.length} Products ↓`}
             </button>
         `;
     }
@@ -84,7 +85,7 @@ function renderWatchlist() {
 }
 
 function toggleWatchlist() {
-    window.watchlistExpanded = !window.watchlistExpanded;
+    watchlistExpanded = !watchlistExpanded;
     renderWatchlist();
 }
 
@@ -271,4 +272,3 @@ async function fetchAIAdvice(productName) {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(loadTerminal, 500);
 });
-
