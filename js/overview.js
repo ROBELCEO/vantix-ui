@@ -14,6 +14,12 @@ function ovSet(id, text) {
     const el = document.getElementById(id);
     if (el) el.innerText = text;
 }
+function ovError(id, text, retryFn) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.innerHTML = `<div class="vx-error-box">${text}<br><button class="vx-retry-btn" onclick="${retryFn}">Retry</button></div>`;
+    }
+}
 function ovEmpty(id, text) {
     const el = document.getElementById(id);
     if (el) el.innerHTML = `<div class="ov-empty">${text}</div>`;
@@ -32,12 +38,46 @@ async function ovFetchJson(url) {
 async function loadOverview() {
     ovSet("ov-last-updated", "Updated: " + new Date().toLocaleTimeString());
 
+    // If we are not using cached data, show skeletons
+    if (!window.__vxSilent) {
+        ovSet("ov-revenue", "");
+        document.getElementById("ov-revenue").classList.add("vx-skeleton");
+        ovSet("ov-net-profit", "");
+        document.getElementById("ov-net-profit").classList.add("vx-skeleton");
+        ovSet("ov-orders", "");
+        document.getElementById("ov-orders").classList.add("vx-skeleton");
+        ovSet("ov-price-index", "");
+        document.getElementById("ov-price-index").classList.add("vx-skeleton");
+        ovSet("ov-leaks", "");
+        document.getElementById("ov-leaks").classList.add("vx-skeleton");
+    }
+
     const [summaryRes, storeStatusRes, storeDetailedRes, alertsRes] = await Promise.all([
         ovFetchJson("https://vantix-my5f.onrender.com/api/overview/summary"),
         ovFetchJson("https://vantix-my5f.onrender.com/api/shopify/status"),
         ovFetchJson("https://vantix-my5f.onrender.com/api/store/detailed"),
         ovFetchJson("https://vantix-my5f.onrender.com/api/alerts/list")
     ]);
+
+    // Remove skeletons
+    ["ov-revenue", "ov-net-profit", "ov-orders", "ov-price-index", "ov-leaks"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove("vx-skeleton");
+    });
+
+    // If the summary fetch failed completely (e.g. Render asleep or 401)
+    if (!summaryRes.ok) {
+        ovSet("ov-revenue", "Err");
+        ovSet("ov-net-profit", "Err");
+        ovSet("ov-orders", "Err");
+        ovSet("ov-price-index", "Err");
+        ovSet("ov-leaks", "Err");
+        ovError("ov-opportunities", "Could not connect to backend. Render may be waking up.", "loadOverview()");
+        ovError("ov-insights", "Could not load insights.", "loadOverview()");
+        ovError("ov-top-products", "Could not load products.", "loadOverview()");
+        ovSet("ov-store-status", "Store: Offline");
+        return;
+    }
 
     if (storeStatusRes.ok && storeStatusRes.data && storeStatusRes.data.connected) {
         ovSet("ov-store-status", "Store: " + (storeStatusRes.data.domain || "connected"));
@@ -275,6 +315,7 @@ function escapeHtml(str) {
 function escapeAttr(str) {
     return escapeHtml(str).replace(/`/g, "&#96;");
 }
+
 
 
 
