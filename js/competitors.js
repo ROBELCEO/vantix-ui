@@ -3,6 +3,7 @@ window.cmpAllCompetitors = [];
 window.cmpAllStockouts = [];
 window.cmpAllLaunches = [];
 window.cmpAllGaps = [];
+window.cmpAllBestSellers = [];
 
 function cmpEsc(str) {
     return String(str ?? "").replace(/[&<>"']/g, s => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[s]));
@@ -97,6 +98,7 @@ async function refreshCompetitor(domain, btn) {
             fetchCompetitors();
             loadCompetitorIntel();
             loadCatalogGaps();
+        loadBestSellers();
         } else {
             alert(data.detail || "Refresh failed.");
             btn.innerText = original; btn.disabled = false;
@@ -163,6 +165,7 @@ async function addCompetitor(domain) {
             fetchCompetitors();
             loadCompetitorIntel();
             loadCatalogGaps();
+        loadBestSellers();
         } else {
             status.className = 'cmp-status-msg cmp-text-red';
             status.innerText = data.detail || data.message || "Error adding.";
@@ -212,6 +215,32 @@ async function loadCompetitorIntel() {
             `).join('');
         } else {
             launchList.innerHTML = '<div class="cmp-empty">No new launches found.</div>';
+        }
+    } catch (e) { console.error(e); }
+}
+
+async function loadBestSellers() {
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/best-sellers');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        window.cmpAllBestSellers = data.best_sellers || [];
+        const list = document.getElementById('bestsellers-list');
+        
+        if (window.cmpAllBestSellers.length > 0) {
+            list.innerHTML = window.cmpAllBestSellers.slice(0, 5).map(p => `
+                <div class="cmp-product-row">
+                    <img class="cmp-avatar" src="${cmpEsc(p.image || '')}" onerror="this.style.visibility='hidden'">
+                    <div class="cmp-row-body">
+                        <div class="cmp-row-title">${cmpEsc(p.title)}${cmpBestSellerBadge(true, p.rank, p.prev_rank)}</div>
+                        <div class="cmp-row-meta">${cmpEsc(p.store)}</div>
+                    </div>
+                    ${cmpPriceTag(p.price, p.price_available, 'cmp-text-cyan')}
+                </div>
+            `).join('');
+        } else {
+            list.innerHTML = '<div class="cmp-empty">No best sellers found yet. Refresh a competitor.</div>';
         }
     } catch (e) { console.error(e); }
 }
@@ -299,6 +328,20 @@ function openCmpModal(type) {
             </div>
         `).join("");
     }
+        else if (type === 'bestsellers') {
+        title.innerText = "All Competitor Best Sellers";
+        if (window.cmpAllBestSellers.length === 0) html = '<div class="cmp-empty">No best sellers found.</div>';
+        else html = window.cmpAllBestSellers.map(p => `
+            <div class="cmp-product-row">
+                <img class="cmp-avatar" src="${cmpEsc(p.image || '')}" onerror="this.style.visibility='hidden'">
+                <div class="cmp-row-body">
+                    <div class="cmp-row-title">${cmpEsc(p.title)}${cmpBestSellerBadge(true, p.rank, p.prev_rank)}</div>
+                    <div class="cmp-row-meta">${cmpEsc(p.store)}</div>
+                </div>
+                ${cmpPriceTag(p.price, p.price_available, 'cmp-text-cyan')}
+            </div>
+        `).join("");
+    }
     else if (type === 'gaps') {
         title.innerText = "All Catalog Gaps";
         if (window.cmpAllGaps.length === 0) html = '<div class="cmp-empty">No gaps found.</div>';
@@ -332,5 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchCompetitors();
         loadCompetitorIntel();
         loadCatalogGaps();
+        loadBestSellers();
     }, 500);
 });
+
