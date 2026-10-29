@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Competitors</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2138">
+<link rel="stylesheet" href="css/style.css?v=2215">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -47,7 +47,7 @@
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
         <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
-        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none; background: #222 !important; color: #FFF !important; border-color: #333 !important;">Log Out</button>
         <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
     </div>
 </div>
@@ -69,8 +69,7 @@
 
         <!-- ROW B: ACTION PANELS -->
         <div class="cmp-grid-2">
-            <!-- AUTO DISCOVER -->
-            <div class="cmp-panel cmp-panel-cyan">
+            <div class="cmp-panel">
                 <div class="cmp-panel-head">
                     <div>
                         <div class="cmp-panel-title">Auto-Discover Competitors</div>
@@ -78,13 +77,10 @@
                     </div>
                     <div class="cmp-badge cmp-badge-cyan">AI</div>
                 </div>
-                <button onclick="autoDiscover()" id="discover-btn" class="cmp-btn-primary">
-                    Find My Competitors →
-                </button>
+                <button onclick="autoDiscover()" id="discover-btn" class="cmp-btn-primary">Find My Competitors →</button>
                 <div id="discovery-results" class="cmp-list" style="margin-top: 16px;"></div>
             </div>
 
-            <!-- MANUAL ADD -->
             <div class="cmp-panel">
                 <div class="cmp-panel-head">
                     <div>
@@ -107,9 +103,11 @@
                     <div class="cmp-panel-title">Tracked Competitors</div>
                     <div class="cmp-panel-sub">Stores currently being monitored for price and stock changes.</div>
                 </div>
-                <div class="cmp-badge" id="comp-count">0 / 0</div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button class="cmp-link" style="background:none; border:none; cursor:pointer; padding:0;" onclick="openCmpModal('competitors')">View all →</button>
+                    <div class="cmp-badge" id="comp-count">0 / 0</div>
+                </div>
             </div>
-            
             <div id="competitors-list" class="cmp-list">
                 <div class="cmp-empty">Loading competitors…</div>
             </div>
@@ -124,9 +122,12 @@
                 <div class="cmp-panel-head">
                     <div>
                         <div class="cmp-panel-title">Stock-Out Radar</div>
-                        <div class="cmp-panel-sub">Competitors who are out of stock. Run ads now.</div>
+                        <div class="cmp-panel-sub">High-ticket competitor items currently out of stock.</div>
                     </div>
-                    <div class="cmp-badge cmp-badge-amber">OPPORTUNITY</div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button class="cmp-link" style="background:none; border:none; cursor:pointer; padding:0; font-size:11px;" onclick="openCmpModal('stockouts')">View all →</button>
+                        <div class="cmp-badge cmp-badge-amber">OPPORTUNITY</div>
+                    </div>
                 </div>
                 <div id="stockout-list" class="cmp-list">
                     <div class="cmp-empty">Scanning stock…</div>
@@ -138,9 +139,12 @@
                 <div class="cmp-panel-head">
                     <div>
                         <div class="cmp-panel-title">New Launch Tracker</div>
-                        <div class="cmp-panel-sub">Products your competitors recently launched.</div>
+                        <div class="cmp-panel-sub">Newest products your competitors recently launched.</div>
                     </div>
-                    <div class="cmp-badge cmp-badge-green">LAST 30 DAYS</div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button class="cmp-link" style="background:none; border:none; cursor:pointer; padding:0; font-size:11px;" onclick="openCmpModal('launches')">View all →</button>
+                        <div class="cmp-badge cmp-badge-green">LAST 30 DAYS</div>
+                    </div>
                 </div>
                 <div id="launch-list" class="cmp-list">
                     <div class="cmp-empty">Scanning launches…</div>
@@ -155,7 +159,10 @@
                     <div class="cmp-panel-title">Catalog Gap Analyzer</div>
                     <div class="cmp-panel-sub">Items your competitors sell, but you don't.</div>
                 </div>
-                <div class="cmp-badge cmp-badge-violet">MISSED REVENUE</div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button class="cmp-link" style="background:none; border:none; cursor:pointer; padding:0; font-size:11px;" onclick="openCmpModal('gaps')">View all →</button>
+                    <div class="cmp-badge cmp-badge-violet">MISSED REVENUE</div>
+                </div>
             </div>
             <div id="gap-list" class="cmp-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                 <div class="cmp-empty" style="grid-column: span 2;">Scanning catalogs…</div>
@@ -165,36 +172,23 @@
     </div>
 </div>
 
-<script src="js/app.js?v=2142"></script>
-<script src="js/competitors.js?v=2202"></script>
+<!-- COMPETITORS OVERLAY MODAL -->
+<div id="cmp-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px;">
+    <div class="cmp-panel" style="width: 100%; max-width: 650px; max-height: 80vh; display: flex; flex-direction: column; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+        <div class="cmp-panel-head" style="margin-bottom: 16px;">
+            <div>
+                <div class="cmp-panel-title" id="cmp-modal-title" style="font-size: 18px;">Full List</div>
+                <div class="cmp-panel-sub">View all details</div>
+            </div>
+            <button onclick="closeCmpModal()" style="background: none; border: 1px solid #E4E4E7; padding: 6px 12px; border-radius: 2px; cursor: pointer; font-weight: 800; color: #09090B;">✕ Close</button>
+        </div>
+        <div id="cmp-modal-body" class="cmp-list" style="overflow-y: auto; flex: 1; padding-right: 8px;">
+            <!-- Content injected here -->
+        </div>
+    </div>
+</div>
+
+<script src="js/app.js?v=2215"></script>
+<script src="js/competitors.js?v=2215"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
