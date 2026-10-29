@@ -149,6 +149,7 @@ function renderRevenueChart(chartData) {
 }
 
 function renderTopProducts(products) {
+    window.stAllProducts = products || [];
     const el = document.getElementById("top-products-list");
     if (!el) return;
     if (!products.length) { el.innerHTML = '<div class="st-empty">No sales data yet.</div>'; return; }
@@ -166,6 +167,7 @@ function renderTopProducts(products) {
 }
 
 function renderCarts(carts) {
+    window.stAllCarts = carts || [];
     const el = document.getElementById("carts-list");
     if (!el) return;
     if (!carts.length) { el.innerHTML = '<div class="st-empty st-empty-good">No abandoned carts right now.</div>'; return; }
@@ -182,6 +184,7 @@ function renderCarts(carts) {
 }
 
 function renderLowStock(stock) {
+    window.stAllLowStock = stock || [];
     const el = document.getElementById("low-stock-list");
     if (!el) return;
     if (!stock.length) { el.innerHTML = '<div class="st-empty st-empty-good">Stock is healthy.</div>'; return; }
@@ -323,3 +326,103 @@ async function loadCustomerLTV() {
 }
 
 
+
+// ==========================================
+// MY STORE MODAL LOGIC
+// ==========================================
+function stEsc(str) {
+    return String(str ?? "").replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
+}
+function stMoney(n) {
+    const v = Number(n);
+    if (!Number.isFinite(v)) return "—";
+    return "$" + v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function openStoreModal(type) {
+    const modal = document.getElementById("st-modal");
+    const list = document.getElementById("st-modal-body");
+    const title = document.getElementById("st-modal-title");
+    if (!modal || !list) return;
+
+    let html = "";
+
+    if (type === 'products') {
+        title.innerText = "All Top Selling Products";
+        if (!window.stAllProducts || window.stAllProducts.length === 0) html = '<div class="st-empty">No products found.</div>';
+        else {
+            html = window.stAllProducts.map((p, i) => `
+                <div class="st-product-row">
+                    <div class="st-row-rank">${i + 1}</div>
+                    <img class="st-product-img" src="${stEsc(p.image || 'https://via.placeholder.com/40')}" alt="">
+                    <div class="st-row-body">
+                        <div class="st-row-title">${stEsc(p.title || "Product")}</div>
+                        <div class="st-row-meta">${p.units || 0} sold</div>
+                    </div>
+                    <div class="st-row-amount st-green">${stMoney(p.revenue || 0)}</div>
+                </div>
+            `).join("");
+        }
+    } 
+    else if (type === 'carts') {
+        title.innerText = "All Abandoned Carts";
+        if (!window.stAllCarts || window.stAllCarts.length === 0) html = '<div class="st-empty">No abandoned carts found.</div>';
+        else {
+            html = window.stAllCarts.map(c => `
+                <div class="st-product-row">
+                    <div class="st-row-body">
+                        <div class="st-row-title">${stEsc(c.item)}</div>
+                        <div class="st-row-meta">${stEsc(c.email || 'Guest')}</div>
+                    </div>
+                    <div class="st-row-amount st-amber" style="margin-right: 12px;">${stMoney(c.value)}</div>
+                    ${c.url ? `<a href="${c.url}" target="_blank" class="st-row-action">Recover →</a>` : ''}
+                </div>
+            `).join("");
+        }
+    }
+    else if (type === 'dead') {
+        title.innerText = "All Dead Stock Items";
+        if (!window.stAllDeadStock || window.stAllDeadStock.length === 0) html = '<div class="st-empty">No dead stock detected.</div>';
+        else {
+            html = window.stAllDeadStock.map(item => `
+                <div class="st-product-row">
+                    <img class="st-product-img" src="${stEsc(item.image || 'https://via.placeholder.com/32')}" alt="">
+                    <div class="st-row-body">
+                        <div class="st-row-title">${stEsc(item.title)}</div>
+                        <div class="st-row-meta">${item.stock} units sitting</div>
+                    </div>
+                    <div class="st-row-amount st-red">${stMoney(item.cash_trapped)}</div>
+                </div>
+            `).join("");
+        }
+    }
+    else if (type === 'low') {
+        title.innerText = "All Low Stock Items";
+        if (!window.stAllLowStock || window.stAllLowStock.length === 0) html = '<div class="st-empty">No low stock items found.</div>';
+        else {
+            html = window.stAllLowStock.map(s => `
+                <div class="st-product-row">
+                    <img class="st-product-img" src="${stEsc(s.image || 'https://via.placeholder.com/32')}" alt="">
+                    <div class="st-row-body">
+                        <div class="st-row-title">${stEsc(s.title)}</div>
+                        <div class="st-row-meta">Running out soon</div>
+                    </div>
+                    <div class="st-row-amount st-red">${s.qty} left</div>
+                </div>
+            `).join("");
+        }
+    }
+
+    list.innerHTML = html;
+    modal.style.display = "flex";
+}
+
+function closeStoreModal() {
+    const modal = document.getElementById("st-modal");
+    if (modal) modal.style.display = "none";
+}
+
+// Close on clicking outside
+document.getElementById("st-modal")?.addEventListener("click", function(e) {
+    if (e.target === this) closeStoreModal();
+});

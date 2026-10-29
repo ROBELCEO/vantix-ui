@@ -216,14 +216,29 @@
                 </div>
             </div>
         </div>
-
+    <!-- MY STORE OVERLAY MODAL -->
+    <div id="st-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px;">
+        <div class="st-panel" style="width: 100%; max-width: 650px; max-height: 80vh; display: flex; flex-direction: column; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+            <div class="st-panel-head" style="margin-bottom: 16px;">
+                <div>
+                    <div class="st-panel-title" id="st-modal-title" style="font-size: 18px;">Full List</div>
+                    <div class="st-panel-sub">View all details</div>
+                </div>
+                <button onclick="closeStoreModal()" style="background: none; border: 1px solid #E4E4E7; padding: 6px 12px; border-radius: 2px; cursor: pointer; font-weight: 800; color: #09090B;">✕ Close</button>
+            </div>
+            <div id="st-modal-body" class="st-list" style="overflow-y: auto; flex: 1; padding-right: 8px;">
+                <!-- Content injected here -->
+            </div>
+        </div>
     </div>
-</div>
 
+</div>
+</div>
 <script src="js/app.js?v=2142"></script>
-<script src="js/store.js?v=2145"></script>
+<script src="js/store.js?v=2184"></script>
 </body>
 </html>
+
 
 
 
