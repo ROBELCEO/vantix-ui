@@ -29,6 +29,23 @@ async function checkConnectionStatus() {
             if (statusEl) statusEl.innerText = "Connected";
             document.getElementById('connected-domain').innerText = data.domain;
             
+            // FETCH STORE LOGO
+            const logoUrl = `https://www.google.com/s2/favicons?domain=${data.domain}&sz=128`;
+            const logoImg = document.getElementById('store-logo');
+            const logoFallback = document.getElementById('store-logo-fallback');
+            
+            if (logoImg && logoFallback) {
+                logoImg.src = logoUrl;
+                logoImg.style.display = 'block';
+                logoFallback.style.display = 'none';
+                
+                // If image fails to load, fallback to the checkmark
+                logoImg.onerror = () => {
+                    logoImg.style.display = 'none';
+                    logoFallback.style.display = 'flex';
+                };
+            }
+
             // AUTO-SYNC IN THE BACKGROUND
             fetch('https://vantix-my5f.onrender.com/api/shopify/sync')
                 .then(r => r.json())
@@ -196,5 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 800);
     }
 });
+
 
 
