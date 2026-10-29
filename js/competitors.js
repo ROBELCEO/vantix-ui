@@ -30,17 +30,9 @@ function cmpPriceTag(price, priceAvailable, cls) {
 
 function cmpBestSellerBadge(isBestSeller, rank, prevRank) {
     if (!isBestSeller) return '';
-    
-    // Volatility Logic
-    if (rank === 1) {
-        return '<span class="cmp-badge cmp-badge-amber" style="font-size:9px; padding:2px 6px; margin-left:8px;">🔥 #1 BEST SELLER</span>';
-    }
-    if (prevRank && rank < prevRank) {
-        return `<span class="cmp-badge cmp-badge-green" style="font-size:9px; padding:2px 6px; margin-left:8px;">🚀 SURGING (#${prevRank} → #${rank})</span>`;
-    }
-    if (!prevRank) {
-        return '<span class="cmp-badge cmp-badge-violet" style="font-size:9px; padding:2px 6px; margin-left:8px;">✨ NEW WINNER</span>';
-    }
+    if (rank === 1) return '<span class="cmp-badge cmp-badge-amber" style="font-size:9px; padding:2px 6px; margin-left:8px;">🔥 #1 BEST SELLER</span>';
+    if (prevRank && rank < prevRank) return `<span class="cmp-badge cmp-badge-green" style="font-size:9px; padding:2px 6px; margin-left:8px;">🚀 SURGING (#${prevRank} → #${rank})</span>`;
+    if (!prevRank) return '<span class="cmp-badge cmp-badge-violet" style="font-size:9px; padding:2px 6px; margin-left:8px;">✨ NEW WINNER</span>';
     return `<span class="cmp-badge cmp-badge-amber" style="font-size:9px; padding:2px 6px; margin-left:8px;">🔥 TOP #${rank}</span>`;
 }
 
@@ -98,7 +90,7 @@ async function refreshCompetitor(domain, btn) {
             fetchCompetitors();
             loadCompetitorIntel();
             loadCatalogGaps();
-        loadBestSellers();
+            loadBestSellers();
         } else {
             alert(data.detail || "Refresh failed.");
             btn.innerText = original; btn.disabled = false;
@@ -128,12 +120,17 @@ async function autoDiscover() {
         } else {
             results.innerHTML = `
                 <div class="cmp-row-meta" style="margin-bottom:8px;">Source: ${sourceLabel}</div>
-                ${data.suggested_competitors.map(domain => `
+                ${data.suggested_competitors.map(domain => {
+                    const isTracked = allCompetitors.some(c => c.domain.toLowerCase() === domain.toLowerCase());
+                    const btnHtml = isTracked 
+                        ? '<div class="cmp-badge cmp-badge-green" style="font-size: 9px;">TRACKED</div>'
+                        : `<button onclick="addCompetitor('${cmpEsc(domain)}')" class="cmp-btn-small">+ Add</button>`;
+                    return `
                     <div class="cmp-suggestion-row">
                         <div class="cmp-row-title">${cmpEsc(domain)}</div>
-                        <button onclick="addCompetitor('${cmpEsc(domain)}')" class="cmp-btn-small">+ Add</button>
+                        ${btnHtml}
                     </div>
-                `).join('')}
+                `}).join('')}
             `;
         }
     } catch (e) {
@@ -165,7 +162,7 @@ async function addCompetitor(domain) {
             fetchCompetitors();
             loadCompetitorIntel();
             loadCatalogGaps();
-        loadBestSellers();
+            loadBestSellers();
         } else {
             status.className = 'cmp-status-msg cmp-text-red';
             status.innerText = data.detail || data.message || "Error adding.";
@@ -173,6 +170,12 @@ async function addCompetitor(domain) {
     } catch (e) {
         status.className = 'cmp-status-msg cmp-text-red';
         status.innerText = "Error adding competitor. Check backend.";
+    } finally {
+        setTimeout(() => {
+            if (status.innerText.includes("Scraping")) {
+                status.style.display = 'none';
+            }
+        }, 5000);
     }
 }
 
@@ -219,32 +222,6 @@ async function loadCompetitorIntel() {
     } catch (e) { console.error(e); }
 }
 
-async function loadBestSellers() {
-    try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/best-sellers');
-        if (!res.ok) return;
-        const data = await res.json();
-
-        window.cmpAllBestSellers = data.best_sellers || [];
-        const list = document.getElementById('bestsellers-list');
-        
-        if (window.cmpAllBestSellers.length > 0) {
-            list.innerHTML = window.cmpAllBestSellers.slice(0, 5).map(p => `
-                <div class="cmp-product-row">
-                    <img class="cmp-avatar" src="${cmpEsc(p.image || '')}" onerror="this.style.visibility='hidden'">
-                    <div class="cmp-row-body">
-                        <div class="cmp-row-title">${cmpEsc(p.title)}${cmpBestSellerBadge(true, p.rank, p.prev_rank)}</div>
-                        <div class="cmp-row-meta">${cmpEsc(p.store)}</div>
-                    </div>
-                    ${cmpPriceTag(p.price, p.price_available, 'cmp-text-cyan')}
-                </div>
-            `).join('');
-        } else {
-            list.innerHTML = '<div class="cmp-empty">No best sellers found yet. Refresh a competitor.</div>';
-        }
-    } catch (e) { console.error(e); }
-}
-
 async function loadCatalogGaps() {
     const list = document.getElementById('gap-list');
     if (!list) return;
@@ -275,7 +252,32 @@ async function loadCatalogGaps() {
     }
 }
 
-// --- MODAL LOGIC ---
+async function loadBestSellers() {
+    try {
+        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/best-sellers');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        window.cmpAllBestSellers = data.best_sellers || [];
+        const list = document.getElementById('bestsellers-list');
+        
+        if (window.cmpAllBestSellers.length > 0) {
+            list.innerHTML = window.cmpAllBestSellers.slice(0, 5).map(p => `
+                <div class="cmp-product-row">
+                    <img class="cmp-avatar" src="${cmpEsc(p.image || '')}" onerror="this.style.visibility='hidden'">
+                    <div class="cmp-row-body">
+                        <div class="cmp-row-title">${cmpEsc(p.title)}${cmpBestSellerBadge(true, p.rank, p.prev_rank)}</div>
+                        <div class="cmp-row-meta">${cmpEsc(p.store)}</div>
+                    </div>
+                    ${cmpPriceTag(p.price, p.price_available, 'cmp-text-cyan')}
+                </div>
+            `).join('');
+        } else {
+            list.innerHTML = '<div class="cmp-empty">No best sellers found yet. Refresh a competitor.</div>';
+        }
+    } catch (e) { console.error(e); }
+}
+
 function openCmpModal(type) {
     const modal = document.getElementById("cmp-modal");
     const list = document.getElementById("cmp-modal-body");
@@ -328,7 +330,7 @@ function openCmpModal(type) {
             </div>
         `).join("");
     }
-        else if (type === 'bestsellers') {
+    else if (type === 'bestsellers') {
         title.innerText = "All Competitor Best Sellers";
         if (window.cmpAllBestSellers.length === 0) html = '<div class="cmp-empty">No best sellers found.</div>';
         else html = window.cmpAllBestSellers.map(p => `
@@ -378,4 +380,3 @@ document.addEventListener('DOMContentLoaded', () => {
         loadBestSellers();
     }, 500);
 });
-
