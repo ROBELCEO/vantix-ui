@@ -136,6 +136,26 @@ async function loadOverview() {
         ovEmpty("ov-insights", "No insights available yet.");
     }
 
+    // Render Sales by Category
+    if (summary && summary.categories && summary.categories.length > 0) {
+        const catEl = document.getElementById("ov-category");
+        if (catEl) {
+            catEl.innerHTML = summary.categories.map(c => `
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #09090B; margin-bottom: 6px;">
+                        <span>${escapeHtml(c.name)}</span>
+                        <span class="mono">$${c.revenue.toFixed(2)} (${c.percent}%)</span>
+                    </div>
+                    <div style="width: 100%; background: #F1F5F9; height: 6px; border-radius: 2px !important; overflow: hidden;">
+                        <div style="width: ${c.percent}%; background: #0284C7; height: 100%;"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    } else {
+        ovEmpty("ov-category", "No category data yet.");
+    }
+
     const aiNote = document.getElementById("ov-ai-assistant-note");
     if (aiNote) {
         aiNote.innerText = (summary && summary.actions && summary.actions.length)
@@ -252,3 +272,4 @@ function escapeHtml(str) {
 function escapeAttr(str) {
     return escapeHtml(str).replace(/`/g, "&#96;");
 }
+
