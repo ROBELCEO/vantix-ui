@@ -120,34 +120,60 @@ function renderChart(product) {
     if(!canvas) return;
 
     const ctx = canvas.getContext('2d');
-    const dates = ['6d ago', '5d ago', '4d ago', '3d ago', '2d ago', 'Yesterday', 'Today'];
-    const myPrice = product.my_price || 0;
-    const myPriceData = [myPrice, myPrice, myPrice, myPrice, myPrice, myPrice, myPrice];
+    
+    // Set up dynamic labels and data
+    let labels = ['Your Price'];
+    let data = [product.my_price || 0];
+    let backgroundColors = ['#059669']; // Green for user
+    
+    // Color palette for competitors
+    const compColors = ['#E11D48', '#D97706', '#7C3AED', '#0284C7', '#F472B6', '#FBBF24'];
 
-    let datasets = [{
-        label: 'Your Price', data: myPriceData, borderColor: '#059669', borderWidth: 2, tension: 0.4, pointRadius: 3
-    }];
-
-    const colors = ['#E11D48', '#D97706', '#7C3AED'];
-
+    // Loop through ALL competitor matches dynamically
     if (product.competitor_matches && product.competitor_matches.length > 0) {
-        product.competitor_matches.slice(0, 3).forEach((match, i) => {
-            const compPrice = match.comp_price || 0;
-            const compData = [compPrice, compPrice, compPrice, compPrice, compPrice, compPrice, compPrice];
-            
-            datasets.push({
-                label: match.competitor_name, data: compData, borderColor: colors[i % colors.length], borderWidth: 2, tension: 0.4, pointRadius: 3
-            });
+        product.competitor_matches.forEach((match, i) => {
+            labels.push(match.competitor_name);
+            data.push(match.comp_price !== null ? match.comp_price : 0);
+            backgroundColors.push(compColors[i % compColors.length]);
         });
     }
 
     chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: { labels: dates, datasets: datasets },
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Price ($)',
+                data: data,
+                backgroundColor: backgroundColors,
+                borderRadius: 2,
+                barPercentage: 0.6
+            }]
+        },
         options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: true, labels: { color: '#52525B', font: { family: 'JetBrains Mono', size: 11 } } } },
-            scales: { y: { grid: { color: '#F1F5F9' }, ticks: { color: '#71717A' } }, x: { grid: { display: false }, ticks: { color: '#71717A' } } }
+            responsive: true, 
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Price: $' + context.parsed.y.toFixed(2);
+                        }
+                    }
+                }
+            },
+            scales: { 
+                y: { 
+                    beginAtZero: true,
+                    grid: { color: '#F1F5F9' }, 
+                    ticks: { color: '#71717A', font: { family: 'JetBrains Mono' } } 
+                }, 
+                x: { 
+                    grid: { display: false }, 
+                    ticks: { color: '#52525B', font: { weight: 'bold' } } 
+                } 
+            }
         }
     });
 }
@@ -272,3 +298,4 @@ async function fetchAIAdvice(productName) {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(loadTerminal, 500);
 });
+
