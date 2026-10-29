@@ -74,7 +74,7 @@ async function loadOverview() {
     const [summaryRes, storeStatusRes, storeDetailedRes, alertsRes] = await Promise.all([
         ovFetchJson("https://vantix-my5f.onrender.com/api/overview/summary"),
         ovFetchJson("https://vantix-my5f.onrender.com/api/shopify/status"),
-        ovFetchJson("https://vantix-my5f.onrender.com/api/store/detailed"),
+        ovFetchJson("https://vantix-my5f.onrender.com/api/store/detailed?t=" + Date.now()),
         ovFetchJson("https://vantix-my5f.onrender.com/api/alerts/list")
     ]);
 
@@ -172,7 +172,7 @@ async function loadOverview() {
 
     let detailed = storeDetailedRes.ok ? storeDetailedRes.data : null;
     if (detailed) {
-        renderChart(detailed.chart || { labels: [], data: [] });
+        console.log("CHART DATA RECEIVED:", detailed.chart); renderChart(detailed.chart || { labels: [], data: [] });
         const dk = detailed.kpis || {};
         ovSet("ov-chart-revenue", Number.isFinite(Number(dk.total_revenue)) ? ovMoney(dk.total_revenue) : "—");
         
@@ -306,17 +306,17 @@ function _renderChart(chart) {
     gradient.addColorStop(1, "rgba(2, 132, 199, 0)");
 
     ovChartInstance = new Chart(ctx, {
-        type: "line",
+        type: "bar",
         data: {
             labels,
             datasets: [{
                 label: "Revenue",
                 data,
-                borderColor: "#0284C7",
+                backgroundColor: "#0284C7",
                 backgroundColor: gradient,
-                borderWidth: 2,
-                tension: 0.35,
-                fill: true,
+                borderRadius: 4,
+                
+                
                 pointRadius: 3
             }]
         },
@@ -396,5 +396,6 @@ window.loadOverview = async function() {
     await originalLoadOverview();
     initOverviewRealtime();
 };
+
 
 
