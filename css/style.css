@@ -6259,3 +6259,16 @@ body {
     min-height: min-content !important;
     overflow: visible !important;
 }
+
+/* ==========================================
+   HORIZONTAL & DIAGONAL SCROLL FIX
+   ========================================== */
+.screen, .ov-screen, .st-screen, .cmp-screen, .trm-screen, .dsc-screen, .alrt-screen, .inv-screen, .mem-screen, .set-screen, .cnx-screen {
+    overflow-x: auto !important; /* Allow horizontal scrolling when zoomed */
+    overflow-y: auto !important;
+}
+
+/* Make sure the wrappers stretch to fit their content when zoomed */
+.ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
+    min-width: max-content !important; /* Forces the container to expand instead of squishing */
+}
