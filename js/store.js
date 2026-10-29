@@ -250,3 +250,4 @@ function closeStoreModal() {
 document.getElementById("st-modal")?.addEventListener("click", function(e) {
     if (e.target === this) closeStoreModal();
 });
+
