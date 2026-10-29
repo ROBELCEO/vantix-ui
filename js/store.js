@@ -80,7 +80,7 @@ function renderTopProducts(products) {
         list.innerHTML = '<div class="st-empty">No sales data yet.</div>';
         return;
     }
-    list.innerHTML = products.map((p, i) => `
+    list.innerHTML = products.slice(0, 5).map((p, i) => `
         <div class="st-product-row">
             <div class="st-row-rank">#${i+1}</div>
             <img class="st-product-img" src="${stEsc(p.image || 'https://via.placeholder.com/40')}">
@@ -98,7 +98,7 @@ function renderCarts(carts) {
     const list = document.getElementById('carts-list');
     if(!list) return;
     if (carts.length === 0) { list.innerHTML = '<div class="st-empty">No abandoned carts.</div>'; return; }
-    list.innerHTML = carts.map(c => `
+    list.innerHTML = carts.slice(0, 5).map(c => `
         <div class="st-product-row">
             <div class="st-row-body">
                 <div class="st-row-title">${stEsc(c.item)}</div>
@@ -115,7 +115,7 @@ function renderLowStock(stock) {
     const list = document.getElementById('low-stock-list');
     if(!list) return;
     if (stock.length === 0) { list.innerHTML = '<div class="st-empty">✅ Stock is healthy.</div>'; return; }
-    list.innerHTML = stock.map(s => `
+    list.innerHTML = stock.slice(0, 5).map(s => `
         <div class="st-product-row">
             <img class="st-product-img" src="${stEsc(s.image || 'https://via.placeholder.com/32')}">
             <div class="st-row-body">
@@ -136,7 +136,7 @@ async function loadDeadStock() {
         window.stAllDeadStock = data.dead_items || [];
         
         if (data.dead_items.length === 0) { list.innerHTML = '<div class="st-empty">✅ No dead stock!</div>'; return; }
-        list.innerHTML = data.dead_items.map(item => `
+        list.innerHTML = data.dead_items.slice(0, 5).map(item => `
             <div class="st-product-row">
                 <img class="st-product-img" src="${stEsc(item.image || 'https://via.placeholder.com/32')}">
                 <div class="st-row-body">
@@ -250,4 +250,5 @@ function closeStoreModal() {
 document.getElementById("st-modal")?.addEventListener("click", function(e) {
     if (e.target === this) closeStoreModal();
 });
+
 
