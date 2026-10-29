@@ -62,7 +62,7 @@ async function fetchCompetitors() {
             </div>
         `).join('');
     } catch (e) {
-        list.innerHTML = '<div class="cmp-empty cmp-text-red">Failed to load competitors. Please refresh.</div>';
+        list.innerHTML = `<div class="cmp-empty cmp-text-red">Failed: ${e.message}. Please refresh.</div>`;
     }
 }
 
@@ -221,3 +221,4 @@ async function loadCatalogGaps() {
         list.innerHTML = '<div class="cmp-empty cmp-text-red" style="grid-column: span 2;">Failed to load gaps.</div>';
     }
 }
+
