@@ -80,6 +80,7 @@ function renderTopProducts(products) {
         list.innerHTML = '<div class="st-empty">No sales data yet.</div>';
         return;
     }
+    // SHOW ONLY 5
     list.innerHTML = products.slice(0, 5).map((p, i) => `
         <div class="st-product-row">
             <div class="st-row-rank">#${i+1}</div>
@@ -98,6 +99,7 @@ function renderCarts(carts) {
     const list = document.getElementById('carts-list');
     if(!list) return;
     if (carts.length === 0) { list.innerHTML = '<div class="st-empty">No abandoned carts.</div>'; return; }
+    // SHOW ONLY 5
     list.innerHTML = carts.slice(0, 5).map(c => `
         <div class="st-product-row">
             <div class="st-row-body">
@@ -115,6 +117,7 @@ function renderLowStock(stock) {
     const list = document.getElementById('low-stock-list');
     if(!list) return;
     if (stock.length === 0) { list.innerHTML = '<div class="st-empty">✅ Stock is healthy.</div>'; return; }
+    // SHOW ONLY 5
     list.innerHTML = stock.slice(0, 5).map(s => `
         <div class="st-product-row">
             <img class="st-product-img" src="${stEsc(s.image || 'https://via.placeholder.com/32')}">
@@ -136,6 +139,7 @@ async function loadDeadStock() {
         window.stAllDeadStock = data.dead_items || [];
         
         if (data.dead_items.length === 0) { list.innerHTML = '<div class="st-empty">✅ No dead stock!</div>'; return; }
+        // SHOW ONLY 5
         list.innerHTML = data.dead_items.slice(0, 5).map(item => `
             <div class="st-product-row">
                 <img class="st-product-img" src="${stEsc(item.image || 'https://via.placeholder.com/32')}">
@@ -250,5 +254,3 @@ function closeStoreModal() {
 document.getElementById("st-modal")?.addEventListener("click", function(e) {
     if (e.target === this) closeStoreModal();
 });
-
-
