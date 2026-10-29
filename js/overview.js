@@ -163,17 +163,24 @@ function renderChart(chart) {
     let data = Array.isArray(chart.data) && chart.data.length ? chart.data : [0];
 
     const ctx = canvas.getContext("2d");
+    const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+    gradient.addColorStop(0, "rgba(2, 132, 199, 0.2)");
+    gradient.addColorStop(1, "rgba(2, 132, 199, 0)");
 
     ovChartInstance = new Chart(ctx, {
-        type: "bar",
+        type: "line",
         data: {
             labels: labels,
             datasets: [{
                 label: "Net Profit",
                 data: data,
-                backgroundColor: data.map(v => v < 0 ? "#E11D48" : "#059669"),
-                borderRadius: 2,
-                barPercentage: 0.9
+                borderColor: "#0284C7",
+                backgroundColor: gradient,
+                fill: true,
+                borderWidth: 2,
+                pointRadius: 4,
+                pointBackgroundColor: "#0284C7",
+                tension: 0.2
             }]
         },
         options: {
@@ -334,4 +341,5 @@ document.getElementById("ov-modal")?.addEventListener("click", function(e) {
         closeTopProductsModal();
     }
 });
+
 
