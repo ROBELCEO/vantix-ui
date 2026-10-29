@@ -1,27 +1,37 @@
 ﻿const SUPABASE_URL = "https://odvusqxvhgyfoiyooktl.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kdnVzcXh2aGd5Zm9peW9va3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5Mzk3NzAsImV4cCI6MjEwODUxNTc3MH0.5LlYHzs4iHz7gQMCLLBCDT7deMveYpx-8fabCH5AljU"; 
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kdnVzcXh2aGd5Zm9peW9va3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5Mzk3NzAsImV4cCI6MjEwODUxNTc3MH0.5LlYHzs4iHz7gQMCLLBCDT7deMveYpx-8fabCH5AljU";
 
 window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Synchronous Fetch Interceptor
+// --- BULLETPROOF ASYNC FETCH INTERCEPTOR ---
 const originalFetch = window.fetch;
-window.fetch = function(resource, config) {
+window.fetch = async function(resource, config) {
     config = config || {};
-    config.headers = config.headers || {};
-    if (window.currentSession && window.currentSession.access_token) {
-        if (typeof resource === 'string' && resource.includes('vantix-my5f.onrender.com')) {
-            config.headers['Authorization'] = `Bearer ${window.currentSession.access_token}`;
+    
+    if (typeof resource === 'string' && resource.includes('vantix-my5f.onrender.com')) {
+        try {
+            // Always get the absolute freshest session before sending the request
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            
+            if (session && session.access_token) {
+                // Convert existing headers to a Headers object to guarantee it attaches
+                const headers = new Headers(config.headers || {});
+                headers.set('Authorization', `Bearer ${session.access_token}`);
+                config.headers = headers;
+            }
+        } catch (e) {
+            console.error("Fetch Interceptor Auth Error:", e);
         }
     }
+    
     return originalFetch(resource, config);
 };
 
-// Global Auth Check
 window.addEventListener('load', async () => {
     if (window.location.pathname.includes('login.html')) return;
 
     const { data: { session } } = await window.supabaseClient.auth.getSession();
-    
+
     if (!session) {
         window.location.href = "login.html";
         return;
@@ -34,18 +44,13 @@ window.addEventListener('load', async () => {
     if (emailEl) emailEl.innerText = session.user.email;
     if (logoutBtn) logoutBtn.style.display = 'block';
 
-    // SPA mode: only load the current view
-    if (document.getElementById('view-root') && typeof window.routerInit === 'function') {
-        window.routerInit();
-        return;
-    }
-
-    // Legacy multi-page fallback
+    // Delay page loaders slightly so everything is ready
     setTimeout(() => {
         if (typeof checkConnectionStatus === 'function') checkConnectionStatus();
         if (typeof fetchCompetitors === 'function') fetchCompetitors();
         if (typeof loadCompetitorIntel === 'function') loadCompetitorIntel();
         if (typeof loadCatalogGaps === 'function') loadCatalogGaps();
+        if (typeof loadBestSellers === 'function') loadBestSellers();
         if (typeof loadInventory === 'function') loadInventory();
         if (typeof loadStoreData === 'function') loadStoreData();
         if (typeof loadOverview === 'function') loadOverview();
@@ -55,7 +60,7 @@ window.addEventListener('load', async () => {
         if (typeof loadProfile === 'function') loadProfile();
         if (typeof fetchProducts === 'function') fetchProducts();
         if (typeof loadDiscovery === 'function') loadDiscovery();
-    }, 100);
+    }, 200);
 });
 
 async function logOut() {
@@ -72,13 +77,6 @@ function toggleMenu() {
     }
 }
 
-
-
-
-
-
-
-// Stable DOM patch — no write if identical
 window.vxPatch = function (elOrId, html) {
     const el = typeof elOrId === "string" ? document.getElementById(elOrId) : elOrId;
     if (!el) return false;
