@@ -156,6 +156,69 @@ async function loadCustomerLTV() {
     }
 }
 
+let stChartInstance = null;
+
+function renderTopProducts(products) {
+    const list = document.getElementById('top-products-list');
+    if (!list) return;
+    if (!products || products.length === 0) {
+        list.innerHTML = '<div class="st-empty">No sales data yet.</div>';
+        return;
+    }
+    list.innerHTML = products.map((p, i) => `
+        <div class="st-product-row">
+            <div class="st-row-rank">${i + 1}</div>
+            <img class="st-product-img" src="${stEsc(p.image || 'https://via.placeholder.com/36')}">
+            <div class="st-row-body">
+                <div class="st-row-title">${stEsc(p.title)}</div>
+                <div class="st-row-meta">${stNum(p.units)} sold</div>
+            </div>
+            <div class="st-row-amount st-green">${stMoney(p.revenue)}</div>
+        </div>
+    `).join('');
+}
+
+function renderChart(chartData) {
+    const canvas = document.getElementById('revenueChart');
+    if (!canvas || typeof Chart === 'undefined') return;
+    if (stChartInstance) stChartInstance.destroy();
+
+    const labels = chartData.labels || [];
+    const data = chartData.data || [];
+
+    const ctx = canvas.getContext('2d');
+    const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+    gradient.addColorStop(0, "rgba(2, 132, 199, 0.15)");
+    gradient.addColorStop(1, "rgba(2, 132, 199, 0)");
+
+    stChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Revenue",
+                data: data,
+                borderColor: "#0284C7",
+                backgroundColor: gradient,
+                fill: true,
+                borderWidth: 2,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                tension: 0.2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: "#6B7280", font: { size: 10 }, maxTicksLimit: 10 } },
+                y: { grid: { color: "#E5E7EB" }, ticks: { color: "#6B7280", font: { size: 10 } } }
+            }
+        }
+    });
+}
+
 async function loadStoreData() {
     const nameEl = document.getElementById('store-name');
     if(!nameEl) return;
@@ -197,6 +260,9 @@ async function loadStoreData() {
             }
         }
 
+        if (data.chart) renderChart(data.chart);
+        if (data.top_products) renderTopProducts(data.top_products);
+
         renderCarts(data.carts || []);
         renderLowStock(data.low_stock || []);
         renderCustomerChart();
@@ -213,3 +279,4 @@ async function loadStoreData() {
         nameEl.innerText = "Error Loading Store";
     }
 }
+
