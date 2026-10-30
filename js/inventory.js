@@ -92,13 +92,13 @@ async function loadInventory() {
             return;
         }
 
-        // Group by Parent Product
+        // Group by Parent Product (using correct backend keys)
         const grouped = {};
         data.inventory.forEach(item => {
-            const parentTitle = item.title.includes(' - ') ? item.title.split(' - ')[0].trim() : item.title;
-            if (!grouped[parentTitle]) {
-                grouped[parentTitle] = {
-                    title: parentTitle,
+            const pTitle = item.parent_title || 'Unknown Product';
+            if (!grouped[pTitle]) {
+                grouped[pTitle] = {
+                    title: pTitle,
                     image: item.image,
                     variants: [],
                     total_stock: 0,
@@ -106,7 +106,7 @@ async function loadInventory() {
                     total_restock: 0
                 };
             }
-            const g = grouped[parentTitle];
+            const g = grouped[pTitle];
             g.variants.push(item);
             g.total_stock += (item.stock || 0);
             g.total_restock += (item.restock_qty || 0);
@@ -162,11 +162,11 @@ async function loadInventory() {
 
             // Variant Rows
             g.variants.forEach(v => {
+                const vTitle = v.variant_title || 'Default Title';
                 html += `
                     <div style="display: flex !important; align-items: center !important; gap: 16px !important; padding: 12px 0 !important; border-bottom: 1px dashed #E4E4E7 !important;">
                         <div style="flex: 1 !important; min-width: 0 !important;">
-                            <div style="font-weight: 700 !important; font-size: 13px !important; color: #3F3F46 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;">${v.title}</div>
-                            <div style="font-size: 11px !important; color: #A1A1AA !important; font-family: var(--font-mono) !important;">${v.sku || 'No SKU'}</div>
+                            <div style="font-weight: 700 !important; font-size: 13px !important; color: #3F3F46 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;">${vTitle}</div>
                         </div>
                         <div style="display: flex !important; gap: 32px !important; text-align: right !important; flex-shrink: 0 !important;">
                             <div style="width: 60px !important;">
