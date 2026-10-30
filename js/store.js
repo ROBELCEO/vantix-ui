@@ -82,12 +82,15 @@ async function loadStoreData() {
         renderTopProducts(data.top_products);
         renderCarts(data.carts);
         renderLowStock(data.low_stock);
+        renderCustomerChart();
         
-        loadDeadStock();
-        loadBundleSuggestion();
-        loadCustomerLTV();
-
-    } catch(e) {
+        if (tier === 'starter') {
+            applyStoreStarterLocks();
+        } else {
+            loadDeadStock();
+            loadBundleSuggestion();
+            loadCustomerLTV();
+        } catch(e) {
         console.error("Failed to load store data", e);
         nameEl.innerText = "Error Loading Store";
     }
@@ -305,3 +308,4 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tier === 'starter') applyStoreStarterLocks();
     });
 });
+
