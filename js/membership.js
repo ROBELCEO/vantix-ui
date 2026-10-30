@@ -1,4 +1,4 @@
-﻿async function checkSubscription() {
+async function checkSubscription() {
     const banner = document.getElementById('current-plan-banner');
     const bannerText = document.getElementById('banner-text');
     const daysLeft = document.getElementById('trial-days-left');
@@ -10,7 +10,6 @@
     if(!banner) return;
 
     try {
-        // 1. Get the logged-in user's ID
         let userId = '';
         if (window.currentSession && window.currentSession.user) {
             userId = window.currentSession.user.id;
@@ -19,13 +18,11 @@
             if (session) userId = session.user.id;
         }
 
-        // 2. Append user_id to the checkout links
         const suffix = userId ? `?checkout[custom][user_id]=${userId}` : '';
         const starterUrl = `https://vantix-app.lemonsqueezy.com/checkout/buy/d5f53e33-3d35-4cc5-aaca-3ca5a3236ed7${suffix}`;
         const proUrl = `https://vantix-app.lemonsqueezy.com/checkout/buy/422c4e93-6071-457c-90b6-a648c5dee4c4${suffix}`;
         const scaleUrl = `https://vantix-app.lemonsqueezy.com/checkout/buy/789d4ae0-cc01-462d-a074-78a360971168${suffix}`;
 
-        // 3. Reset buttons
         const resetBtn = (btn, text, url) => {
             if(!btn) return;
             btn.disabled = false;
@@ -37,7 +34,6 @@
         resetBtn(btnPro, "Upgrade to Pro →", proUrl);
         resetBtn(btnScale, "Select Scale", scaleUrl);
 
-        // 4. Fetch current plan status
         const res = await fetch('https://vantix-my5f.onrender.com/api/auth/status');
         if (!res.ok) throw new Error("Failed to load status");
 
