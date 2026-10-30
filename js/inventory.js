@@ -79,27 +79,29 @@ async function loadInventory() {
             return;
         }
 
+        // BULLETPROOF INLINE STYLES (Prevents image stretching)
         list.innerHTML = data.inventory.map(item => `
-            <div style="display: flex; align-items: center; gap: 16px; padding: 16px; border-bottom: 1px solid #F1F5F9;">
-                <img src="${item.image || 'https://via.placeholder.com/40'}" style="width: 44px; height: 44px; border-radius: 4px; object-fit: cover; border: 1px solid #E4E4E7; flex-shrink: 0;">
+            <div style="display: flex !important; align-items: center !important; gap: 16px !important; padding: 16px !important; border-bottom: 1px solid #F1F5F9 !important;">
                 
-                <div style="flex: 1; min-width: 0;">
-                    <div style="font-weight: 800; font-size: 14px; color: #09090B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.title}</div>
-                    <div style="font-size: 12px; color: #71717A; font-family: var(--font-mono); margin-top: 2px;">${item.sku || 'No SKU'}</div>
+                <img src="${item.image || 'https://via.placeholder.com/40'}" style="width: 44px !important; height: 44px !important; max-width: 44px !important; max-height: 44px !important; min-width: 44px !important; min-height: 44px !important; border-radius: 4px !important; object-fit: cover !important; border: 1px solid #E4E4E7 !important; flex-shrink: 0 !important; display: block !important;">
+                
+                <div style="flex: 1 !important; min-width: 0 !important;">
+                    <div style="font-weight: 800 !important; font-size: 14px !important; color: #09090B !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;">${item.title}</div>
+                    <div style="font-size: 12px !important; color: #71717A !important; font-family: var(--font-mono) !important; margin-top: 2px !important;">${item.sku || 'No SKU'}</div>
                 </div>
                 
-                <div style="display: flex; gap: 32px; text-align: right; flex-shrink: 0;">
-                    <div style="width: 60px;">
-                        <div style="font-size: 10px; color: #71717A; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Stock</div>
-                        <div style="font-weight: 800; font-size: 15px; font-family: var(--font-mono); color: ${item.stock <= 0 ? '#E11D48' : '#09090B'};">${item.stock}</div>
+                <div style="display: flex !important; gap: 32px !important; text-align: right !important; flex-shrink: 0 !important;">
+                    <div style="width: 60px !important;">
+                        <div style="font-size: 10px !important; color: #71717A !important; text-transform: uppercase !important; font-weight: 700 !important; margin-bottom: 4px !important;">Stock</div>
+                        <div style="font-weight: 800 !important; font-size: 15px !important; font-family: var(--font-mono) !important; color: ${item.stock <= 0 ? '#E11D48' : '#09090B'} !important;">${item.stock}</div>
                     </div>
-                    <div style="width: 70px;">
-                        <div style="font-size: 10px; color: #71717A; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Days Left</div>
-                        <div style="font-weight: 800; font-size: 15px; font-family: var(--font-mono); color: ${item.days_remaining !== null && item.days_remaining < 7 ? '#E11D48' : '#09090B'};">${item.days_remaining !== null && item.days_remaining !== undefined ? item.days_remaining : '—'}</div>
+                    <div style="width: 70px !important;">
+                        <div style="font-size: 10px !important; color: #71717A !important; text-transform: uppercase !important; font-weight: 700 !important; margin-bottom: 4px !important;">Days Left</div>
+                        <div style="font-weight: 800 !important; font-size: 15px !important; font-family: var(--font-mono) !important; color: ${item.days_remaining !== null && item.days_remaining < 7 ? '#E11D48' : '#09090B'} !important;">${item.days_remaining !== null && item.days_remaining !== undefined ? item.days_remaining : '—'}</div>
                     </div>
-                    <div style="width: 60px;">
-                        <div style="font-size: 10px; color: #71717A; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Restock</div>
-                        <div style="font-weight: 800; font-size: 15px; font-family: var(--font-mono); color: #0284C7;">${item.restock_qty || 0}</div>
+                    <div style="width: 60px !important;">
+                        <div style="font-size: 10px !important; color: #71717A !important; text-transform: uppercase !important; font-weight: 700 !important; margin-bottom: 4px !important;">Restock</div>
+                        <div style="font-weight: 800 !important; font-size: 15px !important; font-family: var(--font-mono) !important; color: #0284C7 !important;">${item.restock_qty || 0}</div>
                     </div>
                 </div>
             </div>
@@ -110,4 +112,3 @@ async function loadInventory() {
         list.innerHTML = '<div class="inv-empty inv-text-red">Network error. Failed to load inventory data.</div>';
     }
 }
-
