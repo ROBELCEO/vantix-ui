@@ -67,8 +67,8 @@
         </div>
 
         <div class="dsc-search-wrap">
-            <input type="text" id="dsc-search-input" class="dsc-search-input" placeholder="Search any niche globally (e.g. gaming chairs, skincare, dog toys)…" onkeypress="handleSearch(event)">
-            <button onclick="triggerSearch()" class="dsc-search-btn">Search</button>
+            <input type="text" id="dsc-search-input" class="dsc-search-input" placeholder="Search any niche globally (e.g. gaming chairs, skincare, dog toys)…" onkeypress="if(event.key === 'Enter') performSearch()">
+            <button onclick="performSearch()" class="dsc-search-btn">Search</button>
         </div>
 
         <div class="dsc-pills" id="dsc-pills">
@@ -91,7 +91,7 @@
 </div>
 
 <script src="js/app.js?v=2235"></script>
-<script src="js/discovery.js?v=2190"></script>
+<script src="js/discovery.js?v=2195"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     fetch('https://vantix-my5f.onrender.com/api/auth/status')
@@ -113,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 
 

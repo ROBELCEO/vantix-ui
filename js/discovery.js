@@ -14,7 +14,14 @@ let _dscTierPromise = null;
 function ensureDscTier() {
     if (window.dscTier) return Promise.resolve(window.dscTier);
     if (_dscTierPromise) return _dscTierPromise;
-    _dscTierPromise = fetch('https://vantix-my5f.onrender.com/api/auth/status')
+    let token = null;
+    const authKey = Object.keys(localStorage).find(k => k.includes('auth-token'));
+    if (authKey) {
+        try { token = JSON.parse(localStorage.getItem(authKey)).access_token; } catch(e){}
+    }
+    const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
+
+    _dscTierPromise = fetch('https://vantix-my5f.onrender.com/api/auth/status', { headers })
         .then(r => r.ok ? r.json() : { plan: 'trial' })
         .then(d => {
             window.dscTier = d.plan || 'trial';
@@ -52,7 +59,8 @@ async function performSearch() {
         return;
     }
 
-    const categoryInput = document.getElementById('dsc-category');
+        let categoryInput = document.getElementById('dsc-category');
+    if (!categoryInput) categoryInput = document.querySelector('input[placeholder*="niche"]');
     const category = categoryInput ? categoryInput.value.trim() : "";
     const container = document.getElementById('discovery-results');
     const statusEl = document.getElementById('dsc-status');
@@ -174,3 +182,4 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Expose to HTML
 window.performSearch = performSearch;
 window.pushToShopify = pushToShopify;
+
