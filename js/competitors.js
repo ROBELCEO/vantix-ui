@@ -163,6 +163,10 @@ async function addCompetitor(domain) {
             loadCompetitorIntel();
             loadCatalogGaps();
             loadBestSellers();
+        } else if (res.status === 403) {
+            status.className = 'cmp-status-msg cmp-text-red';
+            const detail = data.detail || "Plan limit reached.";
+            status.innerHTML = `${cmpEsc(detail)} <a href="membership.html" style="margin-left:8px; font-weight:800; color:#0284C7; text-decoration:underline;">Upgrade to Pro →</a>`;
         } else {
             status.className = 'cmp-status-msg cmp-text-red';
             status.innerText = data.detail || data.message || "Error adding.";
@@ -380,3 +384,4 @@ document.addEventListener('DOMContentLoaded', () => {
         loadBestSellers();
     }, 500);
 });
+
