@@ -1,4 +1,42 @@
-﻿function invEsc(str) {
+﻿let _invTierPromise = null;
+function ensureInvTier() {
+    if (window.invTier) return Promise.resolve(window.invTier);
+    if (_invTierPromise) return _invTierPromise;
+    _invTierPromise = fetch('https://vantix-my5f.onrender.com/api/auth/status')
+        .then(r => r.ok ? r.json() : { plan: 'trial' })
+        .then(d => {
+            window.invTier = d.plan || 'trial';
+            return window.invTier;
+        })
+        .catch(() => {
+            window.invTier = 'trial';
+            return window.invTier;
+        });
+    return _invTierPromise;
+}
+
+function invLockHtml() {
+    return `
+        <div class="lock-overlay" style="position:absolute; inset:0; z-index:10; backdrop-filter:blur(4px); background:rgba(255,255,255,0.75); display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:2px; min-height:80px;">
+            <div style="font-size:16px; margin-bottom:4px;">🔒</div>
+            <a href="membership.html" style="background:#0284C7; color:#FFF; padding:4px 8px; border-radius:2px; text-decoration:none; font-size:10px; font-weight:800;">Upgrade</a>
+        </div>
+        <div style="min-height:80px;">&nbsp;</div>
+    `;
+}
+
+function applyInvStarterLocks() {
+    ['kpi-cash', 'kpi-restock', 'kpi-dead'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const parent = el.parentElement;
+        if (parent) {
+            parent.style.position = 'relative';
+            parent.innerHTML = invLockHtml();
+        }
+    });
+}
+function invEsc(str) {
     return String(str ?? "").replace(/[&<>"']/g, s => ({
         "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
     }[s]));
@@ -24,8 +62,9 @@ function toggleVariants(id) {
 
 async function loadInventory() {
     const list = document.getElementById('inventory-list');
-    const statusEl = document.getElementById('inv-status');
     if (!list) return;
+
+    const tier = await ensureInvTier();
 
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/inventory/analytics');
@@ -34,16 +73,22 @@ async function loadInventory() {
         const data = await res.json();
         if (statusEl) statusEl.innerText = "Live Data";
 
-        const cashEl = document.getElementById('kpi-cash');
-        if (data.kpis.has_missing_costs) {
-            cashEl.innerText = invMoney(data.kpis.total_cash || 0) + "*";
-            cashEl.classList.add("inv-text-red");
-        } else {
-            cashEl.innerText = invMoney(data.kpis.total_cash || 0);
-            cashEl.classList.add("inv-text-green");
+        if (window.invTier !== 'starter') {
+            const cashEl = document.getElementById('kpi-cash');
+            if (data.kpis.has_missing_costs) {
+                cashEl.innerText = invMoney(data.kpis.total_cash || 0) + "*";
+                cashEl.classList.add("inv-text-red");
+            } else {
+                cashEl.innerText = invMoney(data.kpis.total_cash || 0);
+                cashEl.classList.add("inv-text-green");
+            }
+            document.getElementById('kpi-restock').innerText = data.kpis.restock_alerts || 0;
+            document.getElementById('kpi-dead').innerText = data.kpis.dead_stock || 0;
         }
-        document.getElementById('kpi-restock').innerText = data.kpis.restock_alerts || 0;
-        document.getElementById('kpi-dead').innerText = data.kpis.dead_stock || 0;
+
+        if (tier === 'starter') {
+            applyInvStarterLocks();
+        }
 
         if (!data.inventory || data.inventory.length === 0) {
             list.innerHTML = '<div class="inv-empty">No inventory found. Sync your Shopify store to populate.</div>';
@@ -183,4 +228,5 @@ async function loadInventory() {
         if (statusEl) statusEl.innerText = "Offline";
     }
 }
+
 
