@@ -23,12 +23,16 @@ function cleanupPreviousView() {
     if (window.supabaseClient && typeof window.supabaseClient.getChannels === "function") {
         try {
             window.supabaseClient.getChannels().forEach(ch => {
-                if (ch.topic && ch.topic.startsWith("alerts-live-")) {
+                // Remove all Vantix live channels
+                if (ch.topic && (ch.topic.startsWith("alerts-live-") || ch.topic.startsWith("overview-live-") || ch.topic.startsWith("inv-live-"))) {
                     window.supabaseClient.removeChannel(ch);
                 }
             });
         } catch (e) {}
     }
+    // Reset flags so they re-initialize when the page loads again
+    window.isOverviewRealtimeSetup = false;
+    window.isInvRealtimeSetup = false;
     ["ovChartInstance", "revChartInstance", "chartInstance"].forEach(k => {
         if (window[k] && typeof window[k].destroy === "function") {
             try { window[k].destroy(); } catch (e) {}
@@ -141,3 +145,4 @@ window.routerInit = function () {
     window.addEventListener("hashchange", () => loadView(getRouteFromHash()));
     loadView(getRouteFromHash());
 };
+

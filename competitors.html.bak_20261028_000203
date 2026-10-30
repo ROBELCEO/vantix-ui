@@ -1,0 +1,171 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vantix — Competitors</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=2058">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
+<div class="drawer" id="mobile-drawer">
+    <div class="drawer-header">
+        <div class="brand"><div>VANTI<span>X</span></div></div>
+        <button class="drawer-close" onclick="toggleMenu()">✕</button>
+    </div>
+    <a href="index.html" class="drawer-tab">Connect</a>
+    <a href="overview.html" class="drawer-tab">Overview</a>
+    <a href="store.html" class="drawer-tab">My Store</a>
+    <a href="competitors.html" class="drawer-tab active">Competitors</a>
+    <a href="terminal.html" class="drawer-tab">Terminal</a>
+    <a href="discovery.html" class="drawer-tab">Discovery</a>
+    <a href="alerts.html" class="drawer-tab">Alerts</a>
+    <a href="inventory.html" class="drawer-tab">Inventory</a>
+    <a href="membership.html" class="drawer-tab">Membership</a>
+    <a href="settings.html" class="drawer-tab">Settings</a>
+</div>
+
+<div class="header">
+    <a href="index.html" class="brand">
+        <div class="mark"><svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg></div>
+        <div>VANTI<span>X</span></div>
+    </a>
+    <div class="tabs">
+        <a href="index.html" class="tab">Connect</a>
+        <a href="overview.html" class="tab">Overview</a>
+        <a href="store.html" class="tab">My Store</a>
+        <a href="competitors.html" class="tab active">Competitors</a>
+        <a href="terminal.html" class="tab">Terminal</a>
+        <a href="discovery.html" class="tab">Discovery</a>
+        <a href="alerts.html" class="tab">Alerts</a>
+        <a href="inventory.html" class="tab">Inventory</a>
+        <a href="membership.html" class="tab">Membership</a>
+        <a href="settings.html" class="tab">Settings</a>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">loading...</div>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
+        <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
+</div>
+
+<div class="screen cmp-screen">
+    <div class="cmp-wrap">
+
+        <!-- ROW A -->
+        <div class="cmp-row-a">
+            <div>
+                <div class="cmp-eyebrow">SPY NETWORK</div>
+                <h1 class="cmp-title">Competitors</h1>
+                <p class="cmp-sub">Track rival stores, detect price drops, and find catalog gaps.</p>
+            </div>
+            <div class="cmp-status-group">
+                <div class="cmp-chip" id="cmp-plan-status">Loading plan info…</div>
+            </div>
+        </div>
+
+        <!-- ROW B: ACTION PANELS -->
+        <div class="cmp-grid-2">
+            <!-- AUTO DISCOVER -->
+            <div class="cmp-panel cmp-panel-cyan">
+                <div class="cmp-panel-head">
+                    <div>
+                        <div class="cmp-panel-title">Auto-Discover Competitors</div>
+                        <div class="cmp-panel-sub">AI scans your catalog and finds competing Shopify stores.</div>
+                    </div>
+                    <div class="cmp-badge cmp-badge-cyan">AI</div>
+                </div>
+                <button onclick="autoDiscover()" id="discover-btn" class="cmp-btn-primary">
+                    Find My Competitors →
+                </button>
+                <div id="discovery-results" class="cmp-list" style="margin-top: 16px;"></div>
+            </div>
+
+            <!-- MANUAL ADD -->
+            <div class="cmp-panel">
+                <div class="cmp-panel-head">
+                    <div>
+                        <div class="cmp-panel-title">Add Manually</div>
+                        <div class="cmp-panel-sub">Enter a public Shopify store domain.</div>
+                    </div>
+                </div>
+                <div class="cmp-input-row">
+                    <input type="text" id="comp-domain" class="cmp-input" placeholder="competitor.com" onkeypress="handleAddKey(event)">
+                    <button onclick="addCompetitor(document.getElementById('comp-domain').value)" class="cmp-btn-secondary">Add</button>
+                </div>
+                <div id="comp-status" class="cmp-status-msg" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- ROW C: TRACKED LIST -->
+        <div class="cmp-panel" style="margin-top: 12px; margin-bottom: 24px;">
+            <div class="cmp-panel-head">
+                <div>
+                    <div class="cmp-panel-title">Tracked Competitors</div>
+                    <div class="cmp-panel-sub">Stores currently being monitored for price and stock changes.</div>
+                </div>
+                <div class="cmp-badge" id="comp-count">0 / 0</div>
+            </div>
+            
+            <div id="competitors-list" class="cmp-list">
+                <div class="cmp-empty">Loading competitors…</div>
+            </div>
+        </div>
+
+        <!-- ROW D: SPY NETWORK -->
+        <div class="cmp-eyebrow" style="margin-top: 32px; margin-bottom: 16px;">🕵️ SPY NETWORK</div>
+
+        <div class="cmp-grid-2">
+            <!-- STOCK OUT RADAR -->
+            <div class="cmp-panel cmp-panel-amber">
+                <div class="cmp-panel-head">
+                    <div>
+                        <div class="cmp-panel-title">Stock-Out Radar</div>
+                        <div class="cmp-panel-sub">Competitors who are out of stock. Run ads now.</div>
+                    </div>
+                    <div class="cmp-badge cmp-badge-amber">OPPORTUNITY</div>
+                </div>
+                <div id="stockout-list" class="cmp-list">
+                    <div class="cmp-empty">Scanning stock…</div>
+                </div>
+            </div>
+
+            <!-- NEW LAUNCH TRACKER -->
+            <div class="cmp-panel cmp-panel-green">
+                <div class="cmp-panel-head">
+                    <div>
+                        <div class="cmp-panel-title">New Launch Tracker</div>
+                        <div class="cmp-panel-sub">Products your competitors recently launched.</div>
+                    </div>
+                    <div class="cmp-badge cmp-badge-green">LAST 30 DAYS</div>
+                </div>
+                <div id="launch-list" class="cmp-list">
+                    <div class="cmp-empty">Scanning launches…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CATALOG GAP ANALYZER -->
+        <div class="cmp-panel cmp-panel-violet" style="margin-top: 12px;">
+            <div class="cmp-panel-head">
+                <div>
+                    <div class="cmp-panel-title">Catalog Gap Analyzer</div>
+                    <div class="cmp-panel-sub">Items your competitors sell, but you don't.</div>
+                </div>
+                <div class="cmp-badge cmp-badge-violet">MISSED REVENUE</div>
+            </div>
+            <div id="gap-list" class="cmp-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="cmp-empty" style="grid-column: span 2;">Scanning catalogs…</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="js/app.js?v=2058"></script>
+<script src="js/competitors.js?v=2058"></script>
+</body>
+</html>

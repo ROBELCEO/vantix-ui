@@ -1,0 +1,368 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vantix — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=2095">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    :root {
+        --bg: #EEF2F6;
+        --panel: #FFFFFF;
+        --border: #CBD5E1;
+        --text: #0F172A;
+        --text2: #334155;
+        --cyan: #0284C7;
+        --green: #059669;
+        --red: #E11D48;
+        --violet: #6D28D9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+        background-color: var(--bg);
+        color: var(--text);
+        font-family: 'Inter', sans-serif;
+        height: 100vh !important;
+        width: 100vw !important;
+        overflow: hidden !important;
+        display: grid !important;
+        grid-template-columns: 1.15fr 0.85fr !important; 
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* LEFT SIDE - CHAT */
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh !important;
+        overflow: hidden;
+        padding: 40px;
+        position: relative;
+        border-right: 1px solid var(--border);
+    }
+    
+    .chat-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 32px;
+    }
+    .chat-header svg { width: 24px; height: 24px; }
+    .chat-header-title { font-size: 14px; font-weight: 800; letter-spacing: 1px; color: var(--text); }
+    .chat-header-title span { color: var(--cyan); }
+    .chat-status {
+        margin-left: auto;
+        font-size: 11px;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--green);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 700;
+    }
+    .chat-status::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        background: var(--green);
+        border-radius: 50%;
+        box-shadow: 0 0 8px var(--green); animation: alrt-pulse 1.8s ease-in-out infinite;
+    }
+
+    .chat-messages {
+        flex: 1;
+        height: 0;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        scroll-behavior: smooth;
+        padding-right: 16px;
+    }
+
+    .msg {
+        display: none;
+        flex-direction: column;
+        gap: 12px;
+        max-width: 90%;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .msg.show { display: flex; opacity: 1; transform: translateY(0); }
+    
+    .msg-sender {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text2);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .msg-sender-icon {
+        width: 20px; height: 20px;
+        background: var(--cyan);
+        border-radius: 2px;
+        display: flex; align-items: center; justify-content: center;
+        color: #FFF; font-size: 10px; font-weight: 900;
+    }
+    
+    .msg-bubble {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 2px;
+        padding: 20px;
+        font-size: 14px;
+        line-height: 1.6;
+        color: var(--text2);
+        box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 2px 6px rgba(15,23,42,0.06);
+    }
+    .msg-bubble strong { color: var(--text); font-weight: 700; }
+
+    .inline-card {
+        background: #F8FAFC;
+        border: 1px solid #CBD5E1;
+        border-radius: 2px;
+        padding: 16px;
+        margin-top: 12px;
+    }
+    .inline-header {
+        display: flex; justify-content: space-between; font-size: 10px;
+        font-family: 'JetBrains Mono', monospace; font-weight: 700;
+        margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
+        text-transform: uppercase;
+    }
+    .inline-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+    .inline-val { font-family: 'JetBrains Mono', monospace; font-weight: 800; }
+
+    .typing-indicator {
+        display: none; gap: 6px; padding: 16px 20px;
+        background: var(--panel); border: 1px solid var(--border); border-radius: 2px;
+        width: fit-content; align-items: center;
+    }
+    .typing-indicator.show { display: flex; }
+    .typing-dot { width: 6px; height: 6px; background: var(--text2); border-radius: 50%; animation: typing 1.4s infinite ease-in-out both; }
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+    
+
+    @keyframes alrt-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* RIGHT SIDE - LOGIN */
+    .login-container {
+        height: 100vh !important;
+        display: grid !important;
+        place-items: center !important; 
+        padding: 40px;
+        background: var(--bg);
+    }
+    
+    .login-box {
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(15,23,42,0.08);
+}
+    .login-logo {
+        width: 56px; height: 56px;
+        background: #000000;
+        border-radius: 2px;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 24px auto;
+    }
+    .login-logo svg { width: 32px; height: 32px; }
+
+    .login-box h1 { font-size: 24px; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.5px; color: var(--text); }
+    .login-box p { font-size: 14px; color: var(--text2); margin-bottom: 32px; line-height: 1.5; }
+
+    .google-btn {
+        display: flex; align-items: center; justify-content: center; gap: 12px;
+        width: 100%; height: 50px; background: #FFFFFF; color: #111827;
+        border-radius: 2px; border: 1px solid #94A3B8;
+        font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700;
+        cursor: pointer; transition: all 0.2s;
+    }
+    .google-btn:hover { 
+        background: #F3F4F6;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transform: translateY(-1px);
+    }
+    .google-btn img { width: 20px; height: 20px; }
+    .google-btn:disabled { opacity: 0.7; cursor: wait; transform: none; box-shadow: none; }
+
+    .error-msg { color: var(--red); font-size: 13px; margin-top: 20px; display: none; font-weight: 500; }
+
+    @media (max-width: 900px) {
+        body { 
+            grid-template-columns: 1fr !important; 
+            grid-template-rows: 55vh 45vh !important; 
+        }
+        .chat-container { 
+            padding: 24px; 
+            border-right: none; 
+            border-bottom: 1px solid var(--border);
+        }
+        .login-container { 
+            padding: 32px 24px; 
+        }
+        .msg-bubble { padding: 16px; }
+    }
+</style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg>
+            <div class="chat-header-title">VANTIX <span>INTELLIGENCE</span></div>
+            <div class="chat-status">ONLINE</div>
+        </div>
+
+        <div class="chat-messages" id="chat-box">
+            <div class="msg" id="msg-1">
+                <div class="msg-sender"><div class="msg-sender-icon">V</div>Vantix AI</div>
+                <div class="msg-bubble">
+                    Welcome to Vantix. <br><br>
+                    Did you know that <strong>80% of Shopify owners</strong> are flying blind? They don't know when a competitor drops their price until they lose the sale.
+                </div>
+            </div>
+
+            <div class="msg" id="msg-2">
+                <div class="msg-sender"><div class="msg-sender-icon">V</div>Vantix AI</div>
+                <div class="msg-bubble">
+                    Vantix fixes that. We monitor your rivals 24/7. When they make a move, you know instantly.
+                    <div class="inline-card">
+                        <div class="inline-header" style="color: var(--red);"><span>🚨 Competitor Alert</span><span>Just Now</span></div>
+                        <div class="inline-row"><span style="color: var(--text2);">Boandtee Shorts</span><span class="inline-val" style="color: var(--green);">$35.00</span></div>
+                        <div class="inline-row"><span style="color: var(--text2);">Previous Price</span><span class="inline-val" style="text-decoration: line-through; color: var(--text2);">$45.00</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="msg" id="msg-3">
+                <div class="msg-sender"><div class="msg-sender-icon">V</div>Vantix AI</div>
+                <div class="msg-bubble">
+                    But we don't just spy. We protect your money. Our <strong>AI Margin Advisor</strong> does the math so you don't accidentally destroy your profit.
+                    <div class="inline-card" style="border-left: 3px solid var(--violet);">
+                        <div class="inline-header" style="color: var(--violet);"><span>🧠 AI Strategy</span><span>Groq</span></div>
+                        <div style="font-size: 12px; color: var(--text); line-height: 1.6;">"HOLD—matching their $35 price will wipe out your margin. Instead, bundle with a Gym Bag to justify your $45 price."</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="msg" id="msg-4">
+                <div class="msg-sender"><div class="msg-sender-icon">V</div>Vantix AI</div>
+                <div class="msg-bubble">
+                    When you're ready to expand, our <strong>Global Catalog Search</strong> finds high-demand products before they saturate the market.
+                </div>
+            </div>
+
+            <div class="msg" id="msg-5">
+                <div class="msg-sender"><div class="msg-sender-icon" style="background: var(--green);">✓</div>Vantix System</div>
+                <div class="msg-bubble" style="border-color: #7DD3FC; background: #F0F9FF;">
+                    <strong style="color: var(--cyan);">SYSTEM READY.</strong><br>
+                    Authenticate with Google to initiate your dashboard.
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typing">
+                <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-logo">
+                <svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg>
+            </div>
+            <h1>Welcome back</h1>
+            <p>Sign in to sync your Shopify data and access your intelligence dashboard.</p>
+
+            <button id="login-btn" class="google-btn">
+                <img id="btn-icon" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
+                <span id="btn-text">Sign in with Google</span>
+            </button>
+
+            <div id="error-msg" class="error-msg"></div>
+        </div>
+    </div>
+
+<script>
+    const messages = [1, 2, 3, 4, 5];
+    const chatBox = document.getElementById('chat-box');
+    const typingIndicator = document.getElementById('typing');
+
+    function scrollToBottom() {
+        chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+    }
+
+    async function playChatSequence() {
+        await new Promise(r => setTimeout(r, 500));
+        for (let i = 0; i < messages.length; i++) {
+            const msgEl = document.getElementById('msg-' + messages[i]);
+            typingIndicator.classList.add('show');
+            scrollToBottom();
+            await new Promise(r => setTimeout(r, 1000 + (i * 150)));
+            typingIndicator.classList.remove('show');
+            msgEl.classList.add('show');
+            scrollToBottom();
+            await new Promise(r => setTimeout(r, 1200));
+        }
+    }
+    window.addEventListener('load', playChatSequence);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById('login-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnIcon = document.getElementById('btn-icon');
+        const errorMsg = document.getElementById('error-msg');
+
+        if (!window.supabase) {
+            errorMsg.style.display = 'block';
+            errorMsg.innerText = "Error: Supabase failed to load.";
+            return;
+        }
+
+        const SUPABASE_URL = "https://odvusqxvhgyfoiyooktl.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kdnVzcXh2aGd5Zm9peW9va3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5Mzk3NzAsImV4cCI6MjEwODUxNTc3MH0.5LlYHzs4iHz7gQMCLLBCDT7deMveYpx-8fabCH5AljU";
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        btn.addEventListener('click', async () => {
+            try {
+                btn.disabled = true;
+                btnText.innerText = "Authenticating...";
+                btnIcon.style.display = 'none';
+                errorMsg.style.display = 'none';
+
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: { redirectTo: 'https://robelceo.github.io/vantix-ui/index.html' }
+                });
+
+                if (error) throw error;
+            } catch (error) {
+                btn.disabled = false;
+                btnText.innerText = "Sign in with Google";
+                btnIcon.style.display = 'block';
+                errorMsg.style.display = 'block';
+                errorMsg.innerText = "Login failed: " + error.message;
+            }
+        });
+    });
+</script>
+</body>
+</html>
+
+
+
+

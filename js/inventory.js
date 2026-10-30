@@ -184,23 +184,3 @@ async function loadInventory() {
     }
 }
 
-
-// LIVE REALTIME LISTENER
-async function initInventoryRealtime() {
-    if (!window.supabaseClient || !window.currentSession) return;
-    const userId = window.currentSession.user.id;
-    if (window.invChannel) window.supabaseClient.removeChannel(window.invChannel);
-
-    window.invChannel = window.supabaseClient.channel('inv-live-' + userId)
-        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'product_variants', filter: `user_id=eq.${userId}` }, (payload) => {
-            console.log("Live event: Inventory changed", payload);
-            // Find the row and update it, or just reload silently
-            window.__vxSilent = true;
-            loadInventory().then(() => window.__vxSilent = false);
-        })
-        .subscribe();
-}
-
-window.addEventListener('load', () => {
-    setTimeout(initInventoryRealtime, 1000);
-});

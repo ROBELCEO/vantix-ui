@@ -1,0 +1,240 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vantix — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    :root {
+        --bg: #09090B;
+        --panel: #FFFFFF;
+        --border: #E4E4E7;
+        --text: #09090B;
+        --text2: #52525B;
+        --cyan: #0284C7;
+        --green: #059669;
+        --red: #E11D48;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; border-radius: 2px; /* SHARP CORNERS */ }
+    body {
+        background-color: var(--bg);
+        color: var(--text);
+        font-family: 'Inter', sans-serif;
+        height: 100vh;
+        display: flex;
+        overflow: hidden;
+    }
+
+    /* LEFT SIDE - SMOOTH DARK BRANDING */
+    .login-left {
+        flex: 1.2;
+        background: radial-gradient(circle at 0% 0%, rgba(2, 132, 199, 0.15) 0%, transparent 60%), 
+                    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 100% 100%, 40px 40px, 40px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 60px;
+        position: relative;
+        border-right: 1px solid #27272A;
+        color: #FFFFFF;
+    }
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 24px;
+        font-weight: 900;
+        letter-spacing: 2px;
+        margin-bottom: 48px;
+    }
+    .brand span { color: var(--cyan); }
+    .headline {
+        font-size: 42px;
+        font-weight: 900;
+        line-height: 1.1;
+        letter-spacing: -1px;
+        margin-bottom: 24px;
+    }
+    .subhead {
+        font-size: 16px;
+        color: #A1A1AA;
+        line-height: 1.6;
+        max-width: 480px;
+        margin-bottom: 48px;
+    }
+    .feature-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #D4D4D8;
+    }
+    .feature-icon {
+        width: 32px;
+        height: 32px;
+        background: rgba(2, 132, 199, 0.1);
+        border: 1px solid rgba(2, 132, 199, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--cyan);
+        font-size: 16px;
+    }
+
+    /* RIGHT SIDE - SMOOTH WHITE LOGIN */
+    .login-right {
+        flex: 1;
+        background: #FAFAFA;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+    }
+    .login-box {
+        width: 100%;
+        max-width: 400px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        padding: 48px 40px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .login-box h1 {
+        font-size: 24px;
+        font-weight: 900;
+        margin-bottom: 8px;
+        color: var(--text);
+    }
+    .login-box p {
+        font-size: 14px;
+        color: var(--text2);
+        margin-bottom: 32px;
+        line-height: 1.5;
+    }
+    .google-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+        height: 48px;
+        background: #FFFFFF;
+        color: #000000;
+        border: 1px solid #D4D4D8;
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .google-btn:hover { 
+        background: #F4F4F5;
+        border-color: #A1A1AA;
+    }
+    .google-btn img { width: 20px; height: 20px; }
+    
+    .error-msg {
+        color: var(--red);
+        font-size: 13px;
+        margin-top: 16px;
+        display: none;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    @media (max-width: 900px) {
+        body { flex-direction: column; overflow-y: auto; }
+        .login-left { padding: 40px 24px; border-right: none; border-bottom: 1px solid #27272A; }
+        .headline { font-size: 32px; }
+        .login-right { padding: 40px 24px; min-height: 500px; }
+    }
+</style>
+</head>
+<body>
+
+    <!-- LEFT SIDE -->
+    <div class="login-left">
+        <div class="brand">
+            <svg viewBox="0 0 32 32" style="width:32px; height:32px;"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg>
+            VANTI<span>X</span>
+        </div>
+        
+        <div class="headline">Your Store.<br>Your Margins.<br>Under Control.</div>
+        <div class="subhead">
+            Vantix analyzes your real COGS and competitor prices to stop you from losing money on bad price matches, and finds the cash trapped in your dead inventory.
+        </div>
+        
+        <div class="feature-list">
+            <div class="feature-item"><div class="feature-icon">⚔️</div> Calculate exact Safe Floor prices.</div>
+            <div class="feature-item"><div class="feature-icon">🪤</div> Uncover cash trapped in Dead Stock.</div>
+            <div class="feature-item"><div class="feature-icon">🕵️</div> Real-time competitor stock-out alerts.</div>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="login-right">
+        <div class="login-box">
+            <h1>Welcome back</h1>
+            <p>Sign in to sync your Shopify data and access your intelligence dashboard.</p>
+
+            <button id="login-btn" class="google-btn">
+                <img id="btn-icon" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
+                <span id="btn-text">Sign in with Google</span>
+            </button>
+
+            <div id="error-msg" class="error-msg"></div>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById('login-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnIcon = document.getElementById('btn-icon');
+        const errorMsg = document.getElementById('error-msg');
+
+        if (!window.supabase) {
+            errorMsg.style.display = 'block';
+            errorMsg.innerText = "Error: Supabase failed to load.";
+            return;
+        }
+
+        const SUPABASE_URL = "https://odvusqxvhgyfoiyooktl.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kdnVzcXh2aGd5Zm9peW9va3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5Mzk3NzAsImV4cCI6MjEwODUxNTc3MH0.5LlYHzs4iHz7gQMCLLBCDT7deMveYpx-8fabCH5AljU";
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        btn.addEventListener('click', async () => {
+            try {
+                btn.disabled = true;
+                btnText.innerText = "Authenticating...";
+                btnIcon.style.display = 'none';
+                errorMsg.style.display = 'none';
+
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: { redirectTo: 'https://robelceo.github.io/vantix-ui/index.html' }
+                });
+
+                if (error) throw error;
+            } catch (error) {
+                btn.disabled = false;
+                btnText.innerText = "Sign in with Google";
+                btnIcon.style.display = 'block';
+                errorMsg.style.display = 'block';
+                errorMsg.innerText = "Login failed: " + error.message;
+            }
+        });
+    });
+</script>
+</body>
+</html>

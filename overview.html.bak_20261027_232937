@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vantix — Overview</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
+<div class="drawer" id="mobile-drawer">
+    <div class="drawer-header">
+        <div class="brand"><div>VANTI<span>X</span></div></div>
+        <button class="drawer-close" onclick="toggleMenu()">✕</button>
+    </div>
+    <a href="index.html" class="drawer-tab ">Connect</a>
+    <a href="overview.html" class="drawer-tab active">Overview</a>
+    <a href="store.html" class="drawer-tab ">My Store</a>
+    <a href="competitors.html" class="drawer-tab ">Competitors</a>
+    <a href="terminal.html" class="drawer-tab ">Terminal</a>
+    <a href="discovery.html" class="drawer-tab ">Discovery</a>
+    <a href="alerts.html" class="drawer-tab ">Alerts</a>
+    <a href="inventory.html" class="drawer-tab ">Inventory</a>
+    <a href="membership.html" class="drawer-tab ">Membership</a>
+    <a href="settings.html" class="drawer-tab ">Settings</a>
+    
+</div>
+
+<div class="header">
+    <a href="index.html" class="brand">
+        <div class="mark"><svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg></div>
+        <div>VANTI<span>X</span></div>
+    </a>
+    <div class="tabs">
+        <a href="index.html" class="tab ">Connect</a>
+        <a href="overview.html" class="tab active">Overview</a>
+        <a href="store.html" class="tab ">My Store</a>
+        <a href="competitors.html" class="tab ">Competitors</a>
+        <a href="terminal.html" class="tab ">Terminal</a>
+        <a href="discovery.html" class="tab ">Discovery</a>
+        <a href="alerts.html" class="tab ">Alerts</a>
+        <a href="inventory.html" class="tab ">Inventory</a>
+        <a href="membership.html" class="tab ">Membership</a>
+        <a href="settings.html" class="tab ">Settings</a>
+        
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">loading...</div>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
+        <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
+</div>
+
+<div class="screen">
+    <div style="max-width: 1100px; margin: 0 auto; padding-top: 20px;">
+        <div class="screen-title">Command Center</div>
+        <div class="screen-sub">Your daily profit briefing and store health.</div>
+
+        <!-- TOP KPIs -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+            <div class="kpi-card" style="border-color: rgba(0,255,136,0.3);">
+                <div class="kpi-label">True Net Profit (30d)</div>
+                <div class="kpi-value text-green" id="ov-net-profit">$0.00</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Gross Revenue (30d)</div>
+                <div class="kpi-value" id="ov-revenue">$0.00</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Competitor Price Index</div>
+                <div class="kpi-value" id="ov-price-index" style="color: var(--violet);">0%</div>
+            </div>
+        </div>
+
+        <!-- MAIN GRID -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+            
+            <!-- LEFT COL: AI BRIEFING -->
+            <div class="panel" style="border-color: rgba(139, 127, 255, 0.4); background: linear-gradient(180deg, rgba(139,127,255,0.05), transparent);">
+                <div class="panel-header" style="color: var(--violet); display: flex; justify-content: space-between;">
+                    <div>🧠 Top 3 Moves Today</div>
+                    <div class="badge badge-violet">Groq AI</div>
+                </div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">
+                    Based on your current profit, out-of-stock risks, and competitor pricing, here is your strategy for today.
+                </div>
+                <div id="ai-actions-container" style="display: flex; flex-direction: column; gap: 12px;">
+                    <div class="text-tertiary" style="font-size: 12px;">Analyzing store data...</div>
+                </div>
+            </div>
+
+            <!-- RIGHT COL: LEAK DETECTOR -->
+            <div class="panel" style="border-color: rgba(255, 34, 102, 0.4); background: linear-gradient(180deg, rgba(255,34,102,0.05), transparent);">
+                <div class="panel-header" style="color: var(--red);">🚨 Profit Leak Detector</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">
+                    Money you are losing right now due to out-of-stock best-sellers.
+                </div>
+                <div style="text-align: center; padding: 20px 0;">
+                    <div style="font-size: 48px; font-weight: 900; color: var(--red);" id="ov-leaks">0</div>
+                    <div style="font-size: 12px; color: var(--text-tertiary); text-transform: uppercase; margin-top: 8px;">Items Out of Stock</div>
+                </div>
+                <a href="inventory.html" class="btn btn-secondary" style="width: 100%; font-size: 12px; border-color: var(--red); color: var(--red); text-align: center; display: block;">Restock Inventory →</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="js/app.js?v=2050"></script>
+<script src="js/overview.js?v=2030"></script>
+</body>
+</html>

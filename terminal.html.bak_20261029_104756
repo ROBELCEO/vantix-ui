@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vantix — Terminal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
+<div class="drawer" id="mobile-drawer">
+    <div class="drawer-header">
+        <div class="brand"><div>VANTI<span>X</span></div></div>
+        <button class="drawer-close" onclick="toggleMenu()">✕</button>
+    </div>
+    <a href="index.html" class="drawer-tab ">Connect</a>
+    <a href="overview.html" class="drawer-tab ">Overview</a>
+    <a href="store.html" class="drawer-tab ">My Store</a>
+    <a href="competitors.html" class="drawer-tab ">Competitors</a>
+    <a href="terminal.html" class="drawer-tab active">Terminal</a>
+    <a href="discovery.html" class="drawer-tab ">Discovery</a>
+    <a href="alerts.html" class="drawer-tab ">Alerts</a>
+    <a href="inventory.html" class="drawer-tab ">Inventory</a>
+    <a href="membership.html" class="drawer-tab ">Membership</a>
+    <a href="settings.html" class="drawer-tab ">Settings</a>
+    
+</div>
+
+<div class="header">
+    <a href="index.html" class="brand">
+        <div class="mark"><svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg></div>
+        <div>VANTI<span>X</span></div>
+    </a>
+    <div class="tabs">
+        <a href="index.html" class="tab ">Connect</a>
+        <a href="overview.html" class="tab ">Overview</a>
+        <a href="store.html" class="tab ">My Store</a>
+        <a href="competitors.html" class="tab ">Competitors</a>
+        <a href="terminal.html" class="tab active">Terminal</a>
+        <a href="discovery.html" class="tab ">Discovery</a>
+        <a href="alerts.html" class="tab ">Alerts</a>
+        <a href="inventory.html" class="tab ">Inventory</a>
+        <a href="membership.html" class="tab ">Membership</a>
+        <a href="settings.html" class="tab ">Settings</a>
+        
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div id="user-email" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);">loading...</div>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
+        <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
+</div>
+
+<div class="screen">
+    <div style="max-width: 1100px; margin: 0 auto; padding-top: 20px;">
+        
+        <!-- LEFT SIDEBAR: WATCHLIST -->
+        <div>
+            <div class="screen-title" style="font-size: 20px; margin-bottom: 16px;">Watchlist</div>
+            <div id="watchlist-container" style="display: flex; flex-direction: column; gap: 8px;">
+                <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 20px;">Loading products...</div>
+            </div>
+        </div>
+
+        <!-- RIGHT MAIN AREA -->
+        <div>
+            <!-- PRICE HISTORY CHART -->
+            <div class="panel" style="margin-bottom: 24px;">
+                <div class="panel-header" style="display: flex; justify-content: space-between;">
+                    <!-- THE IMAGE TAG IS GUARANTEED TO BE HERE NOW -->
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        Price History — 
+                        <img id="chart-product-img" src="" style="width: 28px; height: 28px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border); display: none;"> 
+                        <span id="chart-product-name" style="color: var(--accent);">SELECT A PRODUCT</span>
+                    </div>
+                    <div class="badge badge-violet">30 Days</div>
+                </div>
+                <div style="height: 250px;">
+                    <canvas id="terminalChart"></canvas>
+                </div>
+            </div>
+
+            <!-- TACTICAL GRID: SAFE FLOOR & SIMULATOR -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                
+                <!-- PRICE WAR SAFE FLOOR -->
+                <div class="panel" style="border-color: rgba(255, 170, 0, 0.4); background: linear-gradient(180deg, rgba(255,170,0,0.05), transparent);">
+                    <div class="panel-header" style="color: var(--amber);">⚔️ Price War Safe Floor</div>
+                    <div id="safe-floor-content">
+                        <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 20px;">Select a product to analyze margins.</div>
+                    </div>
+                </div>
+
+                <!-- PROFIT FORECAST SIMULATOR -->
+                <div class="panel" style="border-color: rgba(0, 229, 255, 0.4); background: linear-gradient(180deg, rgba(0,229,255,0.05), transparent);">
+                    <div class="panel-header" style="color: var(--accent);">🔮 Profit Forecast Simulator</div>
+                    <div id="simulator-content">
+                        <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 20px;">Select a product to simulate pricing.</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- AI MARGIN ADVISOR -->
+            <div class="panel" style="margin-top: 24px; border-color: rgba(139, 127, 255, 0.4);">
+                <div class="panel-header" style="color: var(--violet); display: flex; justify-content: space-between;">
+                    <div>🧠 AI Margin Advisor</div>
+                    <div class="badge badge-violet">Groq</div>
+                </div>
+                <div id="ai-advisor-content">
+                    <div class="text-tertiary" style="font-size: 12px; text-align: center; padding: 20px;">Select a product to generate AI strategy.</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="js/app.js?v=2050"></script>
+<script src="js/terminal.js?v=2275"></script>
+</body>
+</html>
+
+
+
+
+
+
+

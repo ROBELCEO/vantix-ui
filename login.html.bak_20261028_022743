@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vantix — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<!-- Load Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    .login-container { display: flex; justify-content: center; align-items: center; height: 100vh; background: var(--bg-base); }
+    .login-box { background: var(--bg-panel); padding: 40px; border-radius: var(--r-card); border: 1px solid var(--border); text-align: center; max-width: 400px; width: 100%; }
+    .login-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 14px; background: #fff; color: #000; border: none; border-radius: var(--r-btn); font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 20px; transition: 0.2s; }
+    .login-btn:disabled { opacity: 0.7; cursor: wait; }
+</style>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-box">
+        <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+            <svg viewBox="0 0 32 32" width="48" height="48"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg>
+        </div>
+        <h1 style="font-size: 24px; font-weight: 900; margin-bottom: 8px;">Welcome to Vantix</h1>
+        <p style="color: var(--text-tertiary); font-size: 13px; margin-bottom: 30px;">Sign in to access your intelligence dashboard.</p>
+        
+        <button id="login-btn" class="login-btn">
+            <img id="btn-icon" src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" height="20">
+            <span id="btn-text">Sign in with Google</span>
+        </button>
+        
+        <div id="error-msg" style="color: var(--red); font-size: 12px; margin-top: 15px; display: none;"></div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById('login-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnIcon = document.getElementById('btn-icon');
+        const errorMsg = document.getElementById('error-msg');
+
+        // Check if Supabase loaded correctly
+        if (!window.supabase) {
+            errorMsg.style.display = 'block';
+            errorMsg.innerText = "Error: Supabase failed to load. Check your internet connection.";
+            return;
+        }
+
+        const SUPABASE_URL = "https://odvusqxvhgyfoiyooktl.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kdnVzcXh2aGd5Zm9peW9va3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5Mzk3NzAsImV4cCI6MjEwODUxNTc3MH0.5LlYHzs4iHz7gQMCLLBCDT7deMveYpx-8fabCH5AljU"; 
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        btn.addEventListener('click', async () => {
+            try {
+                btn.disabled = true;
+                btnText.innerText = "Connecting to Google...";
+                btnIcon.style.display = 'none';
+                errorMsg.style.display = 'none';
+
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: { 
+                        redirectTo: 'https://robelceo.github.io/vantix-ui/index.html',
+                        skipBrowserRedirect: false
+                    }
+                });
+
+                if (error) throw error;
+                
+                // Note: If successful, the browser will automatically redirect. 
+                // We don't need to reset the button.
+            } catch (error) {
+                btn.disabled = false;
+                btnText.innerText = "Sign in with Google";
+                btnIcon.style.display = 'block';
+                errorMsg.style.display = 'block';
+                errorMsg.innerText = "Login failed: " + error.message;
+            }
+        });
+    });
+</script>
+</body>
+</html>
