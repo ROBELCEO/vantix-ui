@@ -1,4 +1,50 @@
-﻿let currentDiscoveryItems = [];
+﻿let _dscTierPromise = null;
+function ensureDscTier() {
+    if (window.dscTier) return Promise.resolve(window.dscTier);
+    if (_dscTierPromise) return _dscTierPromise;
+    _dscTierPromise = fetch('https://vantix-my5f.onrender.com/api/auth/status')
+        .then(r => r.ok ? r.json() : { plan: 'trial' })
+        .then(d => {
+            window.dscTier = d.plan || 'trial';
+            return window.dscTier;
+        })
+        .catch(() => {
+            window.dscTier = 'trial';
+            return window.dscTier;
+        });
+    return _dscTierPromise;
+}
+
+function applyDiscoveryLock() {
+    // 1. Blur the results container if it exists
+    const resultsContainer = document.getElementById('discovery-results');
+    if (resultsContainer) {
+        resultsContainer.style.position = 'relative';
+        resultsContainer.style.minHeight = '400px';
+        resultsContainer.innerHTML = `
+            <div style="position:absolute; inset:0; z-index:10; backdrop-filter:blur(6px); background:rgba(255,255,255,0.85); display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:4px; text-align:center; padding: 24px;">
+                <div style="font-size:32px; margin-bottom:12px;">🔒</div>
+                <div style="font-weight:900; font-size:20px; color:#09090B; margin-bottom:8px;">Unlock Global Discovery</div>
+                <div style="font-size:14px; color:#52525B; max-width:400px; margin-bottom:16px;">Instantly search 1,000,000+ winning products across the global Shopify catalog and push them to your store in 1-click.</div>
+                <a href="membership.html" style="background:#0284C7; color:#FFF; padding:10px 20px; border-radius:2px; text-decoration:none; font-size:14px; font-weight:800;">Upgrade to Pro →</a>
+            </div>
+            <div style="opacity: 0.1; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; pointer-events: none;">
+                <div style="height: 200px; background: #E4E4E7; border-radius: 4px;"></div>
+                <div style="height: 200px; background: #E4E4E7; border-radius: 4px;"></div>
+                <div style="height: 200px; background: #E4E4E7; border-radius: 4px;"></div>
+            </div>
+        `;
+    }
+
+    // 2. Disable the search button
+    const searchBtn = document.querySelector('.dsc-search-btn') || document.querySelector('button[onclick*="performSearch"]');
+    if (searchBtn) {
+        searchBtn.disabled = true;
+        searchBtn.innerText = "🔒 Pro Feature";
+        searchBtn.style.background = "#A1A1AA";
+    }
+}
+let currentDiscoveryItems = [];
 
 function dscEsc(str) {
     return String(str ?? "").replace(/[&<>"']/g, s => ({
@@ -163,3 +209,10 @@ async function pushToShopify(index, btn) {
         }, 3000);
     }
 }
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    ensureDscTier().then(tier => {
+        if (tier === 'starter') applyDiscoveryLock();
+    });
+});
