@@ -1,4 +1,44 @@
-﻿let revChartInstance = null;
+﻿let _storeTierPromise = null;
+function ensureStoreTier() {
+    if (window.storeTier && window.storeTier !== 'unknown') {
+        return Promise.resolve(window.storeTier);
+    }
+    if (_storeTierPromise) return _storeTierPromise;
+    _storeTierPromise = fetch('https://vantix-my5f.onrender.com/api/auth/status')
+        .then(r => r.ok ? r.json() : { plan: 'trial' })
+        .then(d => {
+            window.storeTier = d.plan || 'trial';
+            return window.storeTier;
+        })
+        .catch(() => {
+            window.storeTier = 'trial';
+            return window.storeTier;
+        });
+    return _storeTierPromise;
+}
+
+function storeLockHtml() {
+    return `
+        <div class="lock-overlay" style="position:absolute; inset:0; z-index:10; backdrop-filter:blur(4px); background:rgba(255,255,255,0.75); display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:2px; min-height:140px;">
+            <div style="font-size:22px; margin-bottom:6px;">🔒</div>
+            <div style="font-weight:800; font-size:13px; color:#09090B; margin-bottom:6px;">Pro Feature</div>
+            <a href="membership.html" style="background:#0284C7; color:#FFF; padding:6px 12px; border-radius:2px; text-decoration:none; font-size:11px; font-weight:800;">Upgrade to Pro</a>
+        </div>
+        <div style="min-height:140px;">&nbsp;</div>
+    `;
+}
+
+function applyStoreStarterLocks() {
+    if (window.storeTier !== 'starter') return;
+    ['carts-list', 'dead-stock-list', 'bundle-container', 'ltv-list'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.querySelector('.lock-overlay')) return;
+        el.style.position = 'relative';
+        el.innerHTML = storeLockHtml();
+    });
+}
+let revChartInstance = null;
 let custChartInstance = null;
 
 window.stAllProducts = [];
@@ -128,6 +168,8 @@ function renderLowStock(stock) {
 }
 
 async function loadDeadStock() {
+    const tier = await ensureStoreTier();
+    if (tier === 'starter') { applyStoreStarterLocks(); return; }
     const list = document.getElementById('dead-stock-list');
     if (!list) return;
     try {
@@ -150,6 +192,8 @@ async function loadDeadStock() {
 }
 
 async function loadBundleSuggestion() {
+    const tier = await ensureStoreTier();
+    if (tier === 'starter') { applyStoreStarterLocks(); return; }
     const container = document.getElementById('bundle-container');
     if (!container) return;
     try {
@@ -169,6 +213,8 @@ async function loadBundleSuggestion() {
 }
 
 async function loadCustomerLTV() {
+    const tier = await ensureStoreTier();
+    if (tier === 'starter') { applyStoreStarterLocks(); return; }
     const list = document.getElementById('ltv-list');
     if (!list) return;
     try {
@@ -252,3 +298,10 @@ document.getElementById("st-modal")?.addEventListener("click", function(e) {
 });
 
 
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    ensureStoreTier().then(tier => {
+        if (tier === 'starter') applyStoreStarterLocks();
+    });
+});
