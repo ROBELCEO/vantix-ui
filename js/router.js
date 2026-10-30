@@ -4,7 +4,7 @@
     store:       { html: "store.html",       init: ["loadStoreData"] },
     competitors: { html: "competitors.html", init: ["fetchCompetitors", "loadCompetitorIntel", "loadCatalogGaps"] },
     terminal:    { html: "terminal.html",    init: ["loadTerminal"] },
-    discovery:   { html: "discovery.html",   init: ["loadDiscovery"] },
+    discovery:   { html: "discovery.html",   init: ["initDiscoveryPaywall", "loadDiscovery"] },
     alerts:      { html: "alerts.html",      init: ["loadAlerts"] },
     inventory:   { html: "inventory.html",   init: ["loadInventory"] },
     membership:  { html: "membership.html",  init: ["checkSubscription"] },
@@ -16,6 +16,8 @@ const viewHTMLCache = {};
 let currentRoute = null;
 
 function cleanupPreviousView() {
+    const paywall = document.getElementById('dsc-paywall-overlay');
+    if (paywall) paywall.remove();
     if (currentRoute) {
         const root = document.getElementById("view-root");
         if (root) viewRenderedCache[currentRoute] = root.innerHTML;
@@ -145,4 +147,5 @@ window.routerInit = function () {
     window.addEventListener("hashchange", () => loadView(getRouteFromHash()));
     loadView(getRouteFromHash());
 };
+
 
