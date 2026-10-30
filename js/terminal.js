@@ -25,26 +25,12 @@ async function loadTerminal() {
         // 2. Fetch Products & Comparisons
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison');
         
-        // Even if it fails (e.g. 402), we handle it gracefully
-        if(!res.ok) {
-            if (window.userTier === 'starter') {
-                // If we are starter, we expect limits, so just render the watchlist with no matches
-                const prodRes = await fetch('https://vantix-my5f.onrender.com/api/products');
-                const prodData = await prodRes.json();
-                allComparisons = (prodData.products || []).map(p => ({
-                    my_product: p.title,
-                    my_price: p.price,
-                    my_cost: p.cost,
-                    my_image: p.image_url,
-                    competitor_matches: []
-                }));
-            } else {
-                throw new Error("HTTP " + res.status);
-            }
-        } else {
-            const data = await res.json();
-            allComparisons = data.comparisons || [];
+        if (!res.ok) {
+            throw new Error("HTTP " + res.status);
         }
+
+        const data = await res.json();
+        allComparisons = data.comparisons || [];
         
         if(allComparisons.length > 0) {
             if(statusEl) statusEl.innerText = "Connected";
@@ -58,11 +44,6 @@ async function loadTerminal() {
         console.error("Terminal error:", e);
         container.innerHTML = `<div class="trm-empty trm-text-red">Failed: ${e.message}</div>`;
         if(statusEl) statusEl.innerText = "Error";
-        
-        // Force render locks if it fails and we are starter
-        if (window.userTier === 'starter') {
-            applyStarterLocks();
-        }
     }
 }
 
@@ -162,14 +143,8 @@ function selectProduct(index) {
 
     renderChart(product);
     
-    // If starter, just apply locks, skip the render functions
-    if (window.userTier === 'starter') {
-        applyStarterLocks();
-    } else {
-        renderSafeFloor(product);
-        fetchAIAdvice(product.my_product);
-    }
-    
+    renderSafeFloor(product);
+    fetchAIAdvice(product.my_product);
     renderSimulator(product);
 }
 
@@ -349,3 +324,4 @@ async function fetchAIAdvice(productName) {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(loadTerminal, 500);
 });
+
