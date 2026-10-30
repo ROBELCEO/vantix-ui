@@ -1,9 +1,8 @@
-﻿window.userTier = 'pro';
-window.chartOrientation = localStorage.getItem('vantix_chart_orientation') || 'vertical';
-let chartInstance = null;
+﻿let chartInstance = null;
 let allComparisons = [];
 let activeIndex = 0;
-let watchlistExpanded = false; // NEW: Controls 4 vs All
+let watchlistExpanded = false;
+window.userTier = 'trial';
 
 function fmtMoney(val) {
     if (val === null || val === undefined || isNaN(val)) return "N/A";
@@ -16,13 +15,14 @@ async function loadTerminal() {
     if(!container) return;
 
     try {
-        // Check Tier First
+        // 1. Get tier
         const statusRes = await fetch('https://vantix-my5f.onrender.com/api/auth/status');
         if (statusRes.ok) {
             const statusData = await statusRes.json();
             window.userTier = statusData.plan || 'trial';
         }
 
+        // 2. Fetch data
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison');
         if(!res.ok) throw new Error("HTTP " + res.status);
         
@@ -48,7 +48,6 @@ function renderWatchlist() {
     const container = document.getElementById('watchlist-container');
     if(!container) return;
     
-    // Show 4 items by default, or ALL if expanded
     const displayItems = watchlistExpanded ? allComparisons : allComparisons.slice(0, 4);
     
     let html = displayItems.map((c, index) => {
@@ -56,7 +55,7 @@ function renderWatchlist() {
         const bg = isActive ? '#E0F2FE' : '#F8FAFC';
         const border = isActive ? '#0284C7' : '#F1F5F9';
         
-        let diffHtml = '<div class="mono trm-text-muted" style="font-size: 11px;">No competitor data</div>';
+        let diffHtml = '<div class="mono trm-text-muted" style="font-size: 11px;">No competitor match found</div>';
         
         if (c.competitor_matches && c.competitor_matches.length > 0) {
             const validComps = c.competitor_matches.filter(m => m.comp_price !== null && m.comp_price !== undefined);
@@ -65,7 +64,7 @@ function renderWatchlist() {
                 const diff = c.my_price - cheapest.comp_price;
                 const sign = diff > 0 ? '+' : '';
                 const colorClass = diff > 0 ? 'trm-text-red' : (diff < 0 ? 'trm-text-green' : 'trm-text-muted');
-                diffHtml = `<div class="mono ${colorClass}" style="font-size: 11px;">${sign}${fmtMoney(diff)} vs Comp</div>`;
+                diffHtml = `<div class="mono ${colorClass}" style="font-size: 11px;">${sign}${fmtMoney(diff)} vs Best Match</div>`;
             }
         }
 
@@ -81,7 +80,6 @@ function renderWatchlist() {
         `;
     }).join('');
 
-    // ADD EXPAND BUTTON
     if (allComparisons.length > 4) {
         html += `
             <button onclick="toggleWatchlist()" style="width: 100%; padding: 10px; margin-top: 4px; background: #FFFFFF; border: 1px dashed #D1D5DB; border-radius: 2px; font-weight: 800; font-size: 11px; color: #0284C7; cursor: pointer; transition: 0.2s;">
@@ -123,21 +121,6 @@ function selectProduct(index) {
     fetchAIAdvice(product.my_product);
 }
 
-function toggleChartOrientation() {
-    window.chartOrientation = window.chartOrientation === 'vertical' ? 'horizontal' : 'vertical';
-    localStorage.setItem('vantix_chart_orientation', window.chartOrientation);
-    updateToggleButtonText();
-    if (allComparisons.length > 0) {
-        renderChart(allComparisons[activeIndex]);
-    }
-}
-
-function updateToggleButtonText() {
-    const btn = document.getElementById('chart-toggle-btn');
-    if (btn) {
-        btn.innerText = window.chartOrientation === 'vertical' ? 'Switch to Horizontal' : 'Switch to Vertical';
-    }
-}
 function renderChart(product) {
     if(chartInstance) chartInstance.destroy();
     const canvas = document.getElementById('terminalChart');
@@ -145,15 +128,12 @@ function renderChart(product) {
 
     const ctx = canvas.getContext('2d');
     
-    // Set up dynamic labels and data
     let labels = ['Your Price'];
     let data = [product.my_price || 0];
-    let backgroundColors = ['#059669']; // Green for user
+    let backgroundColors = ['#059669']; 
     
-    // Color palette for competitors
     const compColors = ['#E11D48', '#D97706', '#7C3AED', '#0284C7', '#F472B6', '#FBBF24'];
 
-    // Loop through ALL competitor matches dynamically
     if (product.competitor_matches && product.competitor_matches.length > 0) {
         product.competitor_matches.forEach((match, i) => {
             labels.push(match.competitor_name);
@@ -161,6 +141,9 @@ function renderChart(product) {
             backgroundColors.push(compColors[i % compColors.length]);
         });
     }
+
+    const chartWrap = document.querySelector('.trm-chart-wrap');
+    chartWrap.style.height = '320px';
 
     chartInstance = new Chart(ctx, {
         type: 'bar',
@@ -171,32 +154,20 @@ function renderChart(product) {
                 data: data,
                 backgroundColor: backgroundColors,
                 borderRadius: 2,
-                barPercentage: 0.6
+                maxBarThickness: 60
             }]
         },
         options: {
+            indexAxis: 'x',
             responsive: true, 
             maintainAspectRatio: false,
             plugins: { 
                 legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return 'Price: $' + context.parsed.y.toFixed(2);
-                        }
-                    }
-                }
+                tooltip: { callbacks: { label: function(context) { return 'Price: $' + context.parsed.y.toFixed(2); } } }
             },
             scales: { 
-                y: { 
-                    beginAtZero: true,
-                    grid: { color: '#F1F5F9' }, 
-                    ticks: { color: '#71717A', font: { family: 'JetBrains Mono' } } 
-                }, 
-                x: { 
-                    grid: { display: false }, 
-                    ticks: { color: '#52525B', font: { weight: 'bold' } } 
-                } 
+                y: { beginAtZero: true, grid: { color: '#F1F5F9' }, ticks: { color: '#71717A', font: { family: 'JetBrains Mono' } } }, 
+                x: { grid: { display: false }, ticks: { color: '#52525B', font: { weight: 'bold' } } } 
             }
         }
     });
@@ -205,7 +176,6 @@ function renderChart(product) {
 function renderSafeFloor(product) {
     const div = document.getElementById('safe-floor-content');
     
-    // Check if locked
     if (window.userTier === 'starter' || (product.competitor_matches && product.competitor_matches.length > 0 && product.competitor_matches[0].war_status === 'LOCKED')) {
         div.style.position = 'relative';
         div.innerHTML = `
@@ -314,7 +284,6 @@ function calculateSimulation(cost, originalPrice) {
 async function fetchAIAdvice(productName) {
     const div = document.getElementById('ai-advisor-content');
     
-    // Check if locked
     if (window.userTier === 'starter') {
         div.style.position = 'relative';
         div.innerHTML = `
@@ -350,9 +319,5 @@ async function fetchAIAdvice(productName) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => { updateToggleButtonText(); loadTerminal(); }, 500);
+    setTimeout(loadTerminal, 500);
 });
-
-
-
-
