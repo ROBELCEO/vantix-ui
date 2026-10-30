@@ -14,6 +14,37 @@ async function loadTerminal() {
     const statusEl = document.getElementById('trm-status');
     if(!container) return;
 
+    // Check Tier and lock AI/Safe Floor if Starter
+    try {
+        const statusRes = await fetch('https://vantix-my5f.onrender.com/api/auth/status');
+        if (statusRes.ok) {
+            const statusData = await statusRes.json();
+            if (statusData.plan === 'starter') {
+                const lockHtml = `
+                    <div style="position: absolute; inset: 0; z-index: 10; backdrop-filter: blur(4px); background: rgba(255,255,255,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 2px;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">🔒</div>
+                        <div style="font-weight: 800; font-size: 14px; color: #09090B; margin-bottom: 8px;">Upgrade to Pro</div>
+                        <a href="membership.html" style="background: #0284C7; color: #FFF; padding: 6px 12px; border-radius: 2px; text-decoration: none; font-size: 11px; font-weight: 800;">Unlock AI & Safe Floor</a>
+                    </div>
+                `;
+                
+                // Apply to Safe Floor
+                const sfEl = document.getElementById('safe-floor-content');
+                if(sfEl && !sfEl.querySelector('.lock-overlay')) {
+                    sfEl.style.position = 'relative';
+                    sfEl.innerHTML += `<div class="lock-overlay">${lockHtml}</div>`;
+                }
+                
+                // Apply to AI Advisor
+                const aiEl = document.getElementById('ai-advisor-content');
+                if(aiEl && !aiEl.querySelector('.lock-overlay')) {
+                    aiEl.style.position = 'relative';
+                    aiEl.innerHTML += `<div class="lock-overlay">${lockHtml}</div>`;
+                }
+            }
+        }
+    } catch (e) { console.error("Tier check failed", e); }
+
     try {
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison');
         if(!res.ok) throw new Error("HTTP " + res.status);
@@ -314,6 +345,7 @@ async function fetchAIAdvice(productName) {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => { updateToggleButtonText(); loadTerminal(); }, 500);
 });
+
 
 
 
