@@ -15,20 +15,17 @@ async function loadTerminal() {
     if(!container) return;
 
     try {
-        // 1. Get Tier FIRST
+        // 1. Get tier
         const statusRes = await fetch('https://vantix-my5f.onrender.com/api/auth/status');
         if (statusRes.ok) {
             const statusData = await statusRes.json();
             window.userTier = statusData.plan || 'trial';
         }
 
-        // 2. Fetch Products & Comparisons
+        // 2. Fetch data
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison');
+        if(!res.ok) throw new Error("HTTP " + res.status);
         
-        if (!res.ok) {
-            throw new Error("HTTP " + res.status);
-        }
-
         const data = await res.json();
         allComparisons = data.comparisons || [];
         
@@ -44,29 +41,6 @@ async function loadTerminal() {
         console.error("Terminal error:", e);
         container.innerHTML = `<div class="trm-empty trm-text-red">Failed: ${e.message}</div>`;
         if(statusEl) statusEl.innerText = "Error";
-    }
-}
-
-function applyStarterLocks() {
-    const lockHtml = `
-        <div style="position: absolute; inset: 0; z-index: 10; backdrop-filter: blur(4px); background: rgba(255,255,255,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 2px;">
-            <div style="font-size: 24px; margin-bottom: 8px;">🔒</div>
-            <div style="font-weight: 800; font-size: 14px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
-            <a href="membership.html" style="background: #0284C7; color: #FFF; padding: 6px 12px; border-radius: 2px; text-decoration: none; font-size: 11px; font-weight: 800;">Upgrade to Pro</a>
-        </div>
-        <div class="trm-empty" style="min-height: 120px;">&nbsp;</div>
-    `;
-    
-    const sfEl = document.getElementById('safe-floor-content');
-    if(sfEl) {
-        sfEl.style.position = 'relative';
-        sfEl.innerHTML = lockHtml;
-    }
-    
-    const aiEl = document.getElementById('ai-advisor-content');
-    if(aiEl) {
-        aiEl.style.position = 'relative';
-        aiEl.innerHTML = lockHtml;
     }
 }
 
@@ -142,10 +116,9 @@ function selectProduct(index) {
     }
 
     renderChart(product);
-    
     renderSafeFloor(product);
-    fetchAIAdvice(product.my_product);
     renderSimulator(product);
+    fetchAIAdvice(product.my_product);
 }
 
 function renderChart(product) {
@@ -206,6 +179,21 @@ function renderChart(product) {
 
 function renderSafeFloor(product) {
     const div = document.getElementById('safe-floor-content');
+    
+    // BULLETPROOF LOCK CHECK
+    if (window.userTier === 'starter' || (product.competitor_matches && product.competitor_matches.length > 0 && product.competitor_matches[0].war_status === 'LOCKED')) {
+        div.style.position = 'relative';
+        div.innerHTML = `
+            <div style="position: absolute; inset: 0; z-index: 10; backdrop-filter: blur(4px); background: rgba(255,255,255,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 2px;">
+                <div style="font-size: 24px; margin-bottom: 8px;">🔒</div>
+                <div style="font-weight: 800; font-size: 14px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+                <a href="membership.html" style="background: #0284C7; color: #FFF; padding: 6px 12px; border-radius: 2px; text-decoration: none; font-size: 11px; font-weight: 800;">Unlock Safe Floor</a>
+            </div>
+            <div class="trm-empty" style="min-height: 120px;">&nbsp;</div>
+        `;
+        return;
+    }
+
     if (!product.competitor_matches || product.competitor_matches.length === 0) {
         div.innerHTML = '<div class="trm-empty">No competitor data available.</div>';
         return;
@@ -321,7 +309,6 @@ async function fetchAIAdvice(productName) {
         const res = await fetch(`https://vantix-my5f.onrender.com/api/ai/advisor?product_name=${encodeURIComponent(productName)}`);
         
         if (res.status === 402) {
-            // Catch the backend paywall and show the lock
             div.style.position = 'relative';
             div.innerHTML = `
                 <div style="position: absolute; inset: 0; z-index: 10; backdrop-filter: blur(4px); background: rgba(255,255,255,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 2px;">
@@ -352,5 +339,3 @@ async function fetchAIAdvice(productName) {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(loadTerminal, 500);
 });
-
-
