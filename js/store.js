@@ -187,33 +187,40 @@ function renderChart(chartData) {
     const data = chartData.data || [];
 
     const ctx = canvas.getContext('2d');
-    const gradient = ctx.createLinearGradient(0, 0, 0, 260);
-    gradient.addColorStop(0, "rgba(2, 132, 199, 0.15)");
-    gradient.addColorStop(1, "rgba(2, 132, 199, 0)");
 
     stChartInstance = new Chart(ctx, {
-        type: 'line',
+        type: 'bar',
         data: {
             labels: labels,
             datasets: [{
-                label: "Revenue",
+                label: "Net Profit",
                 data: data,
-                borderColor: "#0284C7",
-                backgroundColor: gradient,
-                fill: true,
-                borderWidth: 2,
-                pointRadius: 0,
-                pointHoverRadius: 4,
-                tension: 0.2
+                backgroundColor: data.map(v => v < 0 ? "#E11D48" : "#059669"),
+                borderRadius: 2,
+                barPercentage: 0.9
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return "Profit: " + new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                        }
+                    }
+                }
+            },
             scales: {
                 x: { grid: { display: false }, ticks: { color: "#6B7280", font: { size: 10 }, maxTicksLimit: 10 } },
-                y: { grid: { color: "#E5E7EB" }, ticks: { color: "#6B7280", font: { size: 10 } } }
+                y: { 
+                    grid: { color: "#E5E7EB" }, 
+                    ticks: { color: "#6B7280", font: { size: 10 } },
+                    min: -7000, /* Force the axis to show the drop */
+                    max: 1000
+                }
             }
         }
     });
@@ -279,4 +286,5 @@ async function loadStoreData() {
         nameEl.innerText = "Error Loading Store";
     }
 }
+
 
