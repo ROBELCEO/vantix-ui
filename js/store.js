@@ -187,17 +187,27 @@ function renderChart(chartData) {
     const data = chartData.data || [];
 
     const ctx = canvas.getContext('2d');
+    const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+    gradient.addColorStop(0, "rgba(2, 132, 199, 0.15)");
+    gradient.addColorStop(1, "rgba(2, 132, 199, 0)");
 
     stChartInstance = new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
             labels: labels,
             datasets: [{
                 label: "Net Profit",
                 data: data,
-                backgroundColor: data.map(v => v < 0 ? "#E11D48" : "#059669"),
-                borderRadius: 2,
-                barPercentage: 0.9
+                borderColor: "#0284C7",
+                backgroundColor: gradient,
+                fill: true,
+                borderWidth: 2,
+                pointRadius: 3,          // Make the points visible
+                pointBackgroundColor: "#0284C7",
+                pointBorderColor: "#FFFFFF",
+                pointBorderWidth: 1,
+                pointHoverRadius: 6,
+                tension: 0                 // Straight lines so zero days don't wobble
             }]
         },
         options: {
@@ -218,7 +228,7 @@ function renderChart(chartData) {
                 y: { 
                     grid: { color: "#E5E7EB" }, 
                     ticks: { color: "#6B7280", font: { size: 10 } },
-                    min: -7000, /* Force the axis to show the drop */
+                    min: -7000, // Anchors the massive drop so it doesn't get cut off
                     max: 1000
                 }
             }
@@ -286,5 +296,6 @@ async function loadStoreData() {
         nameEl.innerText = "Error Loading Store";
     }
 }
+
 
 
