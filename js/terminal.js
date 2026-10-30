@@ -15,32 +15,77 @@ async function loadTerminal() {
     if(!container) return;
 
     try {
-        // 1. Get tier
+        // 1. Get Tier FIRST
         const statusRes = await fetch('https://vantix-my5f.onrender.com/api/auth/status');
         if (statusRes.ok) {
             const statusData = await statusRes.json();
             window.userTier = statusData.plan || 'trial';
         }
 
-        // 2. Fetch data
+        // 2. Fetch Products & Comparisons
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison');
-        if(!res.ok) throw new Error("HTTP " + res.status);
         
-        const data = await res.json();
+        // Even if it fails (e.g. 402), we handle it gracefully
+        if(!res.ok) {
+            if (window.userTier === 'starter') {
+                // If we are starter, we expect limits, so just render the watchlist with no matches
+                const prodRes = await fetch('https://vantix-my5f.onrender.com/api/products');
+                const prodData = await prodRes.json();
+                allComparisons = (prodData.products || []).map(p => ({
+                    my_product: p.title,
+                    my_price: p.price,
+                    my_cost: p.cost,
+                    my_image: p.image_url,
+                    competitor_matches: []
+                }));
+            } else {
+                throw new Error("HTTP " + res.status);
+            }
+        } else {
+            const data = await res.json();
+            allComparisons = data.comparisons || [];
+        }
         
-        if(data.comparisons && data.comparisons.length > 0) {
-            allComparisons = data.comparisons;
+        if(allComparisons.length > 0) {
             if(statusEl) statusEl.innerText = "Connected";
             renderWatchlist();
             selectProduct(0); 
         } else {
-            container.innerHTML = '<div class="trm-empty">No matching products found.</div>';
+            container.innerHTML = '<div class="trm-empty">No products found.</div>';
             if(statusEl) statusEl.innerText = "Empty";
         }
     } catch(e) {
         console.error("Terminal error:", e);
         container.innerHTML = `<div class="trm-empty trm-text-red">Failed: ${e.message}</div>`;
         if(statusEl) statusEl.innerText = "Error";
+        
+        // Force render locks if it fails and we are starter
+        if (window.userTier === 'starter') {
+            applyStarterLocks();
+        }
+    }
+}
+
+function applyStarterLocks() {
+    const lockHtml = `
+        <div style="position: absolute; inset: 0; z-index: 10; backdrop-filter: blur(4px); background: rgba(255,255,255,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 2px;">
+            <div style="font-size: 24px; margin-bottom: 8px;">🔒</div>
+            <div style="font-weight: 800; font-size: 14px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+            <a href="membership.html" style="background: #0284C7; color: #FFF; padding: 6px 12px; border-radius: 2px; text-decoration: none; font-size: 11px; font-weight: 800;">Upgrade to Pro</a>
+        </div>
+        <div class="trm-empty" style="min-height: 120px;">&nbsp;</div>
+    `;
+    
+    const sfEl = document.getElementById('safe-floor-content');
+    if(sfEl) {
+        sfEl.style.position = 'relative';
+        sfEl.innerHTML = lockHtml;
+    }
+    
+    const aiEl = document.getElementById('ai-advisor-content');
+    if(aiEl) {
+        aiEl.style.position = 'relative';
+        aiEl.innerHTML = lockHtml;
     }
 }
 
@@ -116,9 +161,16 @@ function selectProduct(index) {
     }
 
     renderChart(product);
-    renderSafeFloor(product);
+    
+    // If starter, just apply locks, skip the render functions
+    if (window.userTier === 'starter') {
+        applyStarterLocks();
+    } else {
+        renderSafeFloor(product);
+        fetchAIAdvice(product.my_product);
+    }
+    
     renderSimulator(product);
-    fetchAIAdvice(product.my_product);
 }
 
 function renderChart(product) {
@@ -140,6 +192,10 @@ function renderChart(product) {
             data.push(match.comp_price !== null ? match.comp_price : 0);
             backgroundColors.push(compColors[i % compColors.length]);
         });
+    } else {
+        labels.push('No Competitors');
+        data.push(0);
+        backgroundColors.push('#E4E4E7');
     }
 
     const chartWrap = document.querySelector('.trm-chart-wrap');
@@ -175,20 +231,6 @@ function renderChart(product) {
 
 function renderSafeFloor(product) {
     const div = document.getElementById('safe-floor-content');
-    
-    if (window.userTier === 'starter' || (product.competitor_matches && product.competitor_matches.length > 0 && product.competitor_matches[0].war_status === 'LOCKED')) {
-        div.style.position = 'relative';
-        div.innerHTML = `
-            <div style="position: absolute; inset: 0; z-index: 10; backdrop-filter: blur(4px); background: rgba(255,255,255,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 2px;">
-                <div style="font-size: 24px; margin-bottom: 8px;">🔒</div>
-                <div style="font-weight: 800; font-size: 14px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
-                <a href="membership.html" style="background: #0284C7; color: #FFF; padding: 6px 12px; border-radius: 2px; text-decoration: none; font-size: 11px; font-weight: 800;">Unlock Safe Floor</a>
-            </div>
-            <div class="trm-empty" style="min-height: 120px;">&nbsp;</div>
-        `;
-        return;
-    }
-
     if (!product.competitor_matches || product.competitor_matches.length === 0) {
         div.innerHTML = '<div class="trm-empty">No competitor data available.</div>';
         return;
@@ -283,20 +325,6 @@ function calculateSimulation(cost, originalPrice) {
 
 async function fetchAIAdvice(productName) {
     const div = document.getElementById('ai-advisor-content');
-    
-    if (window.userTier === 'starter') {
-        div.style.position = 'relative';
-        div.innerHTML = `
-            <div style="position: absolute; inset: 0; z-index: 10; backdrop-filter: blur(4px); background: rgba(255,255,255,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 2px;">
-                <div style="font-size: 24px; margin-bottom: 8px;">🔒</div>
-                <div style="font-weight: 800; font-size: 14px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
-                <a href="membership.html" style="background: #0284C7; color: #FFF; padding: 6px 12px; border-radius: 2px; text-decoration: none; font-size: 11px; font-weight: 800;">Unlock AI Advisor</a>
-            </div>
-            <div class="trm-empty" style="min-height: 120px;">&nbsp;</div>
-        `;
-        return;
-    }
-
     div.innerHTML = '<div class="trm-empty">Analyzing strategy…</div>';
     
     try {
