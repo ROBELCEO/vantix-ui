@@ -301,13 +301,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+
+
+
 window.initDiscoveryPaywall = async function() {
     const existing = document.getElementById('dsc-paywall-overlay');
     if (existing) existing.remove();
 
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/auth/status');
+        const authKey = Object.keys(localStorage).find(k => k.includes('auth-token'));
+        let token = null;
+        if (authKey) {
+            const session = JSON.parse(localStorage.getItem(authKey));
+            if (session && session.access_token) token = session.access_token;
+        }
+
+        const headers = {};
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+
+        const res = await fetch('https://vantix-my5f.onrender.com/api/auth/status', { headers });
+        if (!res.ok) return;
         const data = await res.json();
+        
         if (data.plan === 'starter') {
             const overlay = document.createElement('div');
             overlay.id = 'dsc-paywall-overlay';
@@ -324,3 +339,7 @@ window.initDiscoveryPaywall = async function() {
         console.error("Paywall error:", e);
     }
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+    window.initDiscoveryPaywall();
+});
