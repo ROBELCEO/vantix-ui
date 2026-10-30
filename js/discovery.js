@@ -1,4 +1,49 @@
-﻿let _dscTierPromise = null;
+﻿window.dscTier = 'trial';
+fetch('https://vantix-my5f.onrender.com/api/auth/status')
+    .then(r => r.json())
+    .then(d => {
+        window.dscTier = d.plan || 'trial';
+        if (window.dscTier === 'starter') applyDscLock();
+    })
+    .catch(() => {
+        window.dscTier = 'trial';
+        applyDscLock();
+    });
+
+function applyDscLock() {
+    // Disable Input
+    const input = document.querySelector('input[placeholder*="niche"]');
+    if (input) { input.disabled = true; input.placeholder = "🔒 Pro Feature - Upgrade to unlock global search"; }
+    
+    // Disable Buttons
+    const btns = document.querySelectorAll('button');
+    btns.forEach(b => {
+        if (b.innerText.includes('Search') || b.innerText.includes('Auto-Detect') || ['Jeans', 'Shorts', 'Activewear', 'Shoes', 'Bags'].includes(b.innerText)) {
+            b.disabled = true;
+            if (b.innerText === 'Search') {
+                b.innerText = "🔒 Pro";
+                b.style.background = "#A1A1AA";
+            } else {
+                b.style.opacity = '0.5';
+            }
+        }
+    });
+    
+    // Apply Blur Overlay
+    const results = document.getElementById('discovery-results');
+    if (results) {
+        results.style.position = 'relative';
+        results.style.minHeight = '300px';
+        results.innerHTML = `
+            <div style="position:absolute; inset:0; z-index:10; backdrop-filter:blur(4px); background:rgba(255,255,255,0.85); display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:4px;">
+                <div style="font-size:24px; margin-bottom:8px;">🔒</div>
+                <div style="font-weight:800; font-size:16px; color:#09090B; margin-bottom:8px;">Pro Feature</div>
+                <a href="membership.html" style="background:#0284C7; color:#FFF; padding:6px 12px; border-radius:2px; text-decoration:none; font-size:11px; font-weight:800;">Upgrade to Pro</a>
+            </div>
+        `;
+    }
+}
+let _dscTierPromise = null;
 function ensureDscTier() {
     if (window.dscTier) return Promise.resolve(window.dscTier);
     if (_dscTierPromise) return _dscTierPromise;
@@ -216,3 +261,4 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tier === 'starter') applyDiscoveryLock();
     });
 });
+
