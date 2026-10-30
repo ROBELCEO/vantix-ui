@@ -1,4 +1,5 @@
-﻿window.chartOrientation = localStorage.getItem('vantix_chart_orientation') || 'vertical';
+﻿window.userTier = 'pro';
+window.chartOrientation = localStorage.getItem('vantix_chart_orientation') || 'vertical';
 let chartInstance = null;
 let allComparisons = [];
 let activeIndex = 0;
@@ -15,6 +16,13 @@ async function loadTerminal() {
     if(!container) return;
 
     try {
+        // Check Tier First
+        const statusRes = await fetch('https://vantix-my5f.onrender.com/api/auth/status');
+        if (statusRes.ok) {
+            const statusData = await statusRes.json();
+            window.userTier = statusData.plan || 'trial';
+        }
+
         const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison');
         if(!res.ok) throw new Error("HTTP " + res.status);
         
@@ -196,6 +204,21 @@ function renderChart(product) {
 
 function renderSafeFloor(product) {
     const div = document.getElementById('safe-floor-content');
+    
+    // Check if locked
+    if (window.userTier === 'starter' || (product.competitor_matches && product.competitor_matches.length > 0 && product.competitor_matches[0].war_status === 'LOCKED')) {
+        div.style.position = 'relative';
+        div.innerHTML = `
+            <div style="position: absolute; inset: 0; z-index: 10; backdrop-filter: blur(4px); background: rgba(255,255,255,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 2px;">
+                <div style="font-size: 24px; margin-bottom: 8px;">🔒</div>
+                <div style="font-weight: 800; font-size: 14px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+                <a href="membership.html" style="background: #0284C7; color: #FFF; padding: 6px 12px; border-radius: 2px; text-decoration: none; font-size: 11px; font-weight: 800;">Unlock Safe Floor</a>
+            </div>
+            <div class="trm-empty" style="min-height: 120px;">&nbsp;</div>
+        `;
+        return;
+    }
+
     if (!product.competitor_matches || product.competitor_matches.length === 0) {
         div.innerHTML = '<div class="trm-empty">No competitor data available.</div>';
         return;
@@ -290,6 +313,21 @@ function calculateSimulation(cost, originalPrice) {
 
 async function fetchAIAdvice(productName) {
     const div = document.getElementById('ai-advisor-content');
+    
+    // Check if locked
+    if (window.userTier === 'starter') {
+        div.style.position = 'relative';
+        div.innerHTML = `
+            <div style="position: absolute; inset: 0; z-index: 10; backdrop-filter: blur(4px); background: rgba(255,255,255,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 2px;">
+                <div style="font-size: 24px; margin-bottom: 8px;">🔒</div>
+                <div style="font-weight: 800; font-size: 14px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+                <a href="membership.html" style="background: #0284C7; color: #FFF; padding: 6px 12px; border-radius: 2px; text-decoration: none; font-size: 11px; font-weight: 800;">Unlock AI Advisor</a>
+            </div>
+            <div class="trm-empty" style="min-height: 120px;">&nbsp;</div>
+        `;
+        return;
+    }
+
     div.innerHTML = '<div class="trm-empty">Analyzing strategy…</div>';
     
     try {
@@ -314,6 +352,7 @@ async function fetchAIAdvice(productName) {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => { updateToggleButtonText(); loadTerminal(); }, 500);
 });
+
 
 
 
