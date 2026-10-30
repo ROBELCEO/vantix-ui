@@ -300,14 +300,42 @@ function calculateSimulation(cost, originalPrice) {
 
 async function fetchAIAdvice(productName) {
     const div = document.getElementById('ai-advisor-content');
+    
+    // BULLETPROOF LOCK CHECK
+    if (window.userTier === 'starter') {
+        div.style.position = 'relative';
+        div.innerHTML = `
+            <div style="position: absolute; inset: 0; z-index: 10; backdrop-filter: blur(4px); background: rgba(255,255,255,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 2px;">
+                <div style="font-size: 24px; margin-bottom: 8px;">🔒</div>
+                <div style="font-weight: 800; font-size: 14px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+                <a href="membership.html" style="background: #0284C7; color: #FFF; padding: 6px 12px; border-radius: 2px; text-decoration: none; font-size: 11px; font-weight: 800;">Unlock AI Advisor</a>
+            </div>
+            <div class="trm-empty" style="min-height: 120px;">&nbsp;</div>
+        `;
+        return;
+    }
+
     div.innerHTML = '<div class="trm-empty">Analyzing strategy…</div>';
     
     try {
         const res = await fetch(`https://vantix-my5f.onrender.com/api/ai/advisor?product_name=${encodeURIComponent(productName)}`);
         
+        if (res.status === 402) {
+            // Catch the backend paywall and show the lock
+            div.style.position = 'relative';
+            div.innerHTML = `
+                <div style="position: absolute; inset: 0; z-index: 10; backdrop-filter: blur(4px); background: rgba(255,255,255,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 2px;">
+                    <div style="font-size: 24px; margin-bottom: 8px;">🔒</div>
+                    <div style="font-weight: 800; font-size: 14px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+                    <a href="membership.html" style="background: #0284C7; color: #FFF; padding: 6px 12px; border-radius: 2px; text-decoration: none; font-size: 11px; font-weight: 800;">Unlock AI Advisor</a>
+                </div>
+                <div class="trm-empty" style="min-height: 120px;">&nbsp;</div>
+            `;
+            return;
+        }
+
         if (!res.ok) {
-            const errData = await res.json();
-            div.innerHTML = `<div class="trm-text-red">${errData.detail || 'No AI advice available.'}</div>`;
+            div.innerHTML = `<div class="trm-text-red">Failed to load advice.</div>`;
             return;
         }
 
@@ -324,4 +352,5 @@ async function fetchAIAdvice(productName) {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(loadTerminal, 500);
 });
+
 
