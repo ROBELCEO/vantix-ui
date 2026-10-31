@@ -5,6 +5,7 @@ function dscEsc(str) {
 }
 
 async function loadDiscovery() {
+    console.log("VANTIX GOD EYE V3 LOADED");
     const container = document.getElementById('discovery-results');
     const statusEl = document.getElementById('dsc-status');
     const countEl = document.getElementById('dsc-count');
@@ -21,7 +22,6 @@ async function loadDiscovery() {
     if (countEl) countEl.innerText = "0 Results";
 
     try {
-        // Hit your new standalone Cloudflare API
         const res = await fetch('https://vantix-api.vantix-trends-api.workers.dev');
         if (!res.ok) throw new Error("Failed to connect to API");
 
@@ -34,7 +34,7 @@ async function loadDiscovery() {
         renderDiscoveryCards(allTrends);
 
     } catch (e) {
-        console.error(e);
+        console.error("Fetch Error:", e);
         container.innerHTML = '<div class="dsc-empty dsc-text-red" style="grid-column: 1 / -1; padding: 60px;">Network error. Failed to fetch from Cloudflare Worker.</div>';
         if (statusEl) statusEl.innerText = "Offline";
     }
@@ -49,19 +49,17 @@ function renderDiscoveryCards(trends) {
     }
 
     container.innerHTML = trends.map((item, index) => {
-        const score = item.god_eye_score || 0;
+        const score = Number(item.god_eye_score) || 0;
         const scoreColor = score >= 85 ? "#059669" : (score >= 70 ? "#D97706" : "#E11D48");
         const scoreBg = score >= 85 ? "#ECFDF5" : (score >= 70 ? "#FFFBEB" : "#FFF1F2");
         
-        // Formatting the data from your API
         const title = item.ali_title || "Unknown Product";
-        const supplierPrice = item.ali_price_usd ? `$${item.ali_price_usd.toFixed(2)}` : "$0.00";
-        const retailPrice = item.shop_avg_price ? `$${item.shop_avg_price.toFixed(2)}` : "$0.00";
-        const margin = item.margin_pct ? `${item.margin_pct.toFixed(1)}%` : "0%";
-        const demand = item.orders_count || 0;
-        const competition = item.unique_stores || 1;
+        const supplierPrice = Number(item.ali_price_usd) ? `$${Number(item.ali_price_usd).toFixed(2)}` : "$0.00";
+        const retailPrice = Number(item.shop_avg_price) ? `$${Number(item.shop_avg_price).toFixed(2)}` : "$0.00";
+        const margin = Number(item.margin_pct) ? `${Number(item.margin_pct).toFixed(1)}%` : "0%";
+        const demand = Number(item.orders_count) || 0;
+        const competition = Number(item.unique_stores) || 1;
         
-        // Dynamic Insight based on your API's math
         let insight = "";
         if (score >= 85) {
             insight = `🔥 GOLDMINE. Sourced for ${supplierPrice} and retailing at ${retailPrice}. Only ${competition} Shopify stores found. Move fast.`;
@@ -119,7 +117,6 @@ function renderDiscoveryCards(trends) {
     }).join('');
 }
 
-// --- SEARCH FUNCTIONALITY (Client-side Filtering) ---
 function performSearch() {
     const input = document.querySelector('input[placeholder*="niche"]');
     const query = input ? input.value.trim().toLowerCase() : "";
@@ -129,7 +126,6 @@ function performSearch() {
         return;
     }
 
-    // Filter the top 50 trends based on the user's search
     const filtered = allTrends.filter(t => 
         t.ali_title && t.ali_title.toLowerCase().includes(query)
     );
@@ -137,12 +133,8 @@ function performSearch() {
     renderDiscoveryCards(filtered);
 }
 
-// --- SAVE & PUSH TO SHOPIFY ---
 async function pushToShopify(index, btn) {
-    // Note: Since this API is standalone, you'll need to pass the item data 
-    // to your main FastAPI backend if you want to push it to Shopify.
-    // For now, we will alert the user.
-    alert("Push to Shopify requires connecting to your FastAPI backend.");
+    alert("Push to Shopify integration coming soon!");
 }
 
 async function saveOpportunity(index, btn) {
