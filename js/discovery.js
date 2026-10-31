@@ -1,143 +1,151 @@
 ﻿let allTrends = [];
-let currentTags = [];
-let activeAutoCategories = ['Shorts', 'Leggings', 'Activewear']; // Simulated from store
+let currentPrefs = { auto_detect: true, selected_categories: [] };
 
-const NICHE_DICTIONARY = [
-    "yoga mats", "yoga blocks", "resistance bands", "dumbbells", "kettlebells",
-    "gaming chairs", "gaming desks", "gaming mice", "gaming keyboards", "monitors",
-    "skincare", "face masks", "serums", "moisturizers", "sunscreen",
-    "pet beds", "dog toys", "cat trees", "pet grooming", "dog collars",
-    "water bottles", "lunch boxes", "coffee mugs", "protein shakers",
-    "phone cases", "wireless chargers", "power banks", "laptop stands"
-];
+const CATEGORY_TREE = {
+    "Apparel & Activewear": ["Shorts", "Leggings", "Tops", "Hoodies", "Pants", "Jackets"],
+    "Electronics & Gadgets": ["Cameras", "Headphones", "Smart Watches", "Gaming Chairs", "Keyboards"],
+    "Home & Kitchen": ["Cookware", "Storage", "Decor", "Bedding", "Lighting"],
+    "Beauty & Skincare": ["Serums", "Moisturizers", "Face Masks", "Makeup", "Hair Care"],
+    "Fitness & Outdoors": ["Yoga Mats", "Dumbbells", "Water Bottles", "Resistance Bands"]
+};
 
 function dscEsc(str) {
     return String(str ?? "").replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
 }
 
-// --- AUTO-DETECTED CHIPS ---
-function renderAutoChips() {
-    const container = document.getElementById('auto-chips-container');
-    // In a real app, this list comes from the backend analyzing their Shopify store
-    const availableCategories = ['Shorts', 'Leggings', 'Activewear', 'Tops', 'Shoes', 'Bags', 'Cameras'];
+// --- MODAL LOGIC ---
+function openPreferences() {
+    document.getElementById('preferences-modal').style.display = 'flex';
+    document.getElementById('auto-detect-toggle').checked = currentPrefs.auto_detect;
+    renderCategoryTree();
+}
+
+function closePreferences() {
+    document.getElementById('preferences-modal').style.display = 'none';
+}
+
+function toggleAutoDetect(checkbox) {
+    const tree = document.getElementById('category-tree');
+    if (checkbox.checked) {
+        tree.style.opacity = '0.3';
+        tree.style.pointerEvents = 'none';
+        // Uncheck all custom boxes
+        document.querySelectorAll('.dsc-tree-child input, .dsc-tree-parent input').forEach(cb => cb.checked = false);
+    } else {
+        tree.style.opacity = '1';
+        tree.style.pointerEvents = 'auto';
+    }
+}
+
+function renderCategoryTree() {
+    const container = document.getElementById('category-tree');
     
-    container.innerHTML = availableCategories.map(cat => {
-        const isActive = activeAutoCategories.includes(cat);
+    container.innerHTML = Object.keys(CATEGORY_TREE).map(mainCat => {
+        const subCats = CATEGORY_TREE[mainCat];
+        const checkedSubs = subCats.filter(sub => currentPrefs.selected_categories.includes(sub));
+        const isAllChecked = subCats.length === checkedSubs.length && subCats.length > 0;
+        
+        const childHtml = subCats.map(sub => {
+            const isChecked = currentPrefs.selected_categories.includes(sub);
+            return `
+                <label class="dsc-tree-child">
+                    <input type="checkbox" value="${sub}" ${isChecked ? 'checked' : ''} onchange="updateSelection()">
+                    ${sub}
+                </label>
+            `;
+        }).join('');
+
         return `
-            <div class="dsc-auto-chip ${isActive ? 'active' : ''}" onclick="toggleAutoChip('${cat}')">
-                <div class="check">✓</div>
-                ${cat}
+            <div class="dsc-tree-group">
+                <label class="dsc-tree-parent">
+                    <input type="checkbox" ${isAllChecked ? 'checked' : ''} onchange="toggleParent(this, '${mainCat}')">
+                    ${mainCat}
+                </label>
+                <div class="dsc-tree-children">
+                    ${childHtml}
+                </div>
             </div>
         `;
     }).join('');
+
+    // Set initial state
+    toggleAutoDetect(document.getElementById('auto-detect-toggle'));
 }
 
-function toggleAutoChip(cat) {
-    if (activeAutoCategories.includes(cat)) {
-        activeAutoCategories = activeAutoCategories.filter(c => c !== cat);
-    } else {
-        activeAutoCategories.push(cat);
-    }
-    renderAutoChips();
-}
-
-// --- TAG INPUT LOGIC ---
-const nicheInput = document.getElementById('niche-input');
-const tagContainer = document.getElementById('niche-tags');
-const autocompleteList = document.getElementById('autocomplete-list');
-
-nicheInput.addEventListener('input', (e) => {
-    const val = e.target.value.toLowerCase().trim();
-    autocompleteList.innerHTML = '';
+function toggleParent(checkbox, mainCat) {
+    const subCats = CATEGORY_TREE[mainCat];
+    const childInputs = Array.from(document.querySelectorAll(`.dsc-tree-child input`)).filter(input => subCats.includes(input.value));
     
-    if (!val) {
-        autocompleteList.style.display = 'none';
-        return;
-    }
-
-    const matches = NICHE_DICTIONARY.filter(n => n.includes(val) && !currentTags.includes(n));
-    
-    if (matches.length > 0) {
-        autocompleteList.style.display = 'block';
-        matches.slice(0, 5).forEach(match => {
-            const div = document.createElement('div');
-            div.className = 'dsc-autocomplete-item';
-            const regex = new RegExp(`(${val})`, 'gi');
-            div.innerHTML = match.replace(regex, '<b style="color:#0284C7;">$1</b>');
-            div.onclick = () => addTag(match);
-            autocompleteList.appendChild(div);
-        });
-    } else {
-        autocompleteList.style.display = 'none';
-    }
-});
-
-nicheInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ',') {
-        e.preventDefault();
-        const val = nicheInput.value.trim();
-        if (val) addTag(val);
-    } else if (e.key === 'Backspace' && nicheInput.value === '') {
-        if (currentTags.length > 0) {
-            currentTags.pop();
-            renderTags();
-        }
-    }
-});
-
-function addTag(tag) {
-    const cleanTag = tag.toLowerCase().trim();
-    if (cleanTag && !currentTags.includes(cleanTag)) {
-        currentTags.push(cleanTag);
-        renderTags();
-    }
-    nicheInput.value = '';
-    autocompleteList.style.display = 'none';
-    nicheInput.focus();
+    childInputs.forEach(input => {
+        input.checked = checkbox.checked;
+    });
+    updateSelection();
 }
 
-function removeTag(tag) {
-    currentTags = currentTags.filter(t => t !== tag);
-    renderTags();
+function updateSelection() {
+    const selected = [];
+    document.querySelectorAll('.dsc-tree-child input:checked').forEach(cb => {
+        selected.push(cb.value);
+    });
+    currentPrefs.selected_categories = selected;
 }
 
-function renderTags() {
-    tagContainer.innerHTML = currentTags.map(tag => `
-        <div class="dsc-tag">
-            ${dscEsc(tag)}
-            <button onclick="removeTag('${dscEsc(tag)}')">×</button>
-        </div>
-    `).join('');
-}
-
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('.dsc-input-section')) {
-        autocompleteList.style.display = 'none';
-    }
-});
-
-// --- SAVE PREFERENCES ---
 async function savePreferences() {
-    if (activeAutoCategories.length === 0 && currentTags.length === 0) {
-        alert("Please select at least one Auto-Detected category or add a Custom Niche.");
+    currentPrefs.auto_detect = document.getElementById('auto-detect-toggle').checked;
+    updateSelection();
+
+    if (!currentPrefs.auto_detect && currentPrefs.selected_categories.length === 0) {
+        alert("Please select at least one category or enable Auto-Detect.");
         return;
     }
 
-    console.log("Saving to Backend:", { autoDetect: activeAutoCategories, custom: currentTags });
-    
-    const btn = document.querySelector('.dsc-save-btn');
-    const originalText = btn.innerText;
+    const btn = document.querySelector('.dsc-modal-footer button:last-child');
     btn.innerText = "Saving...";
-    
-    // Simulate API call
-    setTimeout(() => {
-        btn.innerText = "✅ Preferences Saved";
-        btn.style.background = "#059669";
-        setTimeout(() => {
-            btn.innerText = originalText;
-            btn.style.background = "#09090B";
-        }, 2000);
-    }, 800);
+
+    try {
+        const token = JSON.parse(localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token')))).access_token;
+        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/preferences', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify(currentPrefs)
+        });
+
+        if (res.ok) {
+            btn.innerText = "✅ Saved!";
+            setTimeout(() => {
+                closePreferences();
+                btn.innerText = "Save Preferences";
+            }, 1000);
+        }
+    } catch(e) {
+        console.error(e);
+        btn.innerText = "Error";
+    }
+}
+
+// --- FETCH USER PREFERENCES & AUTO-DETECT ---
+async function loadPreferences() {
+    try {
+        const token = JSON.parse(localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token')))).access_token;
+        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/preferences', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await res.json();
+        
+        if (data.status === 'success') {
+            currentPrefs.auto_detect = data.auto_detect;
+            currentPrefs.selected_categories = data.selected_categories;
+            
+            // Render Auto-Detected tags
+            document.getElementById('auto-tags-container').innerHTML = data.auto_detected.map(tag => `
+                <span class="dsc-auto-tag">${dscEsc(tag)}</span>
+            `).join('');
+            
+            renderCategoryTree();
+        }
+    } catch(e) {
+        console.error("Failed to load preferences", e);
+    }
 }
 
 // --- LOAD RESULTS ---
@@ -231,6 +239,6 @@ async function pushToShopify(index) { alert("Push to Shopify integration coming 
 async function saveOpportunity(index) { alert("Saved to Wishlist!"); }
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderAutoChips();
+    loadPreferences();
     loadDiscovery();
 });
