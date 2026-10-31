@@ -1,22 +1,22 @@
 ﻿let allTrends = [];
 let currentPrefs = { auto_detect: true, selected_categories: [] };
-
-const CATEGORY_TREE = {
-    "Apparel & Activewear": ["Shorts", "Leggings", "Tops", "Hoodies", "Pants", "Jackets"],
-    "Electronics & Gadgets": ["Cameras", "Headphones", "Smart Watches", "Gaming Chairs", "Keyboards"],
-    "Home & Kitchen": ["Cookware", "Storage", "Decor", "Bedding", "Lighting"],
-    "Beauty & Skincare": ["Serums", "Moisturizers", "Face Masks", "Makeup", "Hair Care"],
-    "Fitness & Outdoors": ["Yoga Mats", "Dumbbells", "Water Bottles", "Resistance Bands"]
-};
+let backendCategories = {}; // Will hold the dynamic tree from backend
 
 function dscEsc(str) {
     return String(str ?? "").replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
 }
 
 // --- MODAL LOGIC ---
-function openPreferences() {
+async function openPreferences() {
     document.getElementById('preferences-modal').style.display = 'flex';
     document.getElementById('auto-detect-toggle').checked = currentPrefs.auto_detect;
+    
+    // Fetch categories if we haven't already
+    if (Object.keys(backendCategories).length === 0) {
+        document.getElementById('category-tree').innerHTML = '<div style="text-align:center; padding:20px; color:#71717A;">Loading categories...</div>';
+        await fetchCategories();
+    }
+    
     renderCategoryTree();
 }
 
@@ -29,7 +29,6 @@ function toggleAutoDetect(checkbox) {
     if (checkbox.checked) {
         tree.style.opacity = '0.3';
         tree.style.pointerEvents = 'none';
-        // Uncheck all custom boxes
         document.querySelectorAll('.dsc-tree-child input, .dsc-tree-parent input').forEach(cb => cb.checked = false);
     } else {
         tree.style.opacity = '1';
@@ -37,11 +36,29 @@ function toggleAutoDetect(checkbox) {
     }
 }
 
+// --- DYNAMIC CATEGORY FETCHING ---
+async function fetchCategories() {
+    try {
+        const token = JSON.parse(localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token')))).access_token;
+        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/categories', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+            backendCategories = data.categories;
+        }
+    } catch(e) {
+        console.error("Failed to fetch categories", e);
+    }
+}
+
 function renderCategoryTree() {
     const container = document.getElementById('category-tree');
     
-    container.innerHTML = Object.keys(CATEGORY_TREE).map(mainCat => {
-        const subCats = CATEGORY_TREE[mainCat];
+    if (Object.keys(backendCategories).length === 0) return;
+
+    container.innerHTML = Object.keys(backendCategories).map(mainCat => {
+        const subCats = backendCategories[mainCat];
         const checkedSubs = subCats.filter(sub => currentPrefs.selected_categories.includes(sub));
         const isAllChecked = subCats.length === checkedSubs.length && subCats.length > 0;
         
@@ -68,12 +85,11 @@ function renderCategoryTree() {
         `;
     }).join('');
 
-    // Set initial state
     toggleAutoDetect(document.getElementById('auto-detect-toggle'));
 }
 
 function toggleParent(checkbox, mainCat) {
-    const subCats = CATEGORY_TREE[mainCat];
+    const subCats = backendCategories[mainCat];
     const childInputs = Array.from(document.querySelectorAll(`.dsc-tree-child input`)).filter(input => subCats.includes(input.value));
     
     childInputs.forEach(input => {
@@ -136,12 +152,13 @@ async function loadPreferences() {
             currentPrefs.auto_detect = data.auto_detect;
             currentPrefs.selected_categories = data.selected_categories;
             
-            // Render Auto-Detected tags
             document.getElementById('auto-tags-container').innerHTML = data.auto_detected.map(tag => `
                 <span class="dsc-auto-tag">${dscEsc(tag)}</span>
             `).join('');
             
-            renderCategoryTree();
+            if (Object.keys(backendCategories).length > 0) {
+                renderCategoryTree();
+            }
         }
     } catch(e) {
         console.error("Failed to load preferences", e);
@@ -241,4 +258,6 @@ async function saveOpportunity(index) { alert("Saved to Wishlist!"); }
 document.addEventListener('DOMContentLoaded', () => {
     loadPreferences();
     loadDiscovery();
+    // Pre-fetch categories in the background so the modal opens instantly
+    fetchCategories().then(() => renderCategoryTree());
 });
