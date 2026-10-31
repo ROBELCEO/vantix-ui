@@ -1,67 +1,10 @@
-﻿function dscEsc(str) {
+﻿let allTrends = [];
+
+function dscEsc(str) {
     return String(str ?? "").replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
 }
 
-function dscMoney(val) {
-    if (val === null || val === undefined || isNaN(val)) return "—";
-    return "$" + Number(val).toFixed(2);
-}
-
-let currentDiscoveryItems = [];
-
-// --- PAYWALL LOGIC ---
-let _dscTierPromise = null;
-function ensureDscTier() {
-    if (window.dscTier) return Promise.resolve(window.dscTier);
-    if (_dscTierPromise) return _dscTierPromise;
-    let token = null;
-    const authKey = Object.keys(localStorage).find(k => k.includes('auth-token'));
-    if (authKey) {
-        try { token = JSON.parse(localStorage.getItem(authKey)).access_token; } catch(e){}
-    }
-    const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
-
-    _dscTierPromise = fetch('https://vantix-my5f.onrender.com/api/auth/status', { headers })
-        .then(r => r.ok ? r.json() : { plan: 'trial' })
-        .then(d => {
-            window.dscTier = d.plan || 'trial';
-            return window.dscTier;
-        })
-        .catch(() => {
-            window.dscTier = 'trial';
-            return window.dscTier;
-        });
-    return _dscTierPromise;
-}
-
-function applyDiscoveryLock() {
-    if (document.getElementById('dsc-paywall-overlay')) return;
-
-    const overlay = document.createElement('div');
-    overlay.id = 'dsc-paywall-overlay';
-    overlay.style.cssText = "position: fixed; top: 56px; left: 0; right: 0; bottom: 0; z-index: 9999; backdrop-filter: blur(8px); background: rgba(248, 250, 252, 0.85); display: flex; flex-direction: column; align-items: center; justify-content: center;";
-    
-    overlay.innerHTML = `
-        <div style="font-size: 48px; margin-bottom: 16px;">🔒</div>
-        <div style="font-weight: 900; font-size: 24px; color: #09090B; margin-bottom: 8px;">Unlock Global Discovery</div>
-        <div style="font-size: 15px; color: #52525B; max-width: 400px; text-align: center; margin-bottom: 24px; line-height: 1.5;">Instantly search 1,000,000+ winning products across the global Shopify catalog and push them to your store in 1-click.</div>
-        <a href="membership.html" style="background: #0284C7; color: #FFF; padding: 12px 24px; border-radius: 2px; text-decoration: none; font-size: 14px; font-weight: 800;">Upgrade to Pro →</a>
-    `;
-    
-    document.body.appendChild(overlay);
-}
-
-// --- SEARCH LOGIC ---
-async function performSearch() {
-    const tier = await ensureDscTier();
-    if (tier === 'starter') {
-        applyDiscoveryLock();
-        return;
-    }
-
-        let categoryInput = document.getElementById('dsc-category');
-    if (!categoryInput) categoryInput = document.querySelector('input[placeholder*="niche"]');
-    const category = categoryInput ? categoryInput.value.trim() : "";
+async function loadDiscovery() {
     const container = document.getElementById('discovery-results');
     const statusEl = document.getElementById('dsc-status');
     const countEl = document.getElementById('dsc-count');
@@ -71,115 +14,145 @@ async function performSearch() {
     container.innerHTML = `
         <div class="dsc-empty" style="grid-column: 1 / -1; padding: 60px;">
             <div class="dsc-spinner"></div>
-            Searching global Shopify catalog for <b>${dscEsc(category) || 'your niche'}</b>…
+            Connecting to the God Eye Engine (Cloudflare Edge)…
         </div>
     `;
     if (statusEl) statusEl.innerText = "Scanning…";
     if (countEl) countEl.innerText = "0 Results";
 
     try {
-        const url = category 
-            ? `https://vantix-my5f.onrender.com/api/discovery/trends?category=${encodeURIComponent(category)}`
-            : `https://vantix-my5f.onrender.com/api/discovery/trends`;
-            
-        const res = await fetch(url);
+        // Hit your new standalone Cloudflare API
+        const res = await fetch('https://vantix-api.vantix-trends-api.workers.dev');
+        if (!res.ok) throw new Error("Failed to connect to API");
+
         const data = await res.json();
+        allTrends = data;
 
-        if (data.error) throw new Error(data.error);
-
-        const items = data.opportunities || data.market_intel || [];
-        currentDiscoveryItems = items;
-
-        if (countEl) countEl.innerText = `${items.length} Results`;
+        if (countEl) countEl.innerText = `${allTrends.length} Goldmines`;
         if (statusEl) statusEl.innerText = "Ready";
 
-        if (items.length === 0) {
-            container.innerHTML = '<div class="dsc-empty" style="grid-column: 1 / -1; padding: 60px;">No opportunities found for this category. Try searching another niche.</div>';
-            return;
-        }
-
-        container.innerHTML = items.map((item, index) => {
-            const sourceBadge = item.source === "ai" 
-                ? '<div class="dsc-badge dsc-badge-violet">AI ANALYZED</div>' 
-                : '<div class="dsc-badge dsc-badge-amber">FALLBACK SIGNALS</div>';
-                
-            return `
-                <div class="dsc-card">
-                    <div class="dsc-card-img-wrap">
-                        <img src="${dscEsc(item.image || 'https://via.placeholder.com/200')}" class="dsc-card-img">
-                    </div>
-                    <div class="dsc-card-body">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-                            <div>
-                                <div class="dsc-card-title">${dscEsc(item.title || 'Untitled Product')}</div>
-                                <div class="dsc-card-store">${dscEsc(item.store || 'Shopify Store')}</div>
-                            </div>
-                            ${sourceBadge}
-                        </div>
-                        <div class="dsc-card-price">${dscMoney(item.price)}</div>
-                        <button onclick="pushToShopify(${index}, this)" class="dsc-push-btn">🚀 Push to Shopify</button>
-                    </div>
-                </div>
-            `;
-        }).join('');
+        renderDiscoveryCards(allTrends);
 
     } catch (e) {
         console.error(e);
-        container.innerHTML = '<div class="dsc-empty dsc-text-red" style="grid-column: 1 / -1; padding: 60px;">Network error. Failed to fetch discovery data.</div>';
+        container.innerHTML = '<div class="dsc-empty dsc-text-red" style="grid-column: 1 / -1; padding: 60px;">Network error. Failed to fetch from Cloudflare Worker.</div>';
         if (statusEl) statusEl.innerText = "Offline";
     }
 }
 
-// --- PUSH TO SHOPIFY ---
-async function pushToShopify(index, btn) {
-    const item = currentDiscoveryItems[index];
-    if (!item) return;
-
-    btn.innerText = "Pushing...";
-    btn.disabled = true;
-
-    try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/push-draft', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                title: item.title,
-                price: item.price,
-                image: item.image,
-                store_url: item.store_url || item.url
-            })
-        });
-
-        if (res.ok) {
-            btn.innerText = "✅ Pushed to Shopify!";
-            btn.style.background = "#059669";
-            btn.style.color = "#FFFFFF";
-        } else {
-            throw new Error("Failed to push");
-        }
-    } catch(e) {
-        console.error("Push error:", e);
-        btn.innerText = "❌ Error";
-        btn.style.background = "#E11D48";
-        btn.style.color = "#FFFFFF";
-        setTimeout(() => {
-            btn.innerText = "🚀 Push to Shopify";
-            btn.style.background = "#0284C7";
-            btn.style.color = "#FFFFFF";
-            btn.disabled = false;
-        }, 3000);
+function renderDiscoveryCards(trends) {
+    const container = document.getElementById('discovery-results');
+    
+    if (!trends || trends.length === 0) {
+        container.innerHTML = '<div class="dsc-empty" style="grid-column: 1 / -1; padding: 60px;">No goldmines found yet. Check back tomorrow.</div>';
+        return;
     }
+
+    container.innerHTML = trends.map((item, index) => {
+        const score = item.god_eye_score || 0;
+        const scoreColor = score >= 85 ? "#059669" : (score >= 70 ? "#D97706" : "#E11D48");
+        const scoreBg = score >= 85 ? "#ECFDF5" : (score >= 70 ? "#FFFBEB" : "#FFF1F2");
+        
+        // Formatting the data from your API
+        const title = item.ali_title || "Unknown Product";
+        const supplierPrice = item.ali_price_usd ? `$${item.ali_price_usd.toFixed(2)}` : "$0.00";
+        const retailPrice = item.shop_avg_price ? `$${item.shop_avg_price.toFixed(2)}` : "$0.00";
+        const margin = item.margin_pct ? `${item.margin_pct.toFixed(1)}%` : "0%";
+        const demand = item.orders_count || 0;
+        const competition = item.unique_stores || 1;
+        
+        // Dynamic Insight based on your API's math
+        let insight = "";
+        if (score >= 85) {
+            insight = `🔥 GOLDMINE. Sourced for ${supplierPrice} and retailing at ${retailPrice}. Only ${competition} Shopify stores found. Move fast.`;
+        } else if (score >= 70) {
+            insight = `⚡ STRONG POTENTIAL. ${demand} orders on AliExpress. Margin is solid at ${margin}.`;
+        } else {
+            insight = `⚠️ SATURATED. ${competition} Shopify stores found. Margin is ${margin}. Proceed with caution.`;
+        }
+
+        return `
+            <div class="god-card">
+                
+                <!-- Top: Title & Source -->
+                <div class="god-card-top">
+                    <div style="width:70px; height:70px; background:#F4F4F5; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:24px; border:1px solid #E4E4E7; flex-shrink:0;">
+                        👁️
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div class="god-source" style="color:#0284C7;">ALIEXPRESS → SHOPIFY</div>
+                        <div class="god-title">${dscEsc(title)}</div>
+                        <div class="god-price-row">
+                            <span class="god-retail">${retailPrice}</span>
+                            <span class="god-supplier">Cost: ${supplierPrice}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Middle: Intelligence Grid -->
+                <div class="god-intel">
+                    <div class="god-score-box" style="background:${scoreBg}; border-color:${scoreColor}40;">
+                        <div class="god-score-label" style="color:${scoreColor};">GOD EYE SCORE</div>
+                        <div class="god-score-value" style="color:${scoreColor};">${score}<span style="font-size:14px; opacity:0.5;">/100</span></div>
+                    </div>
+                    <div class="god-stats">
+                        <div class="god-stat"><span>Margin:</span> <b style="color:#059669;">${margin}</b></div>
+                        <div class="god-stat"><span>Demand:</span> <b>${demand.toLocaleString()} sold</b></div>
+                        <div class="god-stat"><span>Comp:</span> <b style="color:${competition < 3 ? '#059669' : '#E11D48'};">${competition} store(s)</b></div>
+                    </div>
+                </div>
+
+                <!-- AI Insight -->
+                <div class="god-insight">
+                    <div style="font-size:10px; font-weight:800; color:#7C3AED; margin-bottom:4px; letter-spacing:0.5px;">🧠 VANTIX ANALYSIS</div>
+                    <div style="color:#3F3F46; line-height:1.4;">${dscEsc(insight)}</div>
+                </div>
+
+                <!-- Actions -->
+                <div class="god-actions">
+                    <button onclick="saveOpportunity(${index}, this)" class="god-btn god-btn-save">Save</button>
+                    <button onclick="pushToShopify(${index}, this)" class="god-btn god-btn-push">Push to Shopify</button>
+                </div>
+
+            </div>
+        `;
+    }).join('');
 }
 
-// --- INIT ---
-document.addEventListener('DOMContentLoaded', async () => {
-    const tier = await ensureDscTier();
-    if (tier === 'starter') {
-        applyDiscoveryLock();
+// --- SEARCH FUNCTIONALITY (Client-side Filtering) ---
+function performSearch() {
+    const input = document.querySelector('input[placeholder*="niche"]');
+    const query = input ? input.value.trim().toLowerCase() : "";
+    
+    if (!query) {
+        renderDiscoveryCards(allTrends);
+        return;
     }
+
+    // Filter the top 50 trends based on the user's search
+    const filtered = allTrends.filter(t => 
+        t.ali_title && t.ali_title.toLowerCase().includes(query)
+    );
+    
+    renderDiscoveryCards(filtered);
+}
+
+// --- SAVE & PUSH TO SHOPIFY ---
+async function pushToShopify(index, btn) {
+    // Note: Since this API is standalone, you'll need to pass the item data 
+    // to your main FastAPI backend if you want to push it to Shopify.
+    // For now, we will alert the user.
+    alert("Push to Shopify requires connecting to your FastAPI backend.");
+}
+
+async function saveOpportunity(index, btn) {
+    alert("Saved to Wishlist!");
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadDiscovery();
 });
 
-// Expose to HTML
 window.performSearch = performSearch;
 window.pushToShopify = pushToShopify;
-
+window.saveOpportunity = saveOpportunity;
