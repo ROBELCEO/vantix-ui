@@ -1,10 +1,145 @@
 ﻿let allTrends = [];
+let currentTags = [];
+
+// A dictionary of common e-commerce niches for the Autocomplete / Typo Fixer
+const NICHE_DICTIONARY = [
+    "yoga mats", "yoga blocks", "resistance bands", "dumbbells", "kettlebells",
+    "gaming chairs", "gaming desks", "gaming mice", "gaming keyboards", "monitors",
+    "skincare", "face masks", "serums", "moisturizers", "sunscreen",
+    "pet beds", "dog toys", "cat trees", "pet grooming", "dog collars",
+    "water bottles", "lunch boxes", "coffee mugs", "protein shakers",
+    "phone cases", "wireless chargers", "power banks", "laptop stands",
+    "hair accessories", "hair dryers", "makeup brushes", "nail polish"
+];
 
 function dscEsc(str) {
     return String(str ?? "").replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
 }
 
-// --- LOAD THE DAILY RESULTS ---
+// --- TAG INPUT LOGIC ---
+const nicheInput = document.getElementById('niche-input');
+const tagContainer = document.getElementById('niche-tags');
+const autocompleteList = document.getElementById('autocomplete-list');
+
+nicheInput.addEventListener('input', (e) => {
+    const val = e.target.value.toLowerCase().trim();
+    autocompleteList.innerHTML = '';
+    
+    if (!val) {
+        autocompleteList.style.display = 'none';
+        return;
+    }
+
+    // Find matches in the dictionary
+    const matches = NICHE_DICTIONARY.filter(n => n.includes(val) && !currentTags.includes(n));
+    
+    if (matches.length > 0) {
+        autocompleteList.style.display = 'block';
+        matches.slice(0, 5).forEach(match => {
+            const div = document.createElement('div');
+            div.className = 'dsc-autocomplete-item';
+            // Highlight the matched part
+            const regex = new RegExp(`(${val})`, 'gi');
+            div.innerHTML = match.replace(regex, '<b style="color:#0284C7;">$1</b>');
+            
+            div.onclick = () => addTag(match);
+            autocompleteList.appendChild(div);
+        });
+    } else {
+        autocompleteList.style.display = 'none';
+    }
+});
+
+nicheInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        const val = nicheInput.value.trim();
+        if (val) addTag(val);
+    } else if (e.key === 'Backspace' && nicheInput.value === '') {
+        // Remove last tag if input is empty
+        if (currentTags.length > 0) {
+            currentTags.pop();
+            renderTags();
+        }
+    }
+});
+
+function addTag(tag) {
+    const cleanTag = tag.toLowerCase().trim();
+    if (cleanTag && !currentTags.includes(cleanTag)) {
+        currentTags.push(cleanTag);
+        renderTags();
+    }
+    nicheInput.value = '';
+    autocompleteList.style.display = 'none';
+    nicheInput.focus();
+}
+
+function removeTag(tag) {
+    currentTags = currentTags.filter(t => t !== tag);
+    renderTags();
+}
+
+function renderTags() {
+    tagContainer.innerHTML = currentTags.map(tag => `
+        <div class="dsc-tag">
+            ${dscEsc(tag)}
+            <button onclick="removeTag('${dscEsc(tag)}')">×</button>
+        </div>
+    `).join('');
+}
+
+// Hide autocomplete when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.dsc-input-section')) {
+        autocompleteList.style.display = 'none';
+    }
+});
+
+// --- PREFERENCES LOGIC ---
+function toggleAutoDetect(el) {
+    const toggle = document.getElementById('auto-detect-toggle');
+    const section = document.getElementById('custom-niches-section');
+    toggle.classList.toggle('active');
+    
+    if (toggle.classList.contains('active')) {
+        section.style.opacity = '0.5';
+        section.style.pointerEvents = 'none';
+    } else {
+        section.style.opacity = '1';
+        section.style.pointerEvents = 'auto';
+        nicheInput.focus();
+    }
+}
+
+async function savePreferences() {
+    const isAutoDetect = document.getElementById('auto-detect-toggle').classList.contains('active');
+    
+    if (!isAutoDetect && currentTags.length === 0) {
+        alert("Please add at least one custom niche or enable Auto-Detect.");
+        return;
+    }
+
+    console.log("Saving Preferences:", { autoDetect: isAutoDetect, niches: currentTags });
+    
+    // In production, this would be a POST request to your FastAPI backend
+    // await fetch('/api/user/preferences', { method: 'POST', body: JSON.stringify({ niches: currentTags }) });
+    
+    const btn = document.querySelector('.dsc-save-btn');
+    const originalText = btn.innerText;
+    btn.innerText = "Saving...";
+    
+    setTimeout(() => {
+        btn.innerText = "✅ Saved!";
+        btn.style.background = "#059669";
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.background = "#09090B";
+        }, 2000);
+    }, 800);
+}
+
+// --- RESULTS RENDERING ---
 async function loadDiscovery() {
     const container = document.getElementById('discovery-results');
     const countEl = document.getElementById('dsc-count');
@@ -92,50 +227,8 @@ function renderDiscoveryCards(trends) {
     }).join('');
 }
 
-// --- PREFERENCES LOGIC ---
-function toggleAutoDetect(el) {
-    const toggle = document.getElementById('auto-detect-toggle');
-    toggle.classList.toggle('active');
-    
-    const input = document.getElementById('custom-niches');
-    if (toggle.classList.contains('active')) {
-        input.disabled = true;
-        input.style.opacity = '0.5';
-        input.value = '';
-    } else {
-        input.disabled = false;
-        input.style.opacity = '1';
-    }
-}
-
-async function savePreferences() {
-    const isAutoDetect = document.getElementById('auto-detect-toggle').classList.contains('active');
-    const customNiches = document.getElementById('custom-niches').value;
-    
-    // In a full build, you would save this to Supabase (e.g. users table)
-    console.log("Saving Preferences:", { autoDetect: isAutoDetect, niches: customNiches });
-    
-    const btn = document.querySelector('.dsc-save-btn');
-    const originalText = btn.innerText;
-    btn.innerText = "Saving...";
-    
-    setTimeout(() => {
-        btn.innerText = "✅ Saved!";
-        btn.style.background = "#059669";
-        setTimeout(() => {
-            btn.innerText = originalText;
-            btn.style.background = "#09090B";
-        }, 2000);
-    }, 800);
-}
-
-async function pushToShopify(index) {
-    alert("Push to Shopify integration coming soon!");
-}
-
-async function saveOpportunity(index) {
-    alert("Saved to Wishlist!");
-}
+async function pushToShopify(index) { alert("Push to Shopify integration coming soon!"); }
+async function saveOpportunity(index) { alert("Saved to Wishlist!"); }
 
 document.addEventListener('DOMContentLoaded', () => {
     loadDiscovery();
