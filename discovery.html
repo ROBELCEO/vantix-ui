@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Discovery</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2188">
+<link rel="stylesheet" href="css/style.css?v=2250">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
     .dsc-screen { padding-top: 12px !important; }
@@ -47,6 +47,44 @@
     .dsc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
     @media (max-width: 1100px) { .dsc-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 768px) { .dsc-grid { grid-template-columns: 1fr; } .dsc-tree-children { grid-template-columns: 1fr; } }
+</style>
+<style>
+    /* FORCE DARK TEXT IN MODAL */
+    .dsc-modal-body, 
+    .dsc-modal-body label,
+    .dsc-tree-parent,
+    .dsc-tree-child {
+        color: #000000 !important; 
+        font-weight: 800 !important;
+    }
+    
+    .dsc-tree-parent {
+        background: #F8FAFC !important;
+        border-bottom: 1px solid #E4E4E7 !important;
+    }
+
+    .dsc-tree-child {
+        color: #09090B !important;
+        font-weight: 700 !important;
+    }
+
+    /* Make checkboxes more visible */
+    .dsc-tree-parent input[type="checkbox"],
+    .dsc-tree-child input[type="checkbox"] {
+        accent-color: #0284C7 !important;
+        border: 1px solid #71717A !important;
+        width: 16px !important;
+        height: 16px !important;
+    }
+
+    /* Fix modal header text */
+    .dsc-modal-title {
+        color: #000000 !important;
+    }
+    
+    .dsc-pref-section h3 {
+        color: #000000 !important;
+    }
 </style>
 </head>
 <body>
@@ -167,7 +205,8 @@
 </div>
 
 <script src="js/app.js?v=2188"></script>
-<script src="js/discovery.js?v=2240"></script>
+<script src="js/discovery.js?v=2250"></script>
 </body>
 </html>
+
 
