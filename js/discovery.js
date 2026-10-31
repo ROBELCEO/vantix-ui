@@ -27,12 +27,16 @@ function closePreferences() {
 function toggleAutoDetect(checkbox) {
     const tree = document.getElementById('category-tree');
     if (checkbox.checked) {
-        tree.style.opacity = '0.3';
         tree.style.pointerEvents = 'none';
-        document.querySelectorAll('.dsc-tree-child input, .dsc-tree-parent input').forEach(cb => cb.checked = false);
+        // Add a visual dim, but keep text readable
+        tree.style.filter = 'grayscale(1)';
+        tree.style.opacity = '0.6'; 
+        document.querySelectorAll('.dsc-tree-child input, .dsc-tree-parent input').forEach(cb => { cb.checked = false; cb.disabled = true; });
     } else {
-        tree.style.opacity = '1';
         tree.style.pointerEvents = 'auto';
+        tree.style.filter = 'none';
+        tree.style.opacity = '1';
+        document.querySelectorAll('.dsc-tree-child input, .dsc-tree-parent input').forEach(cb => { cb.disabled = false; });
     }
 }
 
@@ -200,7 +204,10 @@ function renderDiscoveryCards(trends) {
         const scoreColor = score >= 85 ? "#059669" : (score >= 70 ? "#D97706" : "#E11D48");
         const scoreBg = score >= 85 ? "#ECFDF5" : (score >= 70 ? "#FFFBEB" : "#FFF1F2");
         
-        const title = item.ali_title || "Unknown Product";
+        let rawTitle = item.ali_title || "Unknown Product";
+        // Clean the title by removing price strings like ETB123.45 or $12.34
+        let title = rawTitle.replace(/ETB[\d\.]+/gi, '').replace(/\$[\d\.]+/gi, '').replace(/-\d+%/gi, '').trim();
+        if (title.length > 60) title = title.substring(0, 60) + "...";
         const supplierPrice = Number(item.ali_price_usd) ? `$${Number(item.ali_price_usd).toFixed(2)}` : "$0.00";
         const retailPrice = Number(item.shop_avg_price) ? `$${Number(item.shop_avg_price).toFixed(2)}` : "$0.00";
         const margin = Number(item.margin_pct) ? `${Number(item.margin_pct).toFixed(1)}%` : "0%";
@@ -261,3 +268,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // Pre-fetch categories in the background so the modal opens instantly
     fetchCategories().then(() => renderCategoryTree());
 });
+

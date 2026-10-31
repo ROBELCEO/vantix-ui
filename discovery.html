@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Discovery</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2250">
+<link rel="stylesheet" href="css/style.css?v=2260">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
     .dsc-screen { padding-top: 12px !important; }
@@ -84,6 +84,28 @@
     
     .dsc-pref-section h3 {
         color: #000000 !important;
+    }
+</style>
+<style>
+    /* FORCE BLACK TEXT EVERYWHERE IN THE MODAL */
+    .dsc-modal-body label,
+    .dsc-tree-parent,
+    .dsc-tree-child,
+    .dsc-tree-parent span,
+    .dsc-tree-child span {
+        color: #000000 !important; 
+        font-weight: 800 !important;
+    }
+    
+    .dsc-tree-parent {
+        background: #F8FAFC !important;
+        border-bottom: 1px solid #E4E4E7 !important;
+        font-size: 14px !important;
+    }
+
+    .dsc-tree-child {
+        color: #09090B !important;
+        font-weight: 700 !important;
     }
 </style>
 </head>
@@ -205,8 +227,9 @@
 </div>
 
 <script src="js/app.js?v=2188"></script>
-<script src="js/discovery.js?v=2250"></script>
+<script src="js/discovery.js?v=2260"></script>
 </body>
 </html>
+
 
 
