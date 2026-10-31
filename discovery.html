@@ -8,33 +8,40 @@
 <link rel="stylesheet" href="css/style.css?v=2188">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-    /* Reduce gap from header */
     .dsc-screen { padding-top: 12px !important; }
     .dsc-wrap { max-width: 1400px; margin: 0 auto; padding: 0 20px 64px !important; }
 
-    .dsc-settings-panel { background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 4px; padding: 24px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 20px; }
-    .dsc-toggle-wrap { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 700; color: #09090B; cursor: pointer; }
-    .dsc-toggle { width: 44px; height: 24px; background: #E4E4E7; border-radius: 12px; position: relative; transition: 0.2s; }
-    .dsc-toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #FFF; border-radius: 50%; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .dsc-toggle.active { background: #0284C7; }
-    .dsc-toggle.active::after { transform: translateX(20px); }
+    /* Top Preference Grid */
+    .dsc-pref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+    @media (max-width: 1024px) { .dsc-pref-grid { grid-template-columns: 1fr; } }
 
-    /* Tag Input Styles */
+    .dsc-pref-card { background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 4px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 16px; }
+    .dsc-pref-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F1F5F9; padding-bottom: 12px; }
+    .dsc-pref-title { font-size: 15px; font-weight: 900; color: #09090B; }
+    .dsc-pref-sub { font-size: 12px; color: #71717A; }
+
+    /* Auto-Detected Chips */
+    .dsc-auto-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+    .dsc-auto-chip { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 2px; font-size: 13px; font-weight: 700; color: #52525B; cursor: pointer; transition: 0.2s; user-select: none; }
+    .dsc-auto-chip:hover { background: #F8FAFC; }
+    .dsc-auto-chip.active { background: #F0F9FF; border-color: #0284C7; color: #0284C7; }
+    .dsc-auto-chip .check { width: 14px; height: 14px; border-radius: 2px; border: 1px solid #D1D5DB; display: flex; align-items: center; justify-content: center; font-size: 10px; color: transparent; }
+    .dsc-auto-chip.active .check { background: #0284C7; border-color: #0284C7; color: #FFF; }
+
+    /* Tag Input */
     .dsc-input-section { display: flex; flex-direction: column; gap: 8px; position: relative; }
-    .dsc-input-label { font-size: 11px; font-weight: 800; color: #71717A; text-transform: uppercase; }
     .dsc-tag-box { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; border: 1px solid #D1D5DB; border-radius: 2px; background: #FFF; min-height: 48px; align-items: center; transition: 0.2s; }
     .dsc-tag-box:focus-within { border-color: #0284C7; box-shadow: 0 0 0 2px rgba(2,132,199,0.1); }
-    .dsc-tag { background: #F0F9FF; color: #0284C7; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 2px; border: 1px solid #BAE6FD; display: flex; align-items: center; gap: 6px; }
-    .dsc-tag button { background: none; border: none; color: #0284C7; cursor: pointer; font-size: 14px; font-weight: 900; padding: 0; line-height: 1; }
+    .dsc-tag { background: #F4F4F5; color: #09090B; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 2px; border: 1px solid #E4E4E7; display: flex; align-items: center; gap: 6px; }
+    .dsc-tag button { background: none; border: none; color: #A1A1AA; cursor: pointer; font-size: 14px; font-weight: 900; padding: 0; line-height: 1; }
+    .dsc-tag button:hover { color: #E11D48; }
     .dsc-tag-input { flex: 1; min-width: 150px; border: none; outline: none; font-size: 13px; font-family: var(--font-sans); background: transparent; color: #09090B; }
     
-    /* Autocomplete Dropdown */
     .dsc-autocomplete { position: absolute; top: 100%; left: 0; right: 0; background: #FFF; border: 1px solid #E4E4E7; border-radius: 0 0 4px 4px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); z-index: 100; max-height: 200px; overflow-y: auto; display: none; }
     .dsc-autocomplete-item { padding: 10px 14px; font-size: 13px; color: #09090B; cursor: pointer; border-bottom: 1px solid #F1F5F9; }
     .dsc-autocomplete-item:hover { background: #F8FAFC; color: #0284C7; font-weight: 700; }
-    .dsc-autocomplete-item:last-child { border-bottom: none; }
 
-    .dsc-save-btn { background: #09090B; color: #FFF; padding: 12px 24px; font-size: 13px; font-weight: 800; border: none; border-radius: 2px; cursor: pointer; transition: 0.2s; align-self: flex-start; }
+    .dsc-save-btn { background: #09090B; color: #FFF; padding: 12px 24px; font-size: 13px; font-weight: 800; border: none; border-radius: 2px; cursor: pointer; transition: 0.2s; margin-top: auto; }
     .dsc-save-btn:hover { background: #27272A; }
     
     .dsc-status-banner { background: #F0F9FF; border: 1px solid #BAE6FD; color: #0284C7; padding: 16px; border-radius: 4px; margin-bottom: 24px; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
@@ -91,29 +98,47 @@
     <div class="dsc-wrap">
         
         <!-- HEADER -->
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 24px;">
             <div style="font-size: 10px; letter-spacing: 1.6px; font-weight: 800; color: #0284C7; text-transform: uppercase; margin-bottom: 4px;">GOLDMINE ENGINE</div>
-            <h1 style="font-size: 24px; font-weight: 900; color: #09090B; margin: 0 0 8px;">Auto-Discovery</h1>
-            <p style="font-size: 14px; color: #52525B; margin: 0;">Set your preferences. Our bots scan the market daily to find your next winning product.</p>
+            <h1 style="font-size: 24px; font-weight: 900; color: #09090B; margin: 0 0 8px;">Auto-Discovery Setup</h1>
+            <p style="font-size: 14px; color: #52525B; margin: 0;">Configure your target niches. The engine runs a deep scan once every 24 hours.</p>
         </div>
 
-        <!-- SETTINGS PANEL -->
-        <div class="dsc-settings-panel">
-            <div class="dsc-toggle-wrap" onclick="toggleAutoDetect(this)">
-                <div class="dsc-toggle active" id="auto-detect-toggle"></div>
-                <span>Auto-detect based on my store products</span>
-            </div>
-
-            <div class="dsc-input-section" id="custom-niches-section" style="opacity: 0.5; pointer-events: none;">
-                <label class="dsc-input-label">Or add custom niches (Press Enter to add)</label>
-                <div class="dsc-tag-box" onclick="document.getElementById('niche-input').focus()">
-                    <div id="niche-tags" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
-                    <input type="text" id="niche-input" class="dsc-tag-input" placeholder="e.g. yoga mats..." autocomplete="off" spellcheck="true">
+        <!-- PREFERENCES GRID -->
+        <div class="dsc-pref-grid">
+            
+            <!-- Left: Auto-Detected -->
+            <div class="dsc-pref-card">
+                <div class="dsc-pref-header">
+                    <div>
+                        <div class="dsc-pref-title">Auto-Detected Categories</div>
+                        <div class="dsc-pref-sub">Based on your synced Shopify products</div>
+                    </div>
+                    <div class="trm-badge trm-badge-green">LIVE</div>
                 </div>
-                <div id="autocomplete-list" class="dsc-autocomplete"></div>
+                <div class="dsc-auto-chips" id="auto-chips-container">
+                    <!-- Populated by JS -->
+                </div>
             </div>
 
-            <button class="dsc-save-btn" onclick="savePreferences()">Save Preferences</button>
+            <!-- Right: Custom Niches -->
+            <div class="dsc-pref-card">
+                <div class="dsc-pref-header">
+                    <div>
+                        <div class="dsc-pref-title">Custom Target Niches</div>
+                        <div class="dsc-pref-sub">Search for new products outside your current store</div>
+                    </div>
+                </div>
+                <div class="dsc-input-section">
+                    <div class="dsc-tag-box" onclick="document.getElementById('niche-input').focus()">
+                        <div id="niche-tags" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+                        <input type="text" id="niche-input" class="dsc-tag-input" placeholder="e.g. yoga mats..." autocomplete="off" spellcheck="true">
+                    </div>
+                    <div id="autocomplete-list" class="dsc-autocomplete"></div>
+                </div>
+                <button class="dsc-save-btn" onclick="savePreferences()">Save All Preferences</button>
+            </div>
+
         </div>
 
         <!-- STATUS BANNER -->
@@ -134,6 +159,6 @@
 </div>
 
 <script src="js/app.js?v=2188"></script>
-<script src="js/discovery.js?v=2200"></script>
+<script src="js/discovery.js?v=2220"></script>
 </body>
 </html>

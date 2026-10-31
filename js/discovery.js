@@ -1,19 +1,44 @@
 ﻿let allTrends = [];
 let currentTags = [];
+let activeAutoCategories = ['Shorts', 'Leggings', 'Activewear']; // Simulated from store
 
-// A dictionary of common e-commerce niches for the Autocomplete / Typo Fixer
 const NICHE_DICTIONARY = [
     "yoga mats", "yoga blocks", "resistance bands", "dumbbells", "kettlebells",
     "gaming chairs", "gaming desks", "gaming mice", "gaming keyboards", "monitors",
     "skincare", "face masks", "serums", "moisturizers", "sunscreen",
     "pet beds", "dog toys", "cat trees", "pet grooming", "dog collars",
     "water bottles", "lunch boxes", "coffee mugs", "protein shakers",
-    "phone cases", "wireless chargers", "power banks", "laptop stands",
-    "hair accessories", "hair dryers", "makeup brushes", "nail polish"
+    "phone cases", "wireless chargers", "power banks", "laptop stands"
 ];
 
 function dscEsc(str) {
     return String(str ?? "").replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
+}
+
+// --- AUTO-DETECTED CHIPS ---
+function renderAutoChips() {
+    const container = document.getElementById('auto-chips-container');
+    // In a real app, this list comes from the backend analyzing their Shopify store
+    const availableCategories = ['Shorts', 'Leggings', 'Activewear', 'Tops', 'Shoes', 'Bags', 'Cameras'];
+    
+    container.innerHTML = availableCategories.map(cat => {
+        const isActive = activeAutoCategories.includes(cat);
+        return `
+            <div class="dsc-auto-chip ${isActive ? 'active' : ''}" onclick="toggleAutoChip('${cat}')">
+                <div class="check">✓</div>
+                ${cat}
+            </div>
+        `;
+    }).join('');
+}
+
+function toggleAutoChip(cat) {
+    if (activeAutoCategories.includes(cat)) {
+        activeAutoCategories = activeAutoCategories.filter(c => c !== cat);
+    } else {
+        activeAutoCategories.push(cat);
+    }
+    renderAutoChips();
 }
 
 // --- TAG INPUT LOGIC ---
@@ -30,7 +55,6 @@ nicheInput.addEventListener('input', (e) => {
         return;
     }
 
-    // Find matches in the dictionary
     const matches = NICHE_DICTIONARY.filter(n => n.includes(val) && !currentTags.includes(n));
     
     if (matches.length > 0) {
@@ -38,10 +62,8 @@ nicheInput.addEventListener('input', (e) => {
         matches.slice(0, 5).forEach(match => {
             const div = document.createElement('div');
             div.className = 'dsc-autocomplete-item';
-            // Highlight the matched part
             const regex = new RegExp(`(${val})`, 'gi');
             div.innerHTML = match.replace(regex, '<b style="color:#0284C7;">$1</b>');
-            
             div.onclick = () => addTag(match);
             autocompleteList.appendChild(div);
         });
@@ -56,7 +78,6 @@ nicheInput.addEventListener('keydown', (e) => {
         const val = nicheInput.value.trim();
         if (val) addTag(val);
     } else if (e.key === 'Backspace' && nicheInput.value === '') {
-        // Remove last tag if input is empty
         if (currentTags.length > 0) {
             currentTags.pop();
             renderTags();
@@ -89,48 +110,28 @@ function renderTags() {
     `).join('');
 }
 
-// Hide autocomplete when clicking outside
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.dsc-input-section')) {
         autocompleteList.style.display = 'none';
     }
 });
 
-// --- PREFERENCES LOGIC ---
-function toggleAutoDetect(el) {
-    const toggle = document.getElementById('auto-detect-toggle');
-    const section = document.getElementById('custom-niches-section');
-    toggle.classList.toggle('active');
-    
-    if (toggle.classList.contains('active')) {
-        section.style.opacity = '0.5';
-        section.style.pointerEvents = 'none';
-    } else {
-        section.style.opacity = '1';
-        section.style.pointerEvents = 'auto';
-        nicheInput.focus();
-    }
-}
-
+// --- SAVE PREFERENCES ---
 async function savePreferences() {
-    const isAutoDetect = document.getElementById('auto-detect-toggle').classList.contains('active');
-    
-    if (!isAutoDetect && currentTags.length === 0) {
-        alert("Please add at least one custom niche or enable Auto-Detect.");
+    if (activeAutoCategories.length === 0 && currentTags.length === 0) {
+        alert("Please select at least one Auto-Detected category or add a Custom Niche.");
         return;
     }
 
-    console.log("Saving Preferences:", { autoDetect: isAutoDetect, niches: currentTags });
-    
-    // In production, this would be a POST request to your FastAPI backend
-    // await fetch('/api/user/preferences', { method: 'POST', body: JSON.stringify({ niches: currentTags }) });
+    console.log("Saving to Backend:", { autoDetect: activeAutoCategories, custom: currentTags });
     
     const btn = document.querySelector('.dsc-save-btn');
     const originalText = btn.innerText;
     btn.innerText = "Saving...";
     
+    // Simulate API call
     setTimeout(() => {
-        btn.innerText = "✅ Saved!";
+        btn.innerText = "✅ Preferences Saved";
         btn.style.background = "#059669";
         setTimeout(() => {
             btn.innerText = originalText;
@@ -139,14 +140,13 @@ async function savePreferences() {
     }, 800);
 }
 
-// --- RESULTS RENDERING ---
+// --- LOAD RESULTS ---
 async function loadDiscovery() {
     const container = document.getElementById('discovery-results');
     const countEl = document.getElementById('dsc-count');
     if (!container) return;
 
     try {
-        // Fetch from your backend proxy (which calls the Cloudflare Worker)
         const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/trends');
         if (!res.ok) throw new Error("Failed to connect to API");
 
@@ -231,5 +231,6 @@ async function pushToShopify(index) { alert("Push to Shopify integration coming 
 async function saveOpportunity(index) { alert("Saved to Wishlist!"); }
 
 document.addEventListener('DOMContentLoaded', () => {
+    renderAutoChips();
     loadDiscovery();
 });
