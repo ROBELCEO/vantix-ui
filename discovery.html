@@ -5,8 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Discovery</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2138">
+<link rel="stylesheet" href="css/style.css?v=2188">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    .dsc-settings-panel { background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 4px; padding: 24px; margin-bottom: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); display: flex; gap: 32px; align-items: center; flex-wrap: wrap; }
+    .dsc-toggle-wrap { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 700; color: #09090B; cursor: pointer; }
+    .dsc-toggle { width: 44px; height: 24px; background: #E4E4E7; border-radius: 12px; position: relative; transition: 0.2s; }
+    .dsc-toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #FFF; border-radius: 50%; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .dsc-toggle.active { background: #0284C7; }
+    .dsc-toggle.active::after { transform: translateX(20px); }
+    .dsc-input-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 250px; }
+    .dsc-input-group label { font-size: 11px; font-weight: 800; color: #71717A; text-transform: uppercase; }
+    .dsc-input { padding: 10px 14px; border: 1px solid #D1D5DB; border-radius: 2px; font-size: 13px; font-family: var(--font-sans); outline: none; }
+    .dsc-input:focus { border-color: #0284C7; box-shadow: 0 0 0 2px rgba(2,132,199,0.1); }
+    .dsc-save-btn { background: #09090B; color: #FFF; padding: 12px 24px; font-size: 13px; font-weight: 800; border: none; border-radius: 2px; cursor: pointer; transition: 0.2s; }
+    .dsc-save-btn:hover { background: #27272A; }
+    
+    .dsc-status-banner { background: #F0F9FF; border: 1px solid #BAE6FD; color: #0284C7; padding: 16px; border-radius: 4px; margin-bottom: 24px; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .dsc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    @media (max-width: 1100px) { .dsc-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { .dsc-grid { grid-template-columns: 1fr; } .dsc-settings-panel { flex-direction: column; align-items: stretch; } }
+</style>
 </head>
 <body>
 
@@ -47,104 +66,55 @@
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
         <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
-        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none; background: #222 !important; color: #FFF !important; border-color: #333 !important;">Log Out</button>
         <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
     </div>
 </div>
 
 <div class="screen dsc-screen">
-    <div class="dsc-wrap">
+    <div class="dsc-wrap" style="max-width: 1400px; margin: 0 auto; padding: 32px 20px 64px;">
         
-        <div class="dsc-row-a">
-            <div>
-                <div class="dsc-eyebrow">GOLDMINE ENGINE</div>
-                <h1 class="dsc-title">Discovery</h1>
-                <p class="dsc-sub">Search the global Shopify catalog for high-demand, low-competition products.</p>
+        <!-- HEADER -->
+        <div style="margin-bottom: 32px;">
+            <div style="font-size: 10px; letter-spacing: 1.6px; font-weight: 800; color: #0284C7; text-transform: uppercase; margin-bottom: 4px;">GOLDMINE ENGINE</div>
+            <h1 style="font-size: 24px; font-weight: 900; color: #09090B; margin: 0 0 8px;">Auto-Discovery</h1>
+            <p style="font-size: 14px; color: #52525B; margin: 0;">Set your preferences. Our bots scan the market daily to find your next winning product.</p>
+        </div>
+
+        <!-- SETTINGS PANEL -->
+        <div class="dsc-settings-panel">
+            <div class="dsc-toggle-wrap" onclick="toggleAutoDetect(this)">
+                <div class="dsc-toggle active" id="auto-detect-toggle"></div>
+                <span>Auto-detect based on my store products</span>
             </div>
-            <div class="dsc-status-group">
-                <div class="dsc-chip" id="dsc-status">Ready</div>
+
+            <div class="dsc-input-group">
+                <label>Or add custom niches (comma separated)</label>
+                <input type="text" id="custom-niches" class="dsc-input" placeholder="e.g. gaming chairs, yoga mats, pet beds">
             </div>
+
+            <button class="dsc-save-btn" onclick="savePreferences()">Save Preferences</button>
         </div>
 
-        <div class="dsc-search-wrap">
-            <input type="text" id="dsc-search-input" class="dsc-search-input" placeholder="Search any niche globally (e.g. gaming chairs, skincare, dog toys)…" onkeypress="if(event.key === 'Enter') performSearch()">
-            <button onclick="performSearch()" class="dsc-search-btn">Search</button>
+        <!-- STATUS BANNER -->
+        <div class="dsc-status-banner">
+            <div>🔄 Next daily scan runs at <b>12:00 AM UTC</b>. Results are cached below.</div>
+            <div id="dsc-count" style="font-family: var(--font-mono); font-weight: 800;">0 Goldmines</div>
         </div>
 
-        <div class="dsc-pills" id="dsc-pills">
-            <div class="dsc-pill active" onclick="switchCategory('', this)">Auto-Detect</div>
-            <div class="dsc-pill" onclick="switchCategory('jeans', this)">Jeans</div>
-            <div class="dsc-pill" onclick="switchCategory('shorts', this)">Shorts</div>
-            <div class="dsc-pill" onclick="switchCategory('activewear', this)">Activewear</div>
-            <div class="dsc-pill" onclick="switchCategory('shoes', this)">Shoes</div>
-            <div class="dsc-pill" onclick="switchCategory('bags', this)">Bags</div>
-        </div>
-
-        <div id="discovery-container" class="dsc-grid">
-            <div class="dsc-empty" style="grid-column: 1 / -1;">
-                <div class="dsc-spinner"></div>
-                Scanning global Shopify catalog…
+        <!-- RESULTS GRID -->
+        <div id="discovery-results" class="dsc-grid">
+            <!-- Data will populate here -->
+            <div class="dsc-empty" style="grid-column: 1 / -1; padding: 60px; text-align: center; color: #71717A;">
+                <div class="dsc-spinner" style="margin: 0 auto 16px;"></div>
+                Loading today's goldmines...
             </div>
         </div>
 
     </div>
 </div>
 
-<script src="js/app.js?v=2235"></script>
-<script src="js/discovery.js?v=3000"></script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    fetch('https://vantix-my5f.onrender.com/api/auth/status')
-        .then(r => r.json())
-        .then(d => {
-            if (d.plan === 'starter') {
-                const overlay = document.createElement('div');
-                overlay.style.cssText = "position: fixed; top: 56px; left: 0; right: 0; bottom: 0; z-index: 9999; backdrop-filter: blur(8px); background: rgba(248, 250, 252, 0.85); display: flex; flex-direction: column; align-items: center; justify-content: center;";
-                overlay.innerHTML = `
-                    <div style="font-size: 48px; margin-bottom: 16px;">🔒</div>
-                    <div style="font-weight: 900; font-size: 24px; color: #09090B; margin-bottom: 8px;">Unlock Global Discovery</div>
-                    <div style="font-size: 15px; color: #52525B; max-width: 400px; text-align: center; margin-bottom: 24px; line-height: 1.5;">Instantly search 1,000,000+ winning products across the global Shopify catalog and push them to your store in 1-click.</div>
-                    <a href="membership.html" style="background: #0284C7; color: #FFF; padding: 12px 24px; border-radius: 2px; text-decoration: none; font-size: 14px; font-weight: 800;">Upgrade to Pro →</a>
-                `;
-                document.body.appendChild(overlay);
-            }
-        });
-});
-</script>
+<script src="js/app.js?v=2188"></script>
+<script src="js/discovery.js?v=2188"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
