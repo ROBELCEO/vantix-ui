@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vantix — Discovery</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=2138">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
+<div class="drawer" id="mobile-drawer">
+    <div class="drawer-header">
+        <div class="brand"><div>VANTI<span>X</span></div></div>
+        <button class="drawer-close" onclick="toggleMenu()">✕</button>
+    </div>
+    <a href="index.html" class="drawer-tab">Connect</a>
+    <a href="overview.html" class="drawer-tab">Overview</a>
+    <a href="store.html" class="drawer-tab">My Store</a>
+    <a href="competitors.html" class="drawer-tab">Competitors</a>
+    <a href="terminal.html" class="drawer-tab">Terminal</a>
+    <a href="discovery.html" class="drawer-tab active">Discovery</a>
+    <a href="alerts.html" class="drawer-tab">Alerts</a>
+    <a href="inventory.html" class="drawer-tab">Inventory</a>
+    <a href="membership.html" class="drawer-tab">Membership</a>
+    <a href="settings.html" class="drawer-tab">Settings</a>
+</div>
+
+<div class="header">
+    <a href="index.html" class="brand">
+        <div class="mark"><svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg></div>
+        <div>VANTI<span>X</span></div>
+    </a>
+    <div class="tabs">
+        <a href="index.html" class="tab">Connect</a>
+        <a href="overview.html" class="tab">Overview</a>
+        <a href="store.html" class="tab">My Store</a>
+        <a href="competitors.html" class="tab">Competitors</a>
+        <a href="terminal.html" class="tab">Terminal</a>
+        <a href="discovery.html" class="tab active">Discovery</a>
+        <a href="alerts.html" class="tab">Alerts</a>
+        <a href="inventory.html" class="tab">Inventory</a>
+        <a href="membership.html" class="tab">Membership</a>
+        <a href="settings.html" class="tab">Settings</a>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
+        <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
+</div>
+
+<div class="screen dsc-screen">
+    <div class="dsc-wrap">
+        
+        <div class="dsc-row-a">
+            <div>
+                <div class="dsc-eyebrow">GOLDMINE ENGINE</div>
+                <h1 class="dsc-title">Discovery</h1>
+                <p class="dsc-sub">Search the global Shopify catalog for high-demand, low-competition products.</p>
+            </div>
+            <div class="dsc-status-group">
+                <div class="dsc-chip" id="dsc-status">Ready</div>
+            </div>
+        </div>
+
+        <div class="dsc-search-wrap">
+            <input type="text" id="dsc-search-input" class="dsc-search-input" placeholder="Search any niche globally (e.g. gaming chairs, skincare, dog toys)…" onkeypress="handleSearch(event)">
+            <button onclick="triggerSearch()" class="dsc-search-btn">Search</button>
+        </div>
+
+        <div class="dsc-pills" id="dsc-pills">
+            <div class="dsc-pill active" onclick="switchCategory('', this)">Auto-Detect</div>
+            <div class="dsc-pill" onclick="switchCategory('jeans', this)">Jeans</div>
+            <div class="dsc-pill" onclick="switchCategory('shorts', this)">Shorts</div>
+            <div class="dsc-pill" onclick="switchCategory('activewear', this)">Activewear</div>
+            <div class="dsc-pill" onclick="switchCategory('shoes', this)">Shoes</div>
+            <div class="dsc-pill" onclick="switchCategory('bags', this)">Bags</div>
+        </div>
+
+        <div id="discovery-container" class="dsc-grid">
+            <div class="dsc-empty" style="grid-column: 1 / -1;">
+                <div class="dsc-spinner"></div>
+                Scanning global Shopify catalog…
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="js/app.js?v=2235"></script>
+<script src="js/discovery.js?v=2190"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    fetch('https://vantix-my5f.onrender.com/api/auth/status')
+        .then(r => r.json())
+        .then(d => {
+            if (d.plan === 'starter') {
+                const overlay = document.createElement('div');
+                overlay.style.cssText = "position: fixed; top: 56px; left: 0; right: 0; bottom: 0; z-index: 9999; backdrop-filter: blur(8px); background: rgba(248, 250, 252, 0.85); display: flex; flex-direction: column; align-items: center; justify-content: center;";
+                overlay.innerHTML = `
+                    <div style="font-size: 48px; margin-bottom: 16px;">🔒</div>
+                    <div style="font-weight: 900; font-size: 24px; color: #09090B; margin-bottom: 8px;">Unlock Global Discovery</div>
+                    <div style="font-size: 15px; color: #52525B; max-width: 400px; text-align: center; margin-bottom: 24px; line-height: 1.5;">Instantly search 1,000,000+ winning products across the global Shopify catalog and push them to your store in 1-click.</div>
+                    <a href="membership.html" style="background: #0284C7; color: #FFF; padding: 12px 24px; border-radius: 2px; text-decoration: none; font-size: 14px; font-weight: 800;">Upgrade to Pro →</a>
+                `;
+                document.body.appendChild(overlay);
+            }
+        });
+});
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

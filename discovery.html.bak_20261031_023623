@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vantix — Discovery</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=2188">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    /* Reduce gap from header */
+    .dsc-screen { padding-top: 12px !important; }
+    .dsc-wrap { max-width: 1400px; margin: 0 auto; padding: 0 20px 64px !important; }
+
+    .dsc-settings-panel { background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 4px; padding: 24px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 20px; }
+    .dsc-toggle-wrap { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 700; color: #09090B; cursor: pointer; }
+    .dsc-toggle { width: 44px; height: 24px; background: #E4E4E7; border-radius: 12px; position: relative; transition: 0.2s; }
+    .dsc-toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #FFF; border-radius: 50%; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .dsc-toggle.active { background: #0284C7; }
+    .dsc-toggle.active::after { transform: translateX(20px); }
+
+    /* Tag Input Styles */
+    .dsc-input-section { display: flex; flex-direction: column; gap: 8px; position: relative; }
+    .dsc-input-label { font-size: 11px; font-weight: 800; color: #71717A; text-transform: uppercase; }
+    .dsc-tag-box { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; border: 1px solid #D1D5DB; border-radius: 2px; background: #FFF; min-height: 48px; align-items: center; transition: 0.2s; }
+    .dsc-tag-box:focus-within { border-color: #0284C7; box-shadow: 0 0 0 2px rgba(2,132,199,0.1); }
+    .dsc-tag { background: #F0F9FF; color: #0284C7; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 2px; border: 1px solid #BAE6FD; display: flex; align-items: center; gap: 6px; }
+    .dsc-tag button { background: none; border: none; color: #0284C7; cursor: pointer; font-size: 14px; font-weight: 900; padding: 0; line-height: 1; }
+    .dsc-tag-input { flex: 1; min-width: 150px; border: none; outline: none; font-size: 13px; font-family: var(--font-sans); background: transparent; color: #09090B; }
+    
+    /* Autocomplete Dropdown */
+    .dsc-autocomplete { position: absolute; top: 100%; left: 0; right: 0; background: #FFF; border: 1px solid #E4E4E7; border-radius: 0 0 4px 4px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); z-index: 100; max-height: 200px; overflow-y: auto; display: none; }
+    .dsc-autocomplete-item { padding: 10px 14px; font-size: 13px; color: #09090B; cursor: pointer; border-bottom: 1px solid #F1F5F9; }
+    .dsc-autocomplete-item:hover { background: #F8FAFC; color: #0284C7; font-weight: 700; }
+    .dsc-autocomplete-item:last-child { border-bottom: none; }
+
+    .dsc-save-btn { background: #09090B; color: #FFF; padding: 12px 24px; font-size: 13px; font-weight: 800; border: none; border-radius: 2px; cursor: pointer; transition: 0.2s; align-self: flex-start; }
+    .dsc-save-btn:hover { background: #27272A; }
+    
+    .dsc-status-banner { background: #F0F9FF; border: 1px solid #BAE6FD; color: #0284C7; padding: 16px; border-radius: 4px; margin-bottom: 24px; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .dsc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    @media (max-width: 1100px) { .dsc-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { .dsc-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
+<div class="drawer" id="mobile-drawer">
+    <div class="drawer-header">
+        <div class="brand"><div>VANTI<span>X</span></div></div>
+        <button class="drawer-close" onclick="toggleMenu()">✕</button>
+    </div>
+    <a href="index.html" class="drawer-tab">Connect</a>
+    <a href="overview.html" class="drawer-tab">Overview</a>
+    <a href="store.html" class="drawer-tab">My Store</a>
+    <a href="competitors.html" class="drawer-tab">Competitors</a>
+    <a href="terminal.html" class="drawer-tab">Terminal</a>
+    <a href="discovery.html" class="drawer-tab active">Discovery</a>
+    <a href="alerts.html" class="drawer-tab">Alerts</a>
+    <a href="inventory.html" class="drawer-tab">Inventory</a>
+    <a href="membership.html" class="drawer-tab">Membership</a>
+    <a href="settings.html" class="drawer-tab">Settings</a>
+</div>
+
+<div class="header">
+    <a href="index.html" class="brand">
+        <div class="mark"><svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg></div>
+        <div>VANTI<span>X</span></div>
+    </a>
+    <div class="tabs">
+        <a href="index.html" class="tab">Connect</a>
+        <a href="overview.html" class="tab">Overview</a>
+        <a href="store.html" class="tab">My Store</a>
+        <a href="competitors.html" class="tab">Competitors</a>
+        <a href="terminal.html" class="tab">Terminal</a>
+        <a href="discovery.html" class="tab active">Discovery</a>
+        <a href="alerts.html" class="tab">Alerts</a>
+        <a href="inventory.html" class="tab">Inventory</a>
+        <a href="membership.html" class="tab">Membership</a>
+        <a href="settings.html" class="tab">Settings</a>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none; background: #222 !important; color: #FFF !important; border-color: #333 !important;">Log Out</button>
+        <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
+</div>
+
+<div class="screen dsc-screen">
+    <div class="dsc-wrap">
+        
+        <!-- HEADER -->
+        <div style="margin-bottom: 20px;">
+            <div style="font-size: 10px; letter-spacing: 1.6px; font-weight: 800; color: #0284C7; text-transform: uppercase; margin-bottom: 4px;">GOLDMINE ENGINE</div>
+            <h1 style="font-size: 24px; font-weight: 900; color: #09090B; margin: 0 0 8px;">Auto-Discovery</h1>
+            <p style="font-size: 14px; color: #52525B; margin: 0;">Set your preferences. Our bots scan the market daily to find your next winning product.</p>
+        </div>
+
+        <!-- SETTINGS PANEL -->
+        <div class="dsc-settings-panel">
+            <div class="dsc-toggle-wrap" onclick="toggleAutoDetect(this)">
+                <div class="dsc-toggle active" id="auto-detect-toggle"></div>
+                <span>Auto-detect based on my store products</span>
+            </div>
+
+            <div class="dsc-input-section" id="custom-niches-section" style="opacity: 0.5; pointer-events: none;">
+                <label class="dsc-input-label">Or add custom niches (Press Enter to add)</label>
+                <div class="dsc-tag-box" onclick="document.getElementById('niche-input').focus()">
+                    <div id="niche-tags" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+                    <input type="text" id="niche-input" class="dsc-tag-input" placeholder="e.g. yoga mats..." autocomplete="off" spellcheck="true">
+                </div>
+                <div id="autocomplete-list" class="dsc-autocomplete"></div>
+            </div>
+
+            <button class="dsc-save-btn" onclick="savePreferences()">Save Preferences</button>
+        </div>
+
+        <!-- STATUS BANNER -->
+        <div class="dsc-status-banner">
+            <div>🔄 Next daily scan runs at <b>12:00 AM UTC</b>. Results are cached below.</div>
+            <div id="dsc-count" style="font-family: var(--font-mono); font-weight: 800;">0 Goldmines</div>
+        </div>
+
+        <!-- RESULTS GRID -->
+        <div id="discovery-results" class="dsc-grid">
+            <div class="dsc-empty" style="grid-column: 1 / -1; padding: 60px; text-align: center; color: #71717A;">
+                <div class="dsc-spinner" style="margin: 0 auto 16px;"></div>
+                Loading today's goldmines...
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="js/app.js?v=2188"></script>
+<script src="js/discovery.js?v=2200"></script>
+</body>
+</html>

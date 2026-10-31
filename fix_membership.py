@@ -1,0 +1,249 @@
+﻿import os
+
+html_content = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vantix — Membership</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=2187">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px; align-items: stretch; max-width: 1100px; margin-left: auto; margin-right: auto; }
+    .plan-card { background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 2px; padding: 32px 24px; display: flex; flex-direction: column; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+    .plan-card.popular { border-color: #0284C7; box-shadow: 0 10px 30px rgba(2,132,199,0.1); transform: scale(1.05); z-index: 10; }
+    .popular-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #0284C7; color: #FFF; font-size: 10px; font-weight: 800; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .plan-name { font-size: 20px; font-weight: 900; margin-bottom: 8px; color: #09090B; }
+    .plan-price { font-family: var(--font-mono); font-size: 42px; font-weight: 800; margin-bottom: 24px; display: flex; align-items: baseline; gap: 4px; color: #09090B; }
+    .plan-price span { font-size: 14px; color: #71717A; font-weight: 500; font-family: var(--font-sans); }
+    .plan-features { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; flex: 1; }
+    .feature-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #52525B; line-height: 1.5; }
+    .feature-item::before { content: '✓'; color: #059669; font-weight: 900; font-size: 14px; }
+    .plan-btn { width: 100%; padding: 12px; font-size: 14px; font-weight: 800; border-radius: 2px; border: none; cursor: pointer; transition: 0.2s; }
+    .plan-btn-primary { background: #0284C7; color: #FFF; }
+    .plan-btn-primary:hover { background: #0369A1; }
+    .plan-btn-secondary { background: #FFFFFF; color: #09090B; border: 1px solid #D1D5DB; }
+    .plan-btn-secondary:hover { background: #F3F4F6; }
+    .plan-btn-disabled { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; cursor: not-allowed; }
+    .current-plan-banner { background: #ECFDF5; border: 1px solid #A7F3D0; color: #059669; padding: 16px; border-radius: 2px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; font-weight: 700; font-size: 14px; max-width: 1100px; margin-left: auto; margin-right: auto; }
+    @media (max-width: 900px) { .pricing-grid { grid-template-columns: 1fr; } .plan-card.popular { transform: none; } }
+</style>
+</head>
+<body>
+
+<div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
+<div class="drawer" id="mobile-drawer">
+    <div class="drawer-header">
+        <div class="brand"><div>VANTI<span>X</span></div></div>
+        <button class="drawer-close" onclick="toggleMenu()">✕</button>
+    </div>
+    <a href="index.html" class="drawer-tab">Connect</a>
+    <a href="overview.html" class="drawer-tab">Overview</a>
+    <a href="store.html" class="drawer-tab">My Store</a>
+    <a href="competitors.html" class="drawer-tab">Competitors</a>
+    <a href="terminal.html" class="drawer-tab">Terminal</a>
+    <a href="discovery.html" class="drawer-tab">Discovery</a>
+    <a href="alerts.html" class="drawer-tab">Alerts</a>
+    <a href="inventory.html" class="drawer-tab">Inventory</a>
+    <a href="membership.html" class="drawer-tab active">Membership</a>
+    <a href="settings.html" class="drawer-tab">Settings</a>
+</div>
+
+<div class="header">
+    <a href="index.html" class="brand">
+        <div class="mark"><svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg></div>
+        <div>VANTI<span>X</span></div>
+    </a>
+    <div class="tabs">
+        <a href="index.html" class="tab">Connect</a>
+        <a href="overview.html" class="tab">Overview</a>
+        <a href="store.html" class="tab">My Store</a>
+        <a href="competitors.html" class="tab">Competitors</a>
+        <a href="terminal.html" class="tab">Terminal</a>
+        <a href="discovery.html" class="tab">Discovery</a>
+        <a href="alerts.html" class="tab">Alerts</a>
+        <a href="inventory.html" class="tab">Inventory</a>
+        <a href="membership.html" class="tab active">Membership</a>
+        <a href="settings.html" class="tab">Settings</a>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none; background: #222 !important; color: #FFF !important; border-color: #333 !important;">Log Out</button>
+        <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
+</div>
+
+<div class="screen">
+    <div style="max-width: 1100px; margin: 0 auto; padding: 32px 20px 64px;">
+        
+        <div style="text-align: center; margin-bottom: 40px;">
+            <div class="screen-title" style="font-size: 32px; font-weight: 900; margin-bottom: 12px;">Upgrade Your Intelligence</div>
+            <div class="screen-sub" style="font-size: 15px; color: #52525B;">Choose the plan that fits your store's growth stage.</div>
+        </div>
+
+        <div id="current-plan-banner" class="current-plan-banner" style="display: none;">
+            <div id="banner-text">You are currently on the <b>TRIAL</b> plan.</div>
+            <div id="trial-days-left" class="mono"></div>
+        </div>
+
+        <div class="pricing-grid">
+            
+            <!-- STARTER -->
+            <div class="plan-card">
+                <div class="plan-name">Starter</div>
+                <div class="plan-desc" style="font-size: 12px; color: #71717A; margin-bottom: 24px;">For new stores testing the waters.</div>
+                <div class="plan-price">$25<span>/mo</span></div>
+                <div class="plan-features">
+                    <div class="feature-item">3 Competitors tracked</div>
+                    <div class="feature-item">Basic Terminal & Simulator</div>
+                    <div class="feature-item">Basic My Store Dashboard</div>
+                    <div class="feature-item">Basic Inventory List</div>
+                </div>
+                <button id="btn-starter" class="plan-btn plan-btn-secondary">Select Starter</button>
+            </div>
+
+            <!-- PRO -->
+            <div class="plan-card popular">
+                <div class="popular-badge">Most Popular</div>
+                <div class="plan-name">Pro</div>
+                <div class="plan-desc" style="font-size: 12px; color: #71717A; margin-bottom: 24px;">Protect margins and scale.</div>
+                <div class="plan-price">$49<span>/mo</span></div>
+                <div class="plan-features">
+                    <div class="feature-item">10 Competitors tracked</div>
+                    <div class="feature-item">AI Margin Advisor & Safe Floor</div>
+                    <div class="feature-item">Dead Stock, Carts, & LTV</div>
+                    <div class="feature-item">Inventory KPIs & Restock</div>
+                    <div class="feature-item">Global Discovery Engine</div>
+                </div>
+                <button id="btn-pro" class="plan-btn plan-btn-primary">Upgrade to Pro →</button>
+            </div>
+
+            <!-- SCALE -->
+            <div class="plan-card">
+                <div class="plan-name">Scale</div>
+                <div class="plan-desc" style="font-size: 12px; color: #71717A; margin-bottom: 24px;">For high-volume brands & agencies.</div>
+                <div class="plan-price">$79<span>/mo</span></div>
+                <div class="plan-features">
+                    <div class="feature-item">Unlimited Competitors</div>
+                    <div class="feature-item">Everything in Pro</div>
+                    <div class="feature-item">Team Seats (Add VAs)</div>
+                    <div class="feature-item">Priority AI & Server Processing</div>
+                    <div class="feature-item">Priority Support</div>
+                </div>
+                <button id="btn-scale" class="plan-btn plan-btn-secondary">Select Scale</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="js/app.js?v=2187"></script>
+<script src="js/membership.js?v=2187"></script>
+</body>
+</html>
+"""
+
+js_content = '''async function checkSubscription() {
+    const banner = document.getElementById('current-plan-banner');
+    const bannerText = document.getElementById('banner-text');
+    const daysLeft = document.getElementById('trial-days-left');
+    
+    const btnStarter = document.getElementById('btn-starter');
+    const btnPro = document.getElementById('btn-pro');
+    const btnScale = document.getElementById('btn-scale');
+
+    if(!banner) return;
+
+    try {
+        let userId = '';
+        if (window.currentSession && window.currentSession.user) {
+            userId = window.currentSession.user.id;
+        } else if (window.supabaseClient) {
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            if (session) userId = session.user.id;
+        }
+
+        const suffix = userId ? `?checkout[custom][user_id]=${userId}` : '';
+        const starterUrl = `https://vantix-app.lemonsqueezy.com/checkout/buy/d5f53e33-3d35-4cc5-aaca-3ca5a3236ed7${suffix}`;
+        const proUrl = `https://vantix-app.lemonsqueezy.com/checkout/buy/422c4e93-6071-457c-90b6-a648c5dee4c4${suffix}`;
+        const scaleUrl = `https://vantix-app.lemonsqueezy.com/checkout/buy/789d4ae0-cc01-462d-a074-78a360971168${suffix}`;
+
+        const resetBtn = (btn, text, url) => {
+            if(!btn) return;
+            btn.disabled = false;
+            btn.innerText = text;
+            btn.onclick = () => window.open(url, '_blank');
+        };
+
+        resetBtn(btnStarter, "Select Starter", starterUrl);
+        resetBtn(btnPro, "Upgrade to Pro →", proUrl);
+        resetBtn(btnScale, "Select Scale", scaleUrl);
+
+        const res = await fetch('https://vantix-my5f.onrender.com/api/auth/status');
+        if (!res.ok) throw new Error("Failed to load status");
+
+        const data = await res.json();
+        banner.style.display = 'flex';
+
+        if(data.plan === 'trial') {
+            banner.style.background = '#F0F9FF';
+            banner.style.borderColor = '#BAE6FD';
+            banner.style.color = '#0284C7';
+            bannerText.innerHTML = `🎉 You are on a <b>14-Day Free Trial of Pro</b>.`;
+            daysLeft.innerText = `${data.days_left} days left`;
+        } 
+        else if (data.plan === 'starter') {
+            banner.style.background = '#F3F4F6';
+            banner.style.borderColor = '#E5E7EB';
+            banner.style.color = '#09090B';
+            bannerText.innerHTML = `You are subscribed to the <b>STARTER</b> plan.`;
+            daysLeft.innerText = "";
+            btnStarter.innerText = "Current Plan";
+            btnStarter.className = "plan-btn plan-btn-disabled";
+            btnStarter.disabled = true;
+            btnStarter.onclick = null;
+        }
+        else if (data.plan === 'pro') {
+            banner.style.background = '#E0F2FE';
+            banner.style.borderColor = '#BAE6FD';
+            banner.style.color = '#0284C7';
+            bannerText.innerHTML = `⭐ You are subscribed to the <b>PRO</b> plan.`;
+            daysLeft.innerText = "";
+            btnPro.innerText = "Current Plan";
+            btnPro.className = "plan-btn plan-btn-disabled";
+            btnPro.disabled = true;
+            btnPro.onclick = null;
+        }
+        else if (data.plan === 'scale') {
+            banner.style.background = '#F3E8FF';
+            banner.style.borderColor = '#E9D5FF';
+            banner.style.color = '#6D28D9';
+            bannerText.innerHTML = `👑 You are subscribed to the <b>SCALE</b> plan.`;
+            daysLeft.innerText = "";
+            btnScale.innerText = "Current Plan";
+            btnScale.className = "plan-btn plan-btn-disabled";
+            btnScale.disabled = true;
+            btnScale.onclick = null;
+        } 
+    } catch(e) {
+        console.error("Subscription check failed", e);
+        if(banner) {
+            banner.style.display = 'flex';
+            bannerText.innerText = "Could not load subscription status.";
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    checkSubscription();
+});
+'''
+
+with open("membership.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+with open("js/membership.js", "w", encoding="utf-8") as f:
+    f.write(js_content)
+
+print("✅ Both files written successfully.")

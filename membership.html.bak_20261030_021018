@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vantix — Membership</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=9999">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
+<div class="drawer" id="mobile-drawer">
+    <div class="drawer-header">
+        <div class="brand"><div>VANTI<span>X</span></div></div>
+        <button class="drawer-close" onclick="toggleMenu()">✕</button>
+    </div>
+    <a href="index.html" class="drawer-tab">Connect</a>
+    <a href="overview.html" class="drawer-tab">Overview</a>
+    <a href="store.html" class="drawer-tab">My Store</a>
+    <a href="competitors.html" class="drawer-tab">Competitors</a>
+    <a href="terminal.html" class="drawer-tab">Terminal</a>
+    <a href="discovery.html" class="drawer-tab">Discovery</a>
+    <a href="alerts.html" class="drawer-tab">Alerts</a>
+    <a href="inventory.html" class="drawer-tab">Inventory</a>
+    <a href="membership.html" class="drawer-tab active">Membership</a>
+    <a href="settings.html" class="drawer-tab">Settings</a>
+</div>
+
+<div class="header">
+    <a href="index.html" class="brand">
+        <div class="mark"><svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg></div>
+        <div>VANTI<span>X</span></div>
+    </a>
+    <div class="tabs">
+        <a href="index.html" class="tab">Connect</a>
+        <a href="overview.html" class="tab">Overview</a>
+        <a href="store.html" class="tab">My Store</a>
+        <a href="competitors.html" class="tab">Competitors</a>
+        <a href="terminal.html" class="tab">Terminal</a>
+        <a href="discovery.html" class="tab">Discovery</a>
+        <a href="alerts.html" class="tab">Alerts</a>
+        <a href="inventory.html" class="tab">Inventory</a>
+        <a href="membership.html" class="tab active">Membership</a>
+        <a href="settings.html" class="tab">Settings</a>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
+        <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
+</div>
+
+<div class="screen mem-screen">
+    <div class="mem-wrap">
+        
+        <!-- ROW A -->
+        <div class="mem-row-a" style="text-align: center; display: block; margin-bottom: 32px;">
+            <div class="mem-eyebrow">BILLING</div>
+            <h1 class="mem-title">Membership</h1>
+            <p class="mem-sub">Upgrade your plan to unlock more intelligence.</p>
+        </div>
+
+        <!-- DYNAMIC TRIAL BANNER -->
+        <div id="trial-banner" class="mem-banner" style="display: none;">
+            <div id="banner-text">Loading subscription status…</div>
+            <div id="trial-days-left" class="mono" style="font-weight: 800;"></div>
+        </div>
+
+        <!-- PRICING GRID -->
+        <div class="mem-grid">
+            
+            <!-- STARTER PLAN -->
+            <div class="mem-card">
+                <div class="mem-plan-name">Starter</div>
+                <div class="mem-plan-desc">For solo store owners just getting started.</div>
+                <div class="mem-plan-price">$25<span>/mo</span></div>
+                <div class="mem-plan-features">
+                    <div class="mem-feature">50 products monitored</div>
+                    <div class="mem-feature">3 competitor stores</div>
+                    <div class="mem-feature">Daily Telegram alerts</div>
+                </div>
+                <button id="btn-starter" class="mem-btn-secondary">
+                    Upgrade to Starter
+                </button>
+            </div>
+
+            <!-- PRO PLAN (POPULAR) -->
+            <div class="mem-card mem-card-popular">
+                <div class="mem-popular-badge">MOST POPULAR</div>
+                <div class="mem-plan-name">Pro</div>
+                <div class="mem-plan-desc">For growing stores that need full intelligence.</div>
+                <div class="mem-plan-price">$39<span>/mo</span></div>
+                <div class="mem-plan-features">
+                    <div class="mem-feature">200 products monitored</div>
+                    <div class="mem-feature">10 competitor stores</div>
+                    <div class="mem-feature">Daily Telegram alerts</div>
+                    <div class="mem-feature">AI Profit Advisor (Groq)</div>
+                    <div class="mem-feature">Abandoned Cart alerts</div>
+                </div>
+                <button id="btn-pro" class="mem-btn-primary">
+                    Upgrade to Pro →
+                </button>
+            </div>
+
+            <!-- SCALE PLAN -->
+            <div class="mem-card">
+                <div class="mem-plan-name">Scale</div>
+                <div class="mem-plan-desc">For multi-brand operators and agencies.</div>
+                <div class="mem-plan-price">$49<span>/mo</span></div>
+                <div class="mem-plan-features">
+                    <div class="mem-feature">Unlimited products</div>
+                    <div class="mem-feature">25 competitor stores</div>
+                    <div class="mem-feature">Priority Telegram + WhatsApp</div>
+                    <div class="mem-feature">Advanced AI strategies</div>
+                </div>
+                <button id="btn-scale" class="mem-btn-secondary">
+                    Upgrade to Scale
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="js/app.js?v=9999"></script>
+<script src="js/membership.js?v=9999"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,164 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vantix — Discovery</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=2188">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    .dsc-screen { padding-top: 12px !important; }
+    .dsc-wrap { max-width: 1400px; margin: 0 auto; padding: 0 20px 64px !important; }
+
+    /* Top Preference Grid */
+    .dsc-pref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+    @media (max-width: 1024px) { .dsc-pref-grid { grid-template-columns: 1fr; } }
+
+    .dsc-pref-card { background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 4px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 16px; }
+    .dsc-pref-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F1F5F9; padding-bottom: 12px; }
+    .dsc-pref-title { font-size: 15px; font-weight: 900; color: #09090B; }
+    .dsc-pref-sub { font-size: 12px; color: #71717A; }
+
+    /* Auto-Detected Chips */
+    .dsc-auto-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+    .dsc-auto-chip { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid #D1D5DB; border-radius: 2px; font-size: 13px; font-weight: 700; color: #52525B; cursor: pointer; transition: 0.2s; user-select: none; }
+    .dsc-auto-chip:hover { background: #F8FAFC; }
+    .dsc-auto-chip.active { background: #F0F9FF; border-color: #0284C7; color: #0284C7; }
+    .dsc-auto-chip .check { width: 14px; height: 14px; border-radius: 2px; border: 1px solid #D1D5DB; display: flex; align-items: center; justify-content: center; font-size: 10px; color: transparent; }
+    .dsc-auto-chip.active .check { background: #0284C7; border-color: #0284C7; color: #FFF; }
+
+    /* Tag Input */
+    .dsc-input-section { display: flex; flex-direction: column; gap: 8px; position: relative; }
+    .dsc-tag-box { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; border: 1px solid #D1D5DB; border-radius: 2px; background: #FFF; min-height: 48px; align-items: center; transition: 0.2s; }
+    .dsc-tag-box:focus-within { border-color: #0284C7; box-shadow: 0 0 0 2px rgba(2,132,199,0.1); }
+    .dsc-tag { background: #F4F4F5; color: #09090B; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 2px; border: 1px solid #E4E4E7; display: flex; align-items: center; gap: 6px; }
+    .dsc-tag button { background: none; border: none; color: #A1A1AA; cursor: pointer; font-size: 14px; font-weight: 900; padding: 0; line-height: 1; }
+    .dsc-tag button:hover { color: #E11D48; }
+    .dsc-tag-input { flex: 1; min-width: 150px; border: none; outline: none; font-size: 13px; font-family: var(--font-sans); background: transparent; color: #09090B; }
+    
+    .dsc-autocomplete { position: absolute; top: 100%; left: 0; right: 0; background: #FFF; border: 1px solid #E4E4E7; border-radius: 0 0 4px 4px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); z-index: 100; max-height: 200px; overflow-y: auto; display: none; }
+    .dsc-autocomplete-item { padding: 10px 14px; font-size: 13px; color: #09090B; cursor: pointer; border-bottom: 1px solid #F1F5F9; }
+    .dsc-autocomplete-item:hover { background: #F8FAFC; color: #0284C7; font-weight: 700; }
+
+    .dsc-save-btn { background: #09090B; color: #FFF; padding: 12px 24px; font-size: 13px; font-weight: 800; border: none; border-radius: 2px; cursor: pointer; transition: 0.2s; margin-top: auto; }
+    .dsc-save-btn:hover { background: #27272A; }
+    
+    .dsc-status-banner { background: #F0F9FF; border: 1px solid #BAE6FD; color: #0284C7; padding: 16px; border-radius: 4px; margin-bottom: 24px; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .dsc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    @media (max-width: 1100px) { .dsc-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { .dsc-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
+<div class="drawer" id="mobile-drawer">
+    <div class="drawer-header">
+        <div class="brand"><div>VANTI<span>X</span></div></div>
+        <button class="drawer-close" onclick="toggleMenu()">✕</button>
+    </div>
+    <a href="index.html" class="drawer-tab">Connect</a>
+    <a href="overview.html" class="drawer-tab">Overview</a>
+    <a href="store.html" class="drawer-tab">My Store</a>
+    <a href="competitors.html" class="drawer-tab">Competitors</a>
+    <a href="terminal.html" class="drawer-tab">Terminal</a>
+    <a href="discovery.html" class="drawer-tab active">Discovery</a>
+    <a href="alerts.html" class="drawer-tab">Alerts</a>
+    <a href="inventory.html" class="drawer-tab">Inventory</a>
+    <a href="membership.html" class="drawer-tab">Membership</a>
+    <a href="settings.html" class="drawer-tab">Settings</a>
+</div>
+
+<div class="header">
+    <a href="index.html" class="brand">
+        <div class="mark"><svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg></div>
+        <div>VANTI<span>X</span></div>
+    </a>
+    <div class="tabs">
+        <a href="index.html" class="tab">Connect</a>
+        <a href="overview.html" class="tab">Overview</a>
+        <a href="store.html" class="tab">My Store</a>
+        <a href="competitors.html" class="tab">Competitors</a>
+        <a href="terminal.html" class="tab">Terminal</a>
+        <a href="discovery.html" class="tab active">Discovery</a>
+        <a href="alerts.html" class="tab">Alerts</a>
+        <a href="inventory.html" class="tab">Inventory</a>
+        <a href="membership.html" class="tab">Membership</a>
+        <a href="settings.html" class="tab">Settings</a>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none; background: #222 !important; color: #FFF !important; border-color: #333 !important;">Log Out</button>
+        <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
+</div>
+
+<div class="screen dsc-screen">
+    <div class="dsc-wrap">
+        
+        <!-- HEADER -->
+        <div style="margin-bottom: 24px;">
+            <div style="font-size: 10px; letter-spacing: 1.6px; font-weight: 800; color: #0284C7; text-transform: uppercase; margin-bottom: 4px;">GOLDMINE ENGINE</div>
+            <h1 style="font-size: 24px; font-weight: 900; color: #09090B; margin: 0 0 8px;">Auto-Discovery Setup</h1>
+            <p style="font-size: 14px; color: #52525B; margin: 0;">Configure your target niches. The engine runs a deep scan once every 24 hours.</p>
+        </div>
+
+        <!-- PREFERENCES GRID -->
+        <div class="dsc-pref-grid">
+            
+            <!-- Left: Auto-Detected -->
+            <div class="dsc-pref-card">
+                <div class="dsc-pref-header">
+                    <div>
+                        <div class="dsc-pref-title">Auto-Detected Categories</div>
+                        <div class="dsc-pref-sub">Based on your synced Shopify products</div>
+                    </div>
+                    <div class="trm-badge trm-badge-green">LIVE</div>
+                </div>
+                <div class="dsc-auto-chips" id="auto-chips-container">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Right: Custom Niches -->
+            <div class="dsc-pref-card">
+                <div class="dsc-pref-header">
+                    <div>
+                        <div class="dsc-pref-title">Custom Target Niches</div>
+                        <div class="dsc-pref-sub">Search for new products outside your current store</div>
+                    </div>
+                </div>
+                <div class="dsc-input-section">
+                    <div class="dsc-tag-box" onclick="document.getElementById('niche-input').focus()">
+                        <div id="niche-tags" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+                        <input type="text" id="niche-input" class="dsc-tag-input" placeholder="e.g. yoga mats..." autocomplete="off" spellcheck="true">
+                    </div>
+                    <div id="autocomplete-list" class="dsc-autocomplete"></div>
+                </div>
+                <button class="dsc-save-btn" onclick="savePreferences()">Save All Preferences</button>
+            </div>
+
+        </div>
+
+        <!-- STATUS BANNER -->
+        <div class="dsc-status-banner">
+            <div>🔄 Next daily scan runs at <b>12:00 AM UTC</b>. Results are cached below.</div>
+            <div id="dsc-count" style="font-family: var(--font-mono); font-weight: 800;">0 Goldmines</div>
+        </div>
+
+        <!-- RESULTS GRID -->
+        <div id="discovery-results" class="dsc-grid">
+            <div class="dsc-empty" style="grid-column: 1 / -1; padding: 60px; text-align: center; color: #71717A;">
+                <div class="dsc-spinner" style="margin: 0 auto 16px;"></div>
+                Loading today's goldmines...
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="js/app.js?v=2188"></script>
+<script src="js/discovery.js?v=2220"></script>
+</body>
+</html>
