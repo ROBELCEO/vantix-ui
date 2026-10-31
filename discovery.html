@@ -20,13 +20,13 @@
     .dsc-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
     .dsc-modal { background: #FFFFFF; border-radius: 4px; width: 100%; max-width: 700px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.2); overflow: hidden; }
     .dsc-modal-header { padding: 20px 24px; border-bottom: 1px solid #E4E4E7; display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; }
-    .dsc-modal-title { font-size: 18px; font-weight: 900; color: #09090B; }
+    .dsc-modal-title { font-size: 18px; font-weight: 900; color: #09090B !important; }
     .dsc-modal-close { background: none; border: none; font-size: 24px; color: #A1A1AA; cursor: pointer; }
     .dsc-modal-body { padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 32px; }
     .dsc-modal-footer { padding: 16px 24px; border-top: 1px solid #E4E4E7; background: #FFFFFF; display: flex; justify-content: flex-end; gap: 12px; }
 
     /* Preference Sections */
-    .dsc-pref-section h3 { font-size: 14px; font-weight: 900; color: #09090B; margin-bottom: 12px; border-bottom: 1px solid #F1F5F9; padding-bottom: 8px; }
+    .dsc-pref-section h3 { font-size: 15px; font-weight: 900; color: #09090B !important; margin-bottom: 12px; border-bottom: 1px solid #F1F5F9; padding-bottom: 8px; }
     
     .dsc-auto-box { background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 4px; padding: 16px; display: flex; align-items: flex-start; gap: 12px; }
     .dsc-auto-box input[type="checkbox"] { margin-top: 4px; width: 16px; height: 16px; cursor: pointer; accent-color: #0284C7; }
@@ -36,11 +36,11 @@
     /* Checkbox Tree */
     .dsc-tree { display: flex; flex-direction: column; gap: 16px; }
     .dsc-tree-group { border: 1px solid #E4E4E7; border-radius: 2px; overflow: hidden; }
-    .dsc-tree-parent { background: #F8FAFC; padding: 12px 16px; display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 14px; color: #09090B; cursor: pointer; border-bottom: 1px solid #E4E4E7; }
-    .dsc-tree-parent input { width: 16px; height: 16px; accent-color: #09090B; cursor: pointer; }
+    .dsc-tree-parent { background: #F8FAFC; padding: 12px 16px; display: flex; align-items: center; gap: 12px; font-weight: 900; font-size: 14px; color: #09090B !important; cursor: pointer; border-bottom: 1px solid #E4E4E7; }
+    .dsc-tree-parent input { width: 16px; height: 16px; accent-color: #09090B; cursor: pointer; border: 1px solid #A1A1AA; }
     .dsc-tree-children { padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .dsc-tree-child { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #52525B; cursor: pointer; }
-    .dsc-tree-child input { width: 16px; height: 16px; accent-color: #0284C7; cursor: pointer; }
+    .dsc-tree-child { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #09090B !important; cursor: pointer; }
+    .dsc-tree-child input { width: 16px; height: 16px; accent-color: #0284C7; cursor: pointer; border: 1px solid #A1A1AA; }
 
     /* Results Grid */
     .dsc-status-banner { background: #F8FAFC; border: 1px solid #E4E4E7; color: #09090B; padding: 16px; border-radius: 4px; margin-bottom: 24px; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
@@ -167,6 +167,7 @@
 </div>
 
 <script src="js/app.js?v=2188"></script>
-<script src="js/discovery.js?v=2230"></script>
+<script src="js/discovery.js?v=2240"></script>
 </body>
 </html>
+
