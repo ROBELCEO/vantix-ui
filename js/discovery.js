@@ -15,14 +15,14 @@ async function loadDiscovery() {
     container.innerHTML = `
         <div class="dsc-empty" style="grid-column: 1 / -1; padding: 60px;">
             <div class="dsc-spinner"></div>
-            Connecting to the God Eye Engine (Cloudflare Edge)…
+            Connecting to the Vantix God Eye Engine…
         </div>
     `;
     if (statusEl) statusEl.innerText = "Scanning…";
     if (countEl) countEl.innerText = "0 Results";
 
     try {
-        const res = await fetch('https://vantix-api.vantix-trends-api.workers.dev');
+        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/trends');
         if (!res.ok) throw new Error("Failed to connect to API");
 
         const data = await res.json();
@@ -148,3 +148,4 @@ document.addEventListener('DOMContentLoaded', () => {
 window.performSearch = performSearch;
 window.pushToShopify = pushToShopify;
 window.saveOpportunity = saveOpportunity;
+
