@@ -133,15 +133,46 @@ async function loadDiscovery() {
     const countEl = document.getElementById('dsc-count');
     if (!container) return;
 
+    // 1. Show a friendly loading state
+    container.innerHTML = `
+        <div class="dsc-empty" style="grid-column: 1 / -1; padding: 60px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;">
+            <div class="dsc-spinner" style="border-color: #0284C7;"></div>
+            <div style="font-weight: 800; color: #09090B; font-size: 15px;">Waking up the God Eye Engine...</div>
+            <div style="color: #71717A; font-size: 13px;">This takes up to 30 seconds if the server was asleep.</div>
+        </div>
+    `;
+
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/trends');
+        // 2. Add a 45-second timeout for Render cold starts
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 45000);
+
+        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/trends', { signal: controller.signal });
+        clearTimeout(timeoutId);
+
         if (!res.ok) throw new Error("Failed to connect to API");
         const data = await res.json();
         allTrends = data;
+
+        if (!allTrends || allTrends.length === 0) {
+            container.innerHTML = '<div class="dsc-empty" style="grid-column: 1 / -1; padding: 60px; text-align: center; color: #71717A;">No goldmines found yet. Check back after the next scan.</div>';
+            if (countEl) countEl.innerText = `0 Goldmines`;
+            return;
+        }
+
         if (countEl) countEl.innerText = `${allTrends.length} Goldmines`;
         renderDiscoveryCards(allTrends);
+
     } catch (e) {
-        container.innerHTML = '<div class="dsc-empty" style="grid-column: 1 / -1; padding: 60px; text-align: center; color: #E11D48;">Network error. Failed to load daily goldmines.</div>';
+        console.error("Fetch Error:", e);
+        // 3. Friendly error state with a Retry button
+        container.innerHTML = `
+            <div class="dsc-empty" style="grid-column: 1 / -1; padding: 60px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+                <div style="color: #E11D48; font-weight: 800; font-size: 16px;">Failed to load daily goldmines.</div>
+                <div style="color: #71717A; font-size: 13px;">The server took too long to respond or there is a network issue.</div>
+                <button onclick="loadDiscovery()" style="padding: 10px 24px; background: #09090B; color: #FFF; font-weight: 800; border-radius: 4px; border: none; cursor: pointer;">Retry Connection</button>
+            </div>
+        `;
     }
 }
 
@@ -233,3 +264,4 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDiscovery();
     fetchCategories().then(() => renderCategoryTree());
 });
+
