@@ -190,7 +190,11 @@ function renderDiscoveryCards(trends) {
         const demand = Number(item.orders_count) || 0;
         const competition = Number(item.unique_stores) || 1;
         
-        const imgUrl = item.image_url || 'https://ui-avatars.com/api/?name=Vantix&background=F4F4F5&color=09090B';
+        let imgUrl = 'https://ui-avatars.com/api/?name=Vantix&background=F4F4F5&color=09090B';
+        if (item.image_url) {
+            // Route AliExpress images through a free proxy to bypass hotlink protection
+            imgUrl = `https://images.weserv.nl/?url=${encodeURIComponent(item.image_url)}&w=400&h=400&fit=cover`;
+        }
 
         let insight = "";
         if (score >= 85) insight = `🔥 GOLDMINE. Sourced for ${supplierPrice} and retailing at ${retailPrice}. Only ${competition} Shopify stores found.`;
@@ -265,3 +269,4 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDiscovery();
     fetchCategories().then(() => renderCategoryTree());
 });
+
