@@ -145,7 +145,7 @@ async function loadStoreData() {
         if (data.chart) renderChart(data.chart);
         if (data.top_products) renderTopProducts(data.top_products);
         renderCarts(data.carts || []);
-        renderLowStock(data.low_stock || []);
+        renderLowStock((data.low_stock || []).slice(0, 3));
 
         // Handle Dead Stock, Bundle, and LTV panels
         const bundle = document.getElementById('bundle-container');
