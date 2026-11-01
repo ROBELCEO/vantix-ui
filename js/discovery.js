@@ -165,8 +165,12 @@ async function loadDiscovery() {
     `;
 
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/trends');
-        if (!res.ok) throw new Error("Failed to connect to API");
+        const token = JSON.parse(localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token')))).access_token;
+        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/trends', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        
+        if (!res.ok) throw new Error(`Failed to connect to API (Status: ${res.status})`);
         const data = await res.json();
         allTrends = data;
 
@@ -192,6 +196,10 @@ async function loadDiscovery() {
 }
 
 function renderDiscoveryCards(trends) {
+    // Ensure trends is actually an array
+    if (!Array.isArray(trends)) {
+        trends = trends?.trends || trends?.products || [];
+    }
     const container = document.getElementById('discovery-results');
     if (!trends || trends.length === 0) {
         container.innerHTML = '<div class="dsc-empty" style="grid-column: 1 / -1; padding: 60px; text-align: center; color: #71717A;">No goldmines found yet.</div>';
