@@ -9,7 +9,10 @@ function dscEsc(str) {
 // --- MODAL LOGIC ---
 async function openPreferences() {
     document.getElementById('preferences-modal').style.display = 'flex';
-    document.getElementById('auto-detect-toggle').checked = currentPrefs.auto_detect;
+    const toggle = document.getElementById('auto-detect-toggle');
+    toggle.checked = currentPrefs.auto_detect;
+    toggleAutoDetect(toggle);
+    
     if (Object.keys(backendCategories).length === 0) {
         document.getElementById('category-tree').innerHTML = '<div style="text-align:center; padding:20px; color:#71717A;">Loading categories...</div>';
         await fetchCategories();
@@ -23,16 +26,23 @@ function closePreferences() {
 
 function toggleAutoDetect(checkbox) {
     const tree = document.getElementById('category-tree');
+    if (!tree) return;
+    
     if (checkbox.checked) {
         tree.style.pointerEvents = 'none';
         tree.style.filter = 'grayscale(1)';
-        tree.style.opacity = '0.6'; 
-        document.querySelectorAll('.dsc-tree-child input, .dsc-tree-parent input').forEach(cb => { cb.checked = false; cb.disabled = true; });
+        tree.style.opacity = '0.6';
+        document.querySelectorAll('.dsc-tree-child input, .dsc-tree-parent input').forEach(cb => { 
+            cb.checked = false; 
+            cb.disabled = true; 
+        });
     } else {
         tree.style.pointerEvents = 'auto';
         tree.style.filter = 'none';
         tree.style.opacity = '1';
-        document.querySelectorAll('.dsc-tree-child input, .dsc-tree-parent input').forEach(cb => { cb.disabled = false; });
+        document.querySelectorAll('.dsc-tree-child input, .dsc-tree-parent input').forEach(cb => { 
+            cb.disabled = false; 
+        });
     }
 }
 
@@ -54,7 +64,7 @@ function renderCategoryTree() {
         const subCats = backendCategories[mainCat];
         const checkedSubs = subCats.filter(sub => currentPrefs.selected_categories.includes(sub));
         const isAllChecked = subCats.length === checkedSubs.length && subCats.length > 0;
-        
+
         const childHtml = subCats.map(sub => {
             const isChecked = currentPrefs.selected_categories.includes(sub);
             return `
@@ -75,7 +85,8 @@ function renderCategoryTree() {
             </div>
         `;
     }).join('');
-    toggleAutoDetect(document.getElementById('auto-detect-toggle'));
+    
+    // Do NOT call toggleAutoDetect here, it messes up the user's current selection state
 }
 
 function toggleParent(checkbox, mainCat) {
