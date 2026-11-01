@@ -339,6 +339,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+
+
 // ==========================================
 // WATCHLIST TAB LOGIC INSIDE DISCOVERY
 // ==========================================
@@ -351,20 +353,6 @@ function injectWishlistTabs() {
     const container = document.getElementById('discovery-results');
     
     if (!headerBar || !configBtn || !container) return;
-
-    // Inject the CSS overrides for taller images and 4-column Watchlist
-    if (!document.getElementById('wl-custom-styles')) {
-        const style = document.createElement('style');
-        style.id = 'wl-custom-styles';
-        style.innerHTML = `
-            .god-card-top { height: 350px !important; }
-            #watchlist-results { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; grid-column: 1 / -1; width: 100%; }
-            @media (max-width: 1400px) { #watchlist-results { grid-template-columns: repeat(3, 1fr); } }
-            @media (max-width: 1100px) { #watchlist-results { grid-template-columns: repeat(2, 1fr); } }
-            @media (max-width: 768px) { #watchlist-results { grid-template-columns: 1fr; } }
-        `;
-        document.head.appendChild(style);
-    }
 
     // Create the tab bar
     const tabBar = document.createElement('div');
@@ -382,11 +370,11 @@ function injectWishlistTabs() {
     rightWrap.appendChild(tabBar);
     rightWrap.appendChild(configBtn);
 
-    // Create the watchlist container
+    // Create the watchlist container with hardcoded 4 columns
     const wlContainer = document.createElement('div');
     wlContainer.id = 'watchlist-results';
-    wlContainer.style.display = 'none';
-
+    wlContainer.style.cssText = 'display: none; grid-template-columns: repeat(4, 1fr) !important; gap: 20px; grid-column: 1 / -1; width: 100%; margin-top: 20px;';
+    
     container.parentNode.insertBefore(wlContainer, container.nextSibling);
 }
 
@@ -433,7 +421,8 @@ async function loadWatchlist() {
             let cleanTitle = (item.title || 'Untitled').replace(/ETB[\d\.]+/gi, '').replace(/\$[\d\.]+/gi, '').replace(/-\d+%/gi, '').trim();
             return `
             <div class="god-card" style="background:#FFF; border:1px solid #E4E4E7; border-radius:4px; overflow:hidden; padding:16px; display:flex; flex-direction:column; gap:12px;">
-                <img src="${item.image_url || 'https://ui-avatars.com/api/?name=V&background=F4F4F5'}" style="width:100%; height:350px; object-fit:cover; border-radius:4px;">
+                <!-- FORCED 400PX HEIGHT -->
+                <img src="${item.image_url || 'https://ui-avatars.com/api/?name=V&background=F4F4F5'}" style="width:100%; height:400px !important; min-height:400px !important; object-fit:cover; border-radius:4px; display:block;">
                 <div style="font-weight:800; font-size:14px; color:#09090B; height:38px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${cleanTitle}</div>
                 <div style="font-weight:900; font-size:18px; color:#059669; font-family:var(--font-mono);">$${Number(item.price || 0).toFixed(2)}</div>
                 <div style="display:flex; gap:8px; margin-top:auto;">
