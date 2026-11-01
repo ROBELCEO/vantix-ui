@@ -5,9 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=0203">
+<link rel="stylesheet" href="css/style.css?v=0212">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- GLOBAL UI FIX (Titles & Gap) -->
+    <style>
+        /* Force smaller titles on ALL pages */
+        h1, .screen-title, .ov-title, .st-title, .cmp-title, .trm-title, .dsc-title, .alrt-title, .inv-title, .cnx-title, .set-title, .mem-title { 
+            font-size: 20px !important; 
+            line-height: 1.2 !important; 
+            font-weight: 900 !important;
+            margin-top: 0 !important;
+        }
+        /* Force tight vertical gap */
+        .screen { padding-top: 12px !important; margin-top: 0 !important; }
+        .ov-wrap, .st-wrap, .cmp-wrap, .mem-wrap, .trm-wrap, .dsc-wrap, .alrt-wrap, .inv-wrap, .cnx-wrap, .set-wrap { 
+            padding-top: 0 !important; 
+            margin-top: 0 !important; 
+        }
+        /* Adjust the top clearance for the fixed header (if applicable) */
+        #view-root { padding-top: 60px !important; } 
+    </style>
 </head>
 <body>
 
@@ -55,18 +73,18 @@
 
 <div id="view-root"></div>
 
-<script src="js/app.js?v=0203"></script>
-<script src="js/router.js?v=0203"></script>
-<script src="js/connect.js?v=0203"></script>
-<script src="js/overview.js?v=0203"></script>
-<script src="js/store.js?v=0203"></script>
-<script src="js/competitors.js?v=0203"></script>
-<script src="js/terminal.js?v=0203"></script>
-<script src="js/discovery.js?v=0203"></script>
-<script src="js/alerts.js?v=0203"></script>
-<script src="js/inventory.js?v=0203"></script>
-<script src="js/membership.js?v=0203"></script>
-<script src="js/settings.js?v=0203"></script>
+<script src="js/app.js?v=0212"></script>
+<script src="js/router.js?v=0212"></script>
+<script src="js/connect.js?v=0212"></script>
+<script src="js/overview.js?v=0212"></script>
+<script src="js/store.js?v=0212"></script>
+<script src="js/competitors.js?v=0212"></script>
+<script src="js/terminal.js?v=0212"></script>
+<script src="js/discovery.js?v=0212"></script>
+<script src="js/alerts.js?v=0212"></script>
+<script src="js/inventory.js?v=0212"></script>
+<script src="js/membership.js?v=0212"></script>
+<script src="js/settings.js?v=0212"></script>
 </body>
 </html>
 
