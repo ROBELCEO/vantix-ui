@@ -22,35 +22,9 @@
     </style>
 
 
-    <!-- ULTIMATE SCROLLBAR FIX -->
+    <!-- EXACT MATCH TO MY STORE MODAL -->
     <style>
-        /* Force the scrollbar track to be light gray instead of black */
-        #cmp-modal-body {
-            scrollbar-width: thin !important;
-            scrollbar-color: #D4D4D8 #F8FAFC !important; /* thumb track */
-        }
-        
-        #cmp-modal-body::-webkit-scrollbar {
-            width: 8px !important;
-            background: #F8FAFC !important;
-        }
-        #cmp-modal-body::-webkit-scrollbar-track {
-            background: #F8FAFC !important; /* Light gray track */
-            border-left: 1px solid #E4E4E7 !important;
-        }
-        #cmp-modal-body::-webkit-scrollbar-thumb {
-            background: #D4D4D8 !important;
-            border-radius: 4px !important;
-        }
-        #cmp-modal-body::-webkit-scrollbar-thumb:hover {
-            background: #A1A1AA !important;
-        }
-    </style>
-
-
-    <!-- FIX INNER MODAL AND STRETCH LIST -->
-    <style>
-        /* 1. Kill the inner box styling on the modal body */
+        /* Strip the inner box from cmp-list so it looks like st-list */
         #cmp-modal-body.cmp-list {
             background: transparent !important;
             border: none !important;
@@ -61,40 +35,25 @@
             margin: 0 !important;
             display: flex !important;
             flex-direction: column !important;
-            gap: 12px !important;
+            gap: 8px !important;
             overflow-y: auto !important;
         }
 
-        /* 2. Ensure the rows stretch full width and look like cards */
+        /* Clean rows */
         #cmp-modal-body > div {
             width: 100% !important;
-            flex-shrink: 0 !important;
             box-sizing: border-box !important;
-            background: #FFFFFF !important;
-            border: 1px solid #E4E4E7 !important;
-            border-radius: 4px !important;
-            padding: 16px !important;
-            margin: 0 !important;
         }
 
-        /* 3. Make sure images look great */
-        #cmp-modal-body img {
-            width: 64px !important;
-            height: 64px !important;
-            min-width: 64px !important;
-            object-fit: cover !important;
-            border-radius: 6px !important;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
-            margin-right: 12px !important;
+        /* Clean scrollbar to match My Store */
+        #cmp-modal-body {
+            scrollbar-width: thin !important;
+            scrollbar-color: #E4E4E7 transparent !important;
         }
-
-        /* 4. Modal parent layout constraints */
-        #cmp-modal > .cmp-panel {
-            height: 90vh !important;
-            max-height: 90vh !important;
-            display: flex !important;
-            flex-direction: column !important;
-        }
+        #cmp-modal-body::-webkit-scrollbar { width: 6px !important; height: 6px !important; }
+        #cmp-modal-body::-webkit-scrollbar-track { background: transparent !important; }
+        #cmp-modal-body::-webkit-scrollbar-thumb { background: #E4E4E7 !important; border-radius: 4px !important; }
+        #cmp-modal-body::-webkit-scrollbar-thumb:hover { background: #D4D4D8 !important; }
     </style>
 
 </head>
@@ -351,7 +310,7 @@
 
 <!-- COMPETITORS OVERLAY MODAL -->
 <div id="cmp-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px;">
-    <div class="cmp-panel" style="width: 95vw; max-width: 1400px; height: 90vh; display: flex; flex-direction: column; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+    <div class="cmp-panel" style="width: 100%; max-width: 900px; max-height: 85vh; display: flex; flex-direction: column; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
         <div class="cmp-panel-head" style="margin-bottom: 16px;">
             <div>
                 <div class="cmp-panel-title" id="cmp-modal-title" style="font-size: 18px;">Full List</div>
@@ -367,46 +326,6 @@
 
 <script src="js/app.js?v=2235"></script>
 <script src="js/competitors.js?v=2146"></script>
-
-    <!-- FORCE CLEAN SCROLLBAR -->
-    <style>
-        /* Target the exact element that scrolls */
-        #cmp-modal-body {
-            scrollbar-width: thin !important;
-            scrollbar-color: #D4D4D8 transparent !important;
-        }
-        
-        /* Force webkit browsers (Chrome/Edge) to hide the black track */
-        #cmp-modal-body::-webkit-scrollbar {
-            width: 6px !important;
-            background: transparent !important;
-        }
-        #cmp-modal-body::-webkit-scrollbar-track {
-            background: transparent !important;
-            border: none !important;
-        }
-        #cmp-modal-body::-webkit-scrollbar-thumb {
-            background: #E4E4E7 !important;
-            border-radius: 10px !important;
-            border: none !important;
-        }
-        #cmp-modal-body::-webkit-scrollbar-thumb:hover {
-            background: #D4D4D8 !important;
-        }
-        
-        /* Sometimes the parent container gets the scrollbar instead */
-        .cmp-panel[style*="max-width: 1100px"] {
-            scrollbar-width: thin !important;
-            scrollbar-color: #E4E4E7 transparent !important;
-        }
-        .cmp-panel[style*="max-width: 1100px"]::-webkit-scrollbar {
-            width: 6px !important;
-            background: transparent !important;
-        }
-        .cmp-panel[style*="max-width: 1100px"]::-webkit-scrollbar-track {
-            background: transparent !important;
-        }
-    </style>
 
 </body>
 </html>
