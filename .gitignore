@@ -1,0 +1,4 @@
+﻿# Backups — never commit these
+backups/
+*.bak_*
+*.bak
