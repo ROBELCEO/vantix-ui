@@ -53,13 +53,78 @@
 </div>
 
 <div class="screen cmp-screen">
+    <!-- COMPETITORS PAGE — COMPACT LAYOUT FIX -->
+    <style>
+        /* 1. Remove vertical gap */
+        .cmp-screen .cmp-wrap { padding-top: 0 !important; }
+        .cmp-screen .cmp-row-a { margin-bottom: 16px !important; align-items: flex-start !important; }
+
+        /* 2. Title & Eyebrow on same line (Blue Eyebrow) */
+        .cmp-screen .cmp-row-a > div:first-child {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .cmp-screen .cmp-title {
+            font-size: 20px !important;
+            margin: 0 !important;
+            line-height: 1.2 !important;
+            font-weight: 900 !important;
+        }
+        .cmp-screen .cmp-eyebrow {
+            font-size: 10px !important;
+            margin: 0 !important;
+            letter-spacing: 1.4px !important;
+            text-transform: uppercase !important;
+            font-weight: 800 !important;
+            color: #0284C7 !important;
+        }
+        .cmp-screen .cmp-sub {
+            width: 100%; /* Forces subtitle to next row */
+            font-size: 13px !important;
+            margin-top: 4px !important;
+            line-height: 1.5 !important;
+            color: #52525B !important;
+        }
+
+        /* 3. Panels & Flex layout to push button to bottom */
+        .cmp-screen .cmp-panel { display: flex; flex-direction: column; padding: 20px !important; }
+        
+        /* 4. The new full-width View All button */
+        .cmp-screen .cmp-view-all-btn {
+            width: 100%;
+            margin-top: 16px;
+            padding: 10px;
+            background: #FAFAFA;
+            border: 1px dashed #D1D5DB;
+            color: #0284C7;
+            font-size: 12px;
+            font-weight: 800;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .cmp-screen .cmp-view-all-btn:hover { background: #F4F4F5; color: #0369A1; }
+
+        /* 5. Clean Scrollbars */
+        .cmp-screen .cmp-list, #cmp-modal-body {
+            scrollbar-width: thin !important;
+            scrollbar-color: #E4E4E7 transparent !important;
+        }
+        .cmp-screen .cmp-list::-webkit-scrollbar, #cmp-modal-body::-webkit-scrollbar { width: 6px !important; height: 6px !important; }
+        .cmp-screen .cmp-list::-webkit-scrollbar-track, #cmp-modal-body::-webkit-scrollbar-track { background: transparent !important; }
+        .cmp-screen .cmp-list::-webkit-scrollbar-thumb, #cmp-modal-body::-webkit-scrollbar-thumb { background: #E4E4E7 !important; border-radius: 4px !important; }
+        .cmp-screen .cmp-list::-webkit-scrollbar-thumb:hover, #cmp-modal-body::-webkit-scrollbar-thumb:hover { background: #D4D4D8 !important; }
+    </style>
+
     <div class="cmp-wrap">
 
         <!-- ROW A -->
         <div class="cmp-row-a">
             <div>
-                <div class="cmp-eyebrow">SPY NETWORK</div>
                 <h1 class="cmp-title">Competitors</h1>
+                <div class="cmp-eyebrow">SPY NETWORK</div>
                 <p class="cmp-sub">Track rival stores, detect price drops, and find catalog gaps.</p>
             </div>
             <div class="cmp-status-group">
@@ -104,13 +169,14 @@
                     <div class="cmp-panel-sub">Stores currently being monitored for price and stock changes.</div>
                 </div>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                    <button class="cmp-link" style="background:none; border:none; cursor:pointer; padding:0;" onclick="openCmpModal('competitors')">View all →</button>
+                    
                     <div class="cmp-badge" id="comp-count">0 / 0</div>
                 </div>
             </div>
-            <div id="competitors-list" class="cmp-list">
+            <div id="competitors-list" class="cmp-list" style="flex: 1;">
                 <div class="cmp-empty">Loading competitors…</div>
             </div>
+            <button class="cmp-view-all-btn" onclick="openCmpModal('competitors')">Show All Competitors ↓</button>
         </div>
 
         <!-- ROW D: SPY NETWORK -->
@@ -125,13 +191,14 @@
                         <div class="cmp-panel-sub">High-ticket competitor items currently out of stock.</div>
                     </div>
                     <div style="display: flex; gap: 8px; align-items: center;">
-                        <button class="cmp-link" style="background:none; border:none; cursor:pointer; padding:0; font-size:11px;" onclick="openCmpModal('stockouts')">View all →</button>
+                        
                         <div class="cmp-badge cmp-badge-amber">OPPORTUNITY</div>
                     </div>
                 </div>
-                <div id="stockout-list" class="cmp-list">
+                <div id="stockout-list" class="cmp-list" style="flex: 1;">
                     <div class="cmp-empty">Scanning stock…</div>
                 </div>
+                <button class="cmp-view-all-btn" onclick="openCmpModal('stockouts')">Show All Stock-Outs ↓</button>
             </div>
 
             <!-- NEW LAUNCH TRACKER -->
@@ -142,13 +209,14 @@
                         <div class="cmp-panel-sub">Newest products your competitors recently launched.</div>
                     </div>
                     <div style="display: flex; gap: 8px; align-items: center;">
-                        <button class="cmp-link" style="background:none; border:none; cursor:pointer; padding:0; font-size:11px;" onclick="openCmpModal('launches')">View all →</button>
+                        
                         <div class="cmp-badge cmp-badge-green">LAST 30 DAYS</div>
                     </div>
                 </div>
-                <div id="launch-list" class="cmp-list">
+                <div id="launch-list" class="cmp-list" style="flex: 1;">
                     <div class="cmp-empty">Scanning launches…</div>
                 </div>
+                <button class="cmp-view-all-btn" onclick="openCmpModal('launches')">Show All Launches ↓</button>
             </div>
         </div>
 
@@ -160,13 +228,14 @@
                         <div class="cmp-panel-sub">The top-selling products across all competitors.</div>
                     </div>
                     <div style="display: flex; gap: 8px; align-items: center;">
-                        <button class="cmp-link" style="background:none; border:none; cursor:pointer; padding:0; font-size:11px;" onclick="openCmpModal('bestsellers')">View all →</button>
+                        
                         <div class="cmp-badge cmp-badge-cyan">TOP 5</div>
                     </div>
                 </div>
-                <div id="bestsellers-list" class="cmp-list">
+                <div id="bestsellers-list" class="cmp-list" style="flex: 1;">
                     <div class="cmp-empty">Scanning best sellers…</div>
                 </div>
+                <button class="cmp-view-all-btn" onclick="openCmpModal('bestsellers')">Show All Best Sellers ↓</button>
             </div>
 
         <!-- CATALOG GAP ANALYZER -->
@@ -177,13 +246,14 @@
                     <div class="cmp-panel-sub">Items your competitors sell, but you don't.</div>
                 </div>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                    <button class="cmp-link" style="background:none; border:none; cursor:pointer; padding:0; font-size:11px;" onclick="openCmpModal('gaps')">View all →</button>
+                    
                     <div class="cmp-badge cmp-badge-violet">MISSED REVENUE</div>
                 </div>
             </div>
-            <div id="gap-list" class="cmp-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div id="gap-list" class="cmp-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1;">
                 <div class="cmp-empty" style="grid-column: span 2;">Scanning catalogs…</div>
             </div>
+            <button class="cmp-view-all-btn" onclick="openCmpModal('gaps')">Show All Gaps ↓</button>
         </div>
 
     </div>
@@ -191,7 +261,7 @@
 
 <!-- COMPETITORS OVERLAY MODAL -->
 <div id="cmp-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px;">
-    <div class="cmp-panel" style="width: 100%; max-width: 650px; max-height: 80vh; display: flex; flex-direction: column; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+    <div class="cmp-panel" style="width: 100%; max-width: 900px; max-height: 85vh; display: flex; flex-direction: column; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
         <div class="cmp-panel-head" style="margin-bottom: 16px;">
             <div>
                 <div class="cmp-panel-title" id="cmp-modal-title" style="font-size: 18px;">Full List</div>
