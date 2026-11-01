@@ -120,8 +120,20 @@ async function loadPreferences() {
         const data = await res.json();
         if (data.status === 'success') {
             currentPrefs.auto_detect = data.auto_detect;
-            currentPrefs.selected_categories = data.selected_categories;
-            document.getElementById('auto-tags-container').innerHTML = data.auto_detected.map(tag => `<span class="dsc-auto-tag">${dscEsc(tag)}</span>`).join('');
+            currentPrefs.selected_categories = data.selected_categories || [];
+            
+            const tagsContainer = document.getElementById('auto-tags-container');
+            if (tagsContainer && data.auto_detected) {
+                tagsContainer.innerHTML = data.auto_detected.map(tag => `<span class="dsc-auto-tag">${dscEsc(tag)}</span>`).join('');
+            }
+            
+            // Sync the toggle UI with the saved state so it doesn't lock the tree
+            const toggle = document.getElementById('auto-detect-toggle');
+            if (toggle) {
+                toggle.checked = currentPrefs.auto_detect;
+                toggleAutoDetect(toggle);
+            }
+            
             if (Object.keys(backendCategories).length > 0) renderCategoryTree();
         }
     } catch(e) { console.error("Failed to load preferences", e); }
