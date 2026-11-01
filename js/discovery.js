@@ -252,8 +252,8 @@ function renderDiscoveryCards(trends) {
 
                     <!-- ACTIONS -->
                     <div style="display: flex; gap: 8px;">
-                        <button onclick="saveOpportunity(${index})" style="flex: 1; padding: 10px; background: #FFF; border: 1px solid #D1D5DB; font-weight: 800; font-size: 12px; border-radius: 2px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='#FFF'">Save</button>
-                        <button onclick="pushToShopify(${index})" style="flex: 1; padding: 10px; background: #09090B; color: #FFF; border: none; font-weight: 800; font-size: 12px; border-radius: 2px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#27272A'" onmouseout="this.style.background='#09090B'">Push to Shopify</button>
+                        <button id="save-btn-${index}" onclick="saveOpportunity(${index})" style="flex: 1; padding: 10px; background: #FFF; border: 1px solid #D1D5DB; font-weight: 800; font-size: 12px; border-radius: 2px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='#FFF'">Save to Wishlist</button>
+                        ${item.description ? `<button id="push-btn-${index}" onclick="pushToShopify(${index})" style="flex: 1; padding: 10px; background: #09090B; color: #FFF; border: none; font-weight: 800; font-size: 12px; border-radius: 2px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#27272A'" onmouseout="this.style.background='#09090B'">Push to Shopify</button>` : ''}
                     </div>
                 </div>
             </div>
@@ -261,12 +261,75 @@ function renderDiscoveryCards(trends) {
     }).join('');
 }
 
-async function pushToShopify(index) { alert("Push to Shopify integration coming soon!"); }
-async function saveOpportunity(index) { alert("Saved to Wishlist!"); }
+async function pushToShopify(index) {
+    const item = allTrends[index];
+    const btn = document.getElementById(`push-btn-${index}`);
+    btn.innerText = "Pushing...";
+    btn.disabled = true;
+
+    try {
+        const token = JSON.parse(localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token')))).access_token;
+        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/push-draft', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({
+                title: item.ali_title,
+                price: item.shop_avg_price,
+                description: item.description,
+                image_url: item.image_url
+            })
+        });
+        
+        if (res.ok) {
+            btn.innerText = "✅ Pushed!";
+            btn.style.background = "#059669";
+        } else {
+            const err = await res.json();
+            alert(err.detail || "Failed to push");
+            btn.innerText = "Push to Shopify";
+            btn.disabled = false;
+        }
+    } catch(e) {
+        alert("Network Error");
+        btn.innerText = "Push to Shopify";
+        btn.disabled = false;
+    }
+}
+async function saveOpportunity(index) {
+    const item = allTrends[index];
+    const btn = document.getElementById(`save-btn-${index}`);
+    btn.innerText = "Saving...";
+    btn.disabled = true;
+
+    try {
+        const token = JSON.parse(localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token')))).access_token;
+        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({
+                title: item.ali_title,
+                price: item.shop_avg_price,
+                image_url: item.image_url,
+                store_url: item.store_url
+            })
+        });
+        
+        if (res.ok) {
+            btn.innerText = "⭐ Saved!";
+            btn.style.color = "#D97706";
+            btn.style.borderColor = "#D97706";
+        } else {
+            btn.innerText = "Error";
+        }
+    } catch(e) {
+        btn.innerText = "Network Error";
+    }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     loadPreferences();
     loadDiscovery();
     fetchCategories().then(() => renderCategoryTree());
 });
+
 
