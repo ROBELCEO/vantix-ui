@@ -256,6 +256,12 @@ function renderSimulator(product) {
             Adjust the price to see the required volume.
         </div>
     `;
+
+    // Trigger the calculation immediately for the new product
+    setTimeout(() => {
+        const input = document.getElementById('sim-price');
+        if (input) calculateSimulation(safeCost, product.my_price);
+    }, 50);
 }
 
 function calculateSimulation(cost, originalPrice) {
@@ -288,7 +294,11 @@ function calculateSimulation(cost, originalPrice) {
 
 async function fetchAIAdvice(productName) {
     const div = document.getElementById('ai-advisor-content');
+    if (!div) return;
     
+    // Clear old text immediately so it doesn't look like it's stuck on the previous product
+    div.innerHTML = '<div class="trm-empty">Analyzing strategy…</div>';
+
     // BULLETPROOF LOCK CHECK
     if (window.userTier === 'starter') {
         div.style.position = 'relative';
@@ -339,3 +349,4 @@ async function fetchAIAdvice(productName) {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(loadTerminal, 500);
 });
+
