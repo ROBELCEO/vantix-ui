@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Vantix — Membership</title>
+<title>Vantix â€” Membership</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=2187">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -17,7 +17,7 @@
     .plan-price span { font-size: 14px; color: #71717A; font-weight: 500; font-family: var(--font-sans); }
     .plan-features { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; flex: 1; }
     .feature-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #52525B; line-height: 1.5; }
-    .feature-item::before { content: '✓'; color: #059669; font-weight: 900; font-size: 14px; }
+    .feature-item::before { content: 'âœ“'; color: #059669; font-weight: 900; font-size: 14px; }
     .plan-btn { width: 100%; padding: 12px; font-size: 14px; font-weight: 800; border-radius: 2px; border: none; cursor: pointer; transition: 0.2s; }
     .plan-btn-primary { background: #0284C7; color: #FFF; }
     .plan-btn-primary:hover { background: #0369A1; }
@@ -34,7 +34,7 @@
 <div class="drawer" id="mobile-drawer">
     <div class="drawer-header">
         <div class="brand"><div>VANTI<span>X</span></div></div>
-        <button class="drawer-close" onclick="toggleMenu()">✕</button>
+        <button class="drawer-close" onclick="toggleMenu()">âœ•</button>
     </div>
     <a href="index.html" class="drawer-tab">Connect</a>
     <a href="overview.html" class="drawer-tab">Overview</a>
@@ -68,11 +68,34 @@
     <div style="display: flex; align-items: center; gap: 12px;">
         <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
         <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none; background: #222 !important; color: #FFF !important; border-color: #333 !important;">Log Out</button>
-        <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+        <button class="mobile-menu-btn" onclick="toggleMenu()">â˜°</button>
     </div>
 </div>
 
 <div class="screen">
+    <!-- MEMBERSHIP PAGE — SCOPED UI POLISH v1 -->
+    <style>
+        /* 1. Tight gap from header */
+        .screen .mem-wrap { padding-top: 4px !important; }
+
+        /* 2. Header fonts */
+        .screen .screen-title { font-size: 24px !important; line-height: 1.25 !important; font-weight: 900 !important; margin-bottom: 8px !important; }
+        .screen .screen-sub { font-size: 14px !important; color: #52525B !important; }
+
+        /* 3. Card Typography */
+        .screen .plan-name { font-size: 18px !important; font-weight: 900 !important; }
+        .screen .plan-desc { font-size: 13px !important; color: #52525B !important; }
+        .screen .plan-price { font-size: 32px !important; line-height: 1.1 !important; font-weight: 800 !important; }
+        .screen .plan-price span { font-size: 13px !important; color: #71717A !important; font-weight: 500 !important; font-family: var(--font-sans) !important; }
+        
+        /* 4. Features */
+        .screen .feature-item { font-size: 13px !important; color: #3F3F46 !important; }
+        .screen .feature-item::before { font-size: 13px !important; }
+
+        /* 5. Buttons */
+        .screen .plan-btn { font-size: 13px !important; padding: 10px !important; font-weight: 800 !important; }
+        .screen .popular-badge { font-size: 10px !important; padding: 4px 10px !important; }
+    </style>
     <div style="max-width: 1100px; margin: 0 auto; padding: 32px 20px 64px;">
         
         <div style="text-align: center; margin-bottom: 40px;">
@@ -114,7 +137,7 @@
                     <div class="feature-item">Inventory KPIs & Restock</div>
                     <div class="feature-item">Global Discovery Engine</div>
                 </div>
-                <button id="btn-pro" class="plan-btn plan-btn-primary">Upgrade to Pro →</button>
+                <button id="btn-pro" class="plan-btn plan-btn-primary">Upgrade to Pro â†’</button>
             </div>
 
             <!-- SCALE -->
