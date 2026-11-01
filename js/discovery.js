@@ -341,6 +341,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+
+
 // ==========================================
 // WATCHLIST TAB LOGIC INSIDE DISCOVERY
 // ==========================================
@@ -421,8 +423,8 @@ async function loadWatchlist() {
             let cleanTitle = (item.title || 'Untitled').replace(/ETB[\d\.]+/gi, '').replace(/\$[\d\.]+/gi, '').replace(/-\d+%/gi, '').trim();
             return `
             <div class="god-card" style="background:#FFF; border:1px solid #E4E4E7; border-radius:4px; overflow:hidden; padding:16px; display:flex; flex-direction:column; gap:12px;">
-                <!-- FORCED 400PX HEIGHT -->
-                <img src="${item.image_url || 'https://ui-avatars.com/api/?name=V&background=F4F4F5'}" style="width:100%; height:400px !important; min-height:400px !important; object-fit:cover; border-radius:4px; display:block;">
+                <!-- SHORTER 240PX HEIGHT FOR WATCHLIST -->
+                <img src="${item.image_url || 'https://ui-avatars.com/api/?name=V&background=F4F4F5'}" style="width:100%; height:240px !important; min-height:240px !important; object-fit:cover; border-radius:4px; display:block;">
                 <div style="font-weight:800; font-size:14px; color:#09090B; height:38px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${cleanTitle}</div>
                 <div style="font-weight:900; font-size:18px; color:#059669; font-family:var(--font-mono);">$${Number(item.price || 0).toFixed(2)}</div>
                 <div style="display:flex; gap:8px; margin-top:auto;">
