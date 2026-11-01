@@ -1,4 +1,12 @@
-﻿let _invTierPromise = null;
+﻿function invMoney(val) {
+    if (val === null || val === undefined || isNaN(val)) return "—";
+    return "$" + Number(val).toFixed(2);
+}
+function invNum(val) {
+    if (val === null || val === undefined || isNaN(val)) return "—";
+    return Number(val).toLocaleString();
+}
+let _invTierPromise = null;
 function ensureInvTier() {
     if (window.invTier) return Promise.resolve(window.invTier);
     if (_invTierPromise) return _invTierPromise;
@@ -195,3 +203,4 @@ async function loadInventory() {
         list.innerHTML = '<div class="inv-empty inv-text-red">Network error. Failed to load inventory data.</div>';
     }
 }
+
