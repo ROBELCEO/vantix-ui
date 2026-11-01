@@ -54,13 +54,71 @@
 </div>
 
 <div class="screen trm-screen">
+    <!-- TERMINAL PAGE — COMPACT LAYOUT FIX -->
+    <style>
+        /* 1. Remove vertical gap */
+        .trm-screen .trm-wrap { padding-top: 0 !important; }
+        .trm-screen .trm-row-a { margin-bottom: 16px !important; align-items: flex-start !important; }
+
+        /* 2. Title & Eyebrow on same line (Blue Eyebrow) */
+        .trm-screen .trm-row-a > div:first-child {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .trm-screen .trm-title {
+            font-size: 20px !important;
+            margin: 0 !important;
+            line-height: 1.2 !important;
+            font-weight: 900 !important;
+        }
+        .trm-screen .trm-eyebrow {
+            font-size: 10px !important;
+            margin: 0 !important;
+            letter-spacing: 1.4px !important;
+            text-transform: uppercase !important;
+            font-weight: 800 !important;
+            color: #0284C7 !important;
+        }
+        .trm-screen .trm-sub {
+            width: 100%; /* Forces subtitle to next row */
+            font-size: 13px !important;
+            margin-top: 4px !important;
+            line-height: 1.5 !important;
+            color: #52525B !important;
+        }
+
+        /* 3. Status Chip */
+        .trm-screen .trm-status-group { gap: 8px !important; }
+        .trm-screen .trm-chip {
+            font-size: 10px !important;
+            padding: 4px 8px !important;
+            height: 26px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            margin-top: 4px !important;
+        }
+
+        /* 4. Clean Scrollbars for the Watchlist */
+        .trm-screen .trm-list {
+            scrollbar-width: thin !important;
+            scrollbar-color: #E4E4E7 transparent !important;
+            overflow-y: auto !important;
+        }
+        .trm-screen .trm-list::-webkit-scrollbar { width: 6px !important; height: 6px !important; }
+        .trm-screen .trm-list::-webkit-scrollbar-track { background: transparent !important; }
+        .trm-screen .trm-list::-webkit-scrollbar-thumb { background: #E4E4E7 !important; border-radius: 4px !important; }
+        .trm-screen .trm-list::-webkit-scrollbar-thumb:hover { background: #D4D4D8 !important; }
+    </style>
+
     <div class="trm-wrap">
         
         <!-- ROW A: HEADER -->
         <div class="trm-row-a">
             <div>
-                <div class="trm-eyebrow">TACTICAL PRICING</div>
                 <h1 class="trm-title">Terminal</h1>
+                <div class="trm-eyebrow">TACTICAL PRICING</div>
                 <p class="trm-sub">Analyze margins, simulate price drops, and consult the AI advisor.</p>
             </div>
             <div class="trm-status-group">
