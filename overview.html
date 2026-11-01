@@ -54,12 +54,82 @@
 </div>
 
 <div class="screen ov-screen">
+    <!-- OVERVIEW PAGE — COMPACT LAYOUT FIX -->
+    <style>
+        /* 1. Remove vertical gap */
+        .ov-screen .ov-wrap { padding-top: 0 !important; }
+        .ov-screen .ov-row-a { margin-bottom: 16px !important; align-items: flex-start !important; }
+
+        /* 2. Title & Eyebrow on same line (Blue Eyebrow) */
+        .ov-screen .ov-row-a > div:first-child {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .ov-screen .ov-title {
+            font-size: 20px !important;
+            margin: 0 !important;
+            line-height: 1.2 !important;
+            font-weight: 900 !important;
+        }
+        .ov-screen .ov-eyebrow {
+            font-size: 10px !important;
+            margin: 0 !important;
+            letter-spacing: 1.4px !important;
+            text-transform: uppercase !important;
+            font-weight: 800 !important;
+            color: #0284C7 !important;
+        }
+        .ov-screen .ov-sub {
+            width: 100%; /* Forces subtitle to next row */
+            font-size: 13px !important;
+            margin-top: 4px !important;
+            line-height: 1.5 !important;
+            color: #52525B !important;
+        }
+
+        /* 3. Status Chips */
+        .ov-screen .ov-status-group { gap: 8px !important; }
+        .ov-screen .ov-status-chip {
+            font-size: 10px !important;
+            padding: 4px 8px !important;
+            height: 26px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            margin-top: 4px !important;
+        }
+
+        /* 4. Panels & Flex layout to push button to bottom */
+        .ov-screen .ov-panel { display: flex; flex-direction: column; padding: 20px !important; }
+        .ov-screen .ov-list { flex: 1; }
+
+        /* 5. The new full-width View All button */
+        .ov-screen .ov-view-all-btn {
+            width: 100%;
+            margin-top: 16px;
+            padding: 10px;
+            background: #FAFAFA;
+            border: 1px dashed #D1D5DB;
+            color: #0284C7;
+            font-size: 12px;
+            font-weight: 800;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .ov-screen .ov-view-all-btn:hover {
+            background: #F4F4F5;
+            color: #0369A1;
+        }
+    </style>
+
     <div class="ov-wrap">
 
         <div class="ov-row-a">
             <div>
-                <div class="ov-eyebrow">OVERVIEW</div>
                 <h1 class="ov-title">Command Center</h1>
+                <div class="ov-eyebrow">OVERVIEW</div>
                 <p class="ov-sub">A real-time read on profit, risk, and the next move worth making.</p>
             </div>
             <div class="ov-status-group">
@@ -162,11 +232,12 @@
                         <div class="ov-panel-title">Top Products</div>
                         <div class="ov-panel-sub">By revenue, last 30 days</div>
                     </div>
-                    <a href="#" onclick="showTopProductsModal(); return false;" class="ov-link">View all →</a>
+                    
                 </div>
                 <div id="ov-top-products" class="ov-list">
                     <div class="ov-empty">Loading products…</div>
                 </div>
+                <button class="ov-view-all-btn" onclick="showTopProductsModal()">Show All Products ↓</button>
             </div>
 
             <div class="ov-panel ov-ai-panel">
