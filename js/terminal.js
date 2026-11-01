@@ -118,7 +118,14 @@ function selectProduct(index) {
     renderChart(product);
     renderSafeFloor(product);
     renderSimulator(product);
-    fetchAIAdvice(product.my_product);
+
+    let compPrice = null;
+    let safeFloor = null;
+    if (product.competitor_matches && product.competitor_matches.length > 0) {
+        compPrice = product.competitor_matches[0].comp_price;
+        safeFloor = product.competitor_matches[0].safe_floor;
+    }
+    fetchAIAdvice(product.my_product, product.my_price, product.my_cost, compPrice, safeFloor);
 }
 
 function renderChart(product) {
@@ -257,11 +264,8 @@ function renderSimulator(product) {
         </div>
     `;
 
-    // Trigger the calculation immediately for the new product
-    setTimeout(() => {
-        const input = document.getElementById('sim-price');
-        if (input) calculateSimulation(safeCost, product.my_price);
-    }, 50);
+    // Calculate immediately
+    calculateSimulation(safeCost, product.my_price);
 }
 
 function calculateSimulation(cost, originalPrice) {
@@ -270,16 +274,21 @@ function calculateSimulation(cost, originalPrice) {
     const newPrice = parseFloat(input.value) || 0;
     const resultDiv = document.getElementById('sim-result');
     
+    if (newPrice === originalPrice) {
+        resultDiv.innerHTML = `<span class="trm-text-muted">Current price. No volume increase needed.</span>`;
+        return;
+    }
+
+    if (newPrice > originalPrice) {
+        resultDiv.innerHTML = `<span class="trm-text-green">You are raising your price. Any volume maintains higher profit.</span>`;
+        return;
+    }
+
     const originalMargin = originalPrice - cost;
     const newMargin = newPrice - cost;
 
     if (newMargin <= 0) {
         resultDiv.innerHTML = `<span class="trm-text-red">You are selling at a loss.</span>`;
-        return;
-    }
-
-    if (newPrice >= originalPrice) {
-        resultDiv.innerHTML = `<span class="trm-text-green">You are raising your price. Any volume maintains higher profit.</span>`;
         return;
     }
 
@@ -292,7 +301,7 @@ function calculateSimulation(cost, originalPrice) {
     `;
 }
 
-async function fetchAIAdvice(productName) {
+async function fetchAIAdvice(productName, myPrice, myCost, compPrice, safeFloor) {
     const div = document.getElementById('ai-advisor-content');
     if (!div) return;
     
@@ -316,7 +325,14 @@ async function fetchAIAdvice(productName) {
     div.innerHTML = '<div class="trm-empty">Analyzing strategy…</div>';
     
     try {
-        const res = await fetch(`https://vantix-my5f.onrender.com/api/ai/advisor?product_name=${encodeURIComponent(productName)}`);
+        const url = new URL('https://vantix-my5f.onrender.com/api/ai/advisor');
+        url.searchParams.append('product_name', productName);
+        if (myPrice !== undefined && myPrice !== null) url.searchParams.append('my_price', myPrice);
+        if (myCost !== undefined && myCost !== null) url.searchParams.append('my_cost', myCost);
+        if (compPrice !== undefined && compPrice !== null) url.searchParams.append('comp_price', compPrice);
+        if (safeFloor !== undefined && safeFloor !== null) url.searchParams.append('safe_floor', safeFloor);
+
+        const res = await fetch(url.toString());
         
         if (res.status === 402) {
             div.style.position = 'relative';
@@ -349,4 +365,5 @@ async function fetchAIAdvice(productName) {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(loadTerminal, 500);
 });
+
 
