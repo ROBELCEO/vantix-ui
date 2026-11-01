@@ -205,7 +205,7 @@ function renderDiscoveryCards(trends) {
             <div class="god-card" style="display: flex; flex-direction: column; background: #FFF; border: 1px solid #E4E4E7; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); overflow: hidden;">
                 
                 <!-- TOP: Product Image & Score Badge -->
-                <div style="height: 200px; width: 100%; background: #F4F4F5; position: relative;">
+                <div style="height: 380px; width: 100%; background: #F4F4F5; position: relative;">
                     <img src="${dscEsc(imgUrl)}" 
                          style="width: 100%; height: 100%; object-fit: cover;" 
                          onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Vantix&background=F4F4F5&color=09090B';">
