@@ -1,6 +1,6 @@
 ﻿function invMoney(val) {
     if (val === null || val === undefined || isNaN(val)) return "—";
-    return "$" + Number(val).toFixed(2);
+    return "$" + Number(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 function invNum(val) {
     if (val === null || val === undefined || isNaN(val)) return "—";
@@ -203,4 +203,5 @@ async function loadInventory() {
         list.innerHTML = '<div class="inv-empty inv-text-red">Network error. Failed to load inventory data.</div>';
     }
 }
+
 
