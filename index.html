@@ -2,498 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Connect</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=2138">
-
-<style>
-/* ============================================================
-   VANTIX — UI REFINEMENT LAYER  (v1)
-   Sharp edges · tight vertical rhythm · high contrast · calm surfaces
-   Loaded after style.css so it wins without !important spam.
-   ============================================================ */
-
-:root{
-  --vx-ink:        #0A0A0A;
-  --vx-ink-2:      #18181B;
-  --vx-mute:       #52525B;
-  --vx-mute-2:     #71717A;
-  --vx-line:       #E4E4E7;
-  --vx-line-2:     #D4D4D8;
-  --vx-canvas:     #FAFAFA;
-  --vx-surface:    #FFFFFF;
-  --vx-cyan:       #00E5FF;
-  --vx-green:      #00A86B;
-  --vx-radius:     0px;
-  --vx-header-h:   56px;
-  --font-mono:     'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-}
-
-/* ---------- BASE ---------- */
-body{
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  background: var(--vx-surface);
-  color: var(--vx-ink);
-}
-
-/* ---------- HEADER : shorter, sticky, inked hairline ---------- */
-.header{
-  height: var(--vx-header-h);
-  min-height: var(--vx-header-h);
-  padding: 0 20px;
-  background: rgba(255,255,255,.94);
-  backdrop-filter: saturate(180%) blur(12px);
-  -webkit-backdrop-filter: saturate(180%) blur(12px);
-  border-bottom: 1px solid var(--vx-ink);
-  position: sticky;
-  top: 0;
-  z-index: 70;
-}
-
-.header .brand{ letter-spacing: -.02em; }
-
-.header .tabs{
-  height: 100%;
-  display: flex;
-  align-items: stretch;
-  gap: 2px;
-}
-
-.header .tab{
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--vx-mute-2);
-  text-decoration: none;
-  padding: 0 11px;
-  display: inline-flex;
-  align-items: center;
-  height: 100%;
-  border-bottom: 2px solid transparent;
-  transition: color .15s ease, border-color .15s ease;
-}
-.header .tab:hover{ color: var(--vx-ink); }
-.header .tab.active{
-  color: var(--vx-ink);
-  border-bottom-color: var(--vx-cyan);
-}
-
-.header-user{
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: .04em;
-  color: var(--vx-mute-2);
-  max-width: 180px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* ---------- SCREEN : kill the dead space ---------- */
-.screen{ padding-top: 0; }
-
-.cnx-screen{
-  background: var(--vx-canvas);
-  min-height: calc(100vh - var(--vx-header-h));
-  padding: 16px 20px 64px;
-}
-
-.cnx-wrap{
-  max-width: 1120px;
-  margin: 0 auto;
-}
-
-/* ---------- ROW A : title block ---------- */
-.cnx-row-a{
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 24px;
-  flex-wrap: wrap;
-  padding-bottom: 16px;
-  margin-bottom: 16px;
-  border-bottom: 1px solid var(--vx-line);
-}
-
-.cnx-eyebrow{
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: var(--vx-ink);
-  margin-bottom: 10px;
-}
-.cnx-eyebrow::before{
-  content: "";
-  width: 6px;
-  height: 6px;
-  background: var(--vx-cyan);
-  box-shadow: 0 0 0 1px var(--vx-ink);
-  flex: 0 0 6px;
-}
-
-.cnx-title{
-  margin: 0 0 8px;
-  font-size: clamp(26px, 3.2vw, 36px);
-  font-weight: 800;
-  line-height: 1.04;
-  letter-spacing: -.035em;
-  color: var(--vx-ink);
-  text-wrap: balance;
-}
-
-.cnx-sub{
-  margin: 0;
-  font-size: 13.5px;
-  line-height: 1.55;
-  color: var(--vx-mute);
-  max-width: 56ch;
-}
-
-/* ---------- STATUS CHIP ---------- */
-.cnx-status-group{ display: flex; align-items: center; gap: 8px; }
-
-.cnx-chip{
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  padding: 8px 12px;
-  background: var(--vx-surface);
-  color: var(--vx-ink);
-  border: 1px solid var(--vx-line-2);
-  border-radius: var(--vx-radius);
-  white-space: nowrap;
-  transition: border-color .15s ease, color .15s ease, background .15s ease;
-}
-.cnx-chip.is-on{
-  border-color: var(--vx-green);
-  color: var(--vx-green);
-  background: #F4FDF9;
-}
-.cnx-chip.is-off{
-  border-color: var(--vx-line-2);
-  color: var(--vx-mute);
-}
-
-/* ---------- PANELS ---------- */
-.cnx-panel{
-  background: var(--vx-surface);
-  border: 1px solid var(--vx-line);
-  border-radius: var(--vx-radius);
-  padding: 20px;
-  transition: border-color .16s ease;
-}
-.cnx-panel:hover{ border-color: var(--vx-line-2); }
-
-.cnx-panel-head{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 6px;
-}
-
-.cnx-panel-title{
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: -.01em;
-  color: var(--vx-ink);
-}
-
-.cnx-panel-sub{
-  font-size: 12.5px;
-  line-height: 1.5;
-  color: var(--vx-mute);
-}
-
-.cnx-badge{
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  padding: 4px 8px;
-  border-radius: var(--vx-radius);
-  border: 1px solid var(--vx-line-2);
-  background: #FAFAFA;
-  color: var(--vx-mute);
-}
-.cnx-badge.is-info{
-  background: #F0FAFE;
-  border-color: #BAE6FD;
-  color: #0369A1;
-}
-
-/* ---------- INPUTS ---------- */
-.cnx-input-group{ margin-bottom: 14px; }
-.cnx-input-group:last-of-type{ margin-bottom: 0; }
-
-.cnx-label{
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--vx-mute);
-  margin-bottom: 7px;
-}
-
-.cnx-input{
-  width: 100%;
-  height: 42px;
-  padding: 0 12px;
-  font-family: Inter, system-ui, sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--vx-ink);
-  background: var(--vx-surface);
-  border: 1px solid var(--vx-line-2);
-  border-radius: var(--vx-radius);
-  outline: none;
-  transition: border-color .15s ease, box-shadow .15s ease;
-}
-.cnx-input::placeholder{ color: #A1A1AA; font-weight: 400; }
-.cnx-input:hover{ border-color: #A1A1AA; }
-.cnx-input:focus{
-  border-color: var(--vx-ink);
-  box-shadow: 0 0 0 3px rgba(0, 229, 255, .30);
-}
-
-/* ---------- BUTTONS ---------- */
-.cnx-btn-primary{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 44px;
-  padding: 0 20px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: #FFFFFF;
-  background: var(--vx-ink);
-  border: 1px solid var(--vx-ink);
-  border-radius: var(--vx-radius);
-  cursor: pointer;
-  transition: background .15s ease, border-color .15s ease, color .15s ease;
-}
-.cnx-btn-primary:hover{ background: var(--vx-ink-2); border-color: var(--vx-ink-2); }
-.cnx-btn-primary:active{ transform: translateY(1px); }
-.cnx-btn-primary:focus-visible{ outline: 2px solid var(--vx-cyan); outline-offset: 2px; }
-.cnx-btn-primary:disabled{
-  background: var(--vx-line);
-  border-color: var(--vx-line);
-  color: #A1A1AA;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* ---------- GRID ---------- */
-.cnx-grid-2{
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-/* ---------- LOADING ---------- */
-.cnx-loading{
-  padding: 48px 24px;
-  text-align: center;
-}
-.cnx-spinner{
-  width: 28px;
-  height: 28px;
-  margin: 0 auto 14px;
-  border: 2px solid var(--vx-line);
-  border-top-color: var(--vx-ink);
-  border-radius: 50%;
-  animation: vx-spin .7s linear infinite;
-}
-@keyframes vx-spin{ to{ transform: rotate(360deg); } }
-.cnx-loading-text{
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--vx-mute);
-}
-
-/* ---------- UNCONNECTED (empty state) ---------- */
-.cnx-empty{
-  max-width: 560px;
-  margin: 0 auto;
-  padding: 44px 24px;
-  text-align: center;
-}
-.cnx-empty-icon{
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  background: #FAFAFA;
-  border: 1px solid var(--vx-line-2);
-  border-radius: var(--vx-radius);
-}
-.cnx-empty-title{
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: -.02em;
-  color: var(--vx-ink);
-  margin-bottom: 6px;
-}
-.cnx-empty-sub{
-  font-size: 13px;
-  line-height: 1.55;
-  color: var(--vx-mute);
-  max-width: 42ch;
-  margin: 0 auto 22px;
-}
-.cnx-empty .cnx-input-group{
-  max-width: 380px;
-  margin: 0 auto 10px;
-}
-.cnx-empty .cnx-input{ text-align: center; }
-.cnx-empty .cnx-btn-primary{
-  max-width: 380px;
-  width: 100%;
-}
-
-/* ---------- CONNECTED BANNER ---------- */
-.cnx-banner{
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 20px;
-  margin-bottom: 16px;
-  background: var(--vx-surface);
-  border: 1px solid var(--vx-line);
-  border-left: 3px solid var(--vx-green);
-  border-radius: var(--vx-radius);
-}
-
-.cnx-store-logo{
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
-  object-fit: cover;
-  background: #FFF;
-  border: 1px solid var(--vx-line-2);
-  border-radius: var(--vx-radius);
-}
-.cnx-store-fallback{
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
-  font-weight: 800;
-  color: #FFFFFF;
-  background: var(--vx-green);
-  border-radius: var(--vx-radius);
-}
-
-.cnx-banner-text{ min-width: 0; }
-
-.cnx-banner-title{
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: -.01em;
-  color: var(--vx-ink);
-  margin-bottom: 2px;
-}
-.cnx-banner-domain{
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: .02em;
-  color: var(--vx-mute);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.cnx-banner-live{
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--vx-green);
-}
-.cnx-dot{
-  width: 6px;
-  height: 6px;
-  background: var(--vx-green);
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px rgba(0, 168, 107, .14);
-}
-
-/* ---------- INLINE SUCCESS TEXT ---------- */
-.cnx-saved{
-  display: none;
-  margin-top: 12px;
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--vx-green);
-}
-
-/* ---------- RESPONSIVE ---------- */
-@media (max-width: 900px){
-  .cnx-grid-2{ grid-template-columns: 1fr; }
-  .cnx-row-a{
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-    padding-bottom: 14px;
-    margin-bottom: 14px;
-  }
-  .cnx-title{ font-size: 26px; }
-  .cnx-screen{ padding: 14px 16px 48px; }
-  .header{ padding: 0 16px; }
-  .header-user{ display: none; }
-  /* 16px stops iOS from zooming the viewport on focus */
-  .cnx-input{ font-size: 16px; }
-  .cnx-panel{ padding: 16px; }
-}
-
-@media (prefers-reduced-motion: reduce){
-  *{ animation-duration: .01ms !important; transition-duration: .01ms !important; }
-}
-</style>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<!-- ================= MOBILE DRAWER ================= -->
 <div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
 <div class="drawer" id="mobile-drawer">
     <div class="drawer-header">
@@ -512,13 +28,11 @@ body{
     <a href="settings.html" class="drawer-tab">Settings</a>
 </div>
 
-<!-- ================= HEADER ================= -->
 <div class="header">
     <a href="index.html" class="brand">
         <div class="mark"><svg viewBox="0 0 32 32"><rect x="0.5" y="0.5" width="31" height="31" fill="#000" stroke="#2A2A2A" stroke-width="1"/><polyline points="6.5,8 14.5,24 24,8" fill="none" stroke="#00E5FF" stroke-width="3.2" stroke-linejoin="miter" stroke-linecap="square"/><rect x="22" y="5.5" width="5" height="5" fill="#00FF88"/></svg></div>
         <div>VANTI<span>X</span></div>
     </a>
-
     <div class="tabs">
         <a href="index.html" class="tab active">Connect</a>
         <a href="overview.html" class="tab">Overview</a>
@@ -531,22 +45,19 @@ body{
         <a href="membership.html" class="tab">Membership</a>
         <a href="settings.html" class="tab">Settings</a>
     </div>
-
-    <div style="display:flex; align-items:center; gap:12px;">
-        <div id="user-email" class="header-user">loading...</div>
-        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="display:none; padding:6px 12px; font-size:10.5px; background:#0A0A0A !important; color:#FFF !important; border:1px solid #0A0A0A !important; border-radius:0 !important; font-family:var(--font-mono); letter-spacing:.1em; text-transform:uppercase;">Log Out</button>
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
+        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none; background: #222 !important; color: #FFF !important; border-color: #333 !important;">Log Out</button>
         <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
     </div>
 </div>
 
-<!-- ================= SCREEN ================= -->
 <div class="screen cnx-screen">
     <div class="cnx-wrap">
-
-        <!-- Title block -->
+        
         <div class="cnx-row-a">
             <div>
-                <div class="cnx-eyebrow">Onboarding</div>
+                <div class="cnx-eyebrow">ONBOARDING</div>
                 <h1 class="cnx-title">Connect Your Store</h1>
                 <p class="cnx-sub">Link your Shopify store to unlock profit intelligence, competitor tracking, and AI strategies.</p>
             </div>
@@ -556,83 +67,87 @@ body{
         </div>
 
         <!-- SKELETON LOADER -->
-        <div id="view-loading" class="cnx-panel cnx-loading" style="display:block;">
-            <div class="cnx-spinner"></div>
-            <div class="cnx-loading-text">Verifying Shopify connection…</div>
+        <div id="view-loading" style="display: block;">
+            <div class="cnx-panel" style="padding: 48px; text-align: center; border: 1px solid #E4E4E7;">
+                <div class="dsc-spinner" style="width: 32px; height: 32px; margin-bottom: 16px; border-color: #E4E4E7; border-top-color: #0284C7;"></div>
+                <div style="color: #52525B; font-weight: 600;">Verifying Shopify connection...</div>
+            </div>
         </div>
 
         <!-- UNCONNECTED VIEW -->
-        <div id="view-unconnected" style="display:none;">
-            <div class="cnx-panel cnx-empty">
-                <div class="cnx-empty-icon">🛍️</div>
-                <div class="cnx-empty-title">Connect Shopify</div>
-                <div class="cnx-empty-sub">Enter your myshopify domain to begin syncing your catalog and orders.</div>
-
-                <div class="cnx-input-group">
-                    <input type="text" id="shopify-domain" class="cnx-input" placeholder="your-store.myshopify.com">
+        <div id="view-unconnected" style="display: none;">
+            <div class="cnx-panel" style="max-width: 600px; margin: 0 auto; text-align: center; padding: 48px 24px;">
+                <div style="font-size: 48px; margin-bottom: 16px;">🛍️</div>
+                <div class="cnx-panel-title" style="font-size: 20px; margin-bottom: 8px;">Connect Shopify</div>
+                <div class="cnx-panel-sub" style="margin-bottom: 24px;">Enter your myshopify domain to begin syncing your catalog and orders.</div>
+                
+                <div class="cnx-input-group" style="max-width: 400px; margin: 0 auto 16px;">
+                    <input type="text" id="shopify-domain" class="cnx-input" placeholder="your-store.myshopify.com" style="text-align: center;">
                 </div>
-                <button id="direct-connect-link" class="cnx-btn-primary">Connect Shopify Store →</button>
+                <button id="direct-connect-link" class="cnx-btn-primary" style="max-width: 400px; margin: 0 auto;">
+                    Connect Shopify Store →
+                </button>
             </div>
         </div>
 
         <!-- CONNECTED VIEW -->
-        <div id="view-connected" style="display:none;">
-
-            <!-- Status banner -->
-            <div class="cnx-banner">
-                <img id="store-logo" class="cnx-store-logo" src="" alt="" style="display:none;">
-                <div id="store-logo-fallback" class="cnx-store-fallback">✓</div>
-
-                <div class="cnx-banner-text">
-                    <div class="cnx-banner-title">Store Connected</div>
-                    <div class="cnx-banner-domain" id="connected-domain">loading...</div>
+        <div id="view-connected" style="display: none;">
+            
+            <div class="cnx-panel" style="margin-bottom: 24px; background: #F0FDF4; border-color: #BBF7D0;">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <!-- Store Logo Image -->
+                    <img id="store-logo" src="" style="width: 40px; height: 40px; border-radius: 2px; border: 1px solid #22C55E; object-fit: cover; display: none; background: #FFF;">
+                    <!-- Fallback Checkmark -->
+                    <div id="store-logo-fallback" style="width: 40px; height: 40px; background: #DCFCE7; border: 1px solid #22C55E; display: flex; align-items: center; justify-content: center; color: #16A34A; font-size: 18px;">✓</div>
+                    
+                    <div>
+                        <div class="cnx-panel-title" style="color: #059669 !important;">Store Connected</div>
+                        <div class="cnx-panel-sub" id="connected-domain" style="color: #047857 !important;">loading...</div>
+                    </div>
                 </div>
-
-                <div class="cnx-banner-live"><span class="cnx-dot"></span>Active</div>
             </div>
 
             <div class="cnx-grid-2">
-
-                <!-- STEP 1 : PROFIT SETTINGS -->
+                
+                <!-- STEP 1: PROFIT SETTINGS -->
                 <div class="cnx-panel">
                     <div class="cnx-panel-head">
                         <div class="cnx-panel-title">1. Profit Settings</div>
-                        <div class="cnx-badge">Required</div>
+                        <div class="cnx-badge" style="background: #F4F4F5; color: #52525B; border: 1px solid #E4E4E7;">REQUIRED</div>
                     </div>
-                    <div class="cnx-panel-sub" style="margin-bottom:16px;">We use this to calculate True Net Profit, not just revenue.</div>
-
+                    <div class="cnx-panel-sub" style="margin-bottom: 16px;">We use this to calculate True Net Profit, not just revenue.</div>
+                    
                     <div class="cnx-input-group">
-                        <label class="cnx-label" for="profit-goal">Monthly Profit Goal ($)</label>
+                        <label class="cnx-label">Monthly Profit Goal ($)</label>
                         <input type="number" id="profit-goal" class="cnx-input" placeholder="e.g. 5000">
                     </div>
                     <div class="cnx-input-group">
-                        <label class="cnx-label" for="shipping-cost">Avg Shipping Cost ($)</label>
+                        <label class="cnx-label">Avg Shipping Cost ($)</label>
                         <input type="number" id="shipping-cost" class="cnx-input" placeholder="e.g. 5.00">
                     </div>
                     <div class="cnx-input-group">
-                        <label class="cnx-label" for="gateway-fee">Payment Gateway Fee (%)</label>
+                        <label class="cnx-label">Payment Gateway Fee (%)</label>
                         <input type="number" id="gateway-fee" class="cnx-input" placeholder="e.g. 2.9">
                     </div>
-
-                    <button id="save-settings-btn" class="cnx-btn-primary" onclick="saveSettings(this)" style="width:100%; margin-top:16px;">
+                    <button id="save-settings-btn" class="cnx-btn-primary" onclick="saveSettings(this)" style="width: 100%; margin-top: 8px;">
                         Save Profit Settings
                     </button>
-                    <div id="settings-status" class="cnx-saved">Settings saved successfully</div>
+                    <div id="settings-status" style="display: none; color: #059669; margin-top: 12px; text-align: center; font-weight: 600; font-size: 12px;">✅ Settings saved successfully!</div>
                 </div>
 
-                <!-- STEP 2 : TELEGRAM -->
+                <!-- STEP 2: TELEGRAM ALERTS -->
                 <div class="cnx-panel">
                     <div class="cnx-panel-head">
                         <div class="cnx-panel-title">2. Telegram Alerts</div>
-                        <div class="cnx-badge is-info">Recommended</div>
+                        <div class="cnx-badge" style="background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD;">RECOMMENDED</div>
                     </div>
-                    <div class="cnx-panel-sub" style="margin-bottom:16px;">Get instant price drop alerts and daily AI briefings sent to your phone.</div>
-
-                    <div id="telegram-status-text" class="cnx-panel-sub" style="margin-bottom:16px; font-weight:600; color:#0A0A0A;">
+                    <div class="cnx-panel-sub" style="margin-bottom: 16px;">Get instant price drop alerts and daily AI briefings sent to your phone.</div>
+                    
+                    <div id="telegram-status-text" class="cnx-panel-sub" style="margin-bottom: 16px; font-weight: 600;">
                         Checking Telegram status...
                     </div>
-
-                    <button id="telegram-btn" class="cnx-btn-primary" style="width:100%;">
+                    
+                    <button id="telegram-btn" class="cnx-btn-primary" style="width: 100%;">
                         Activate Telegram →
                     </button>
                 </div>
@@ -647,3 +162,16 @@ body{
 <script src="js/connect.js?v=2126"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
