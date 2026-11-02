@@ -164,3 +164,10 @@ body, .screen {
     align-items: center;
     gap: 4px;
 }
+
+/* Donut Chart Container */
+#ov-category {
+    min-height: 160px;
+    display: flex;
+    align-items: center;
+}
