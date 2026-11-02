@@ -222,8 +222,8 @@ async function loadWatchlist() {
 
         container.innerHTML = items.map((item) => {
             let cleanTitle = (item.title || 'Untitled').replace(/ETB[\d\.]+/gi, '').replace(/\$[\d\.]+/gi, '').replace(/-\d+%/gi, '').trim();
-            let sourcePrice = item.cost ? `$${Number(item.cost).toFixed(2)}` : '—';
-            let sellPrice = item.price ? `$${Number(item.price).toFixed(2)}` : '—';
+            let sourcePrice = (item.cost !== null && item.cost !== undefined) ? `$${Number(item.cost).toFixed(2)}` : '—';
+            let sellPrice = (item.price !== null && item.price !== undefined) ? `$${Number(item.price).toFixed(2)}` : '—';
             let link = item.store_url || '#';
 
             return `
