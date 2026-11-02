@@ -350,13 +350,14 @@ async function pushToShopify(index) {
 async function saveOpportunity(index) {
     const item = allTrends[index];
     const btn = document.getElementById(`save-btn-${index}`);
-    const originalText = btn.innerText;
+    if (!btn) return;
     
+    const originalText = btn.innerText;
     btn.innerText = "Saving...";
     btn.disabled = true;
 
     try {
-        const token = getAuthToken();
+        const token = window.getAuthToken();
         if (!token) throw new Error("Not logged in");
 
         const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/save', {
@@ -378,7 +379,7 @@ async function saveOpportunity(index) {
             throw new Error(`HTTP ${res.status}`);
         }
     } catch(e) {
-        console.error(e);
+        console.error("Save Error:", e);
         btn.innerText = "Error - Try Again";
         setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 2000);
     }
