@@ -29,7 +29,7 @@ function renderChart(chartData) {
         data: {
             labels: labels,
             datasets: [{
-                label: "Net Profit",
+                label: "Revenue",
                 data: data,
                 borderColor: "#0284C7",
                 backgroundColor: "rgba(2, 132, 199, 0.1)",
