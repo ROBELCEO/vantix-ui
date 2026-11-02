@@ -245,21 +245,48 @@
         </div>
 
         <!-- KPIs -->
-        <div class="inv-kpi-grid">
-            <div class="inv-kpi">
-                <div class="inv-kpi-label">Cash Tied Up in Stock</div>
-                <div class="inv-kpi-value inv-text-green" id="kpi-cash">—</div>
-                <div class="inv-kpi-meta" id="cash-kpi-meta">Total inventory value</div>
+                <div class="inv-kpi-grid">
+            <div class="inv-kpi kpi-refined-card">
+                <div class="kpi-refined-header">
+                    <div class="kpi-refined-title-group">
+                        <div class="kpi-refined-icon-box"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+                        <div class="kpi-refined-title">Cash Tied Up</div>
+                    </div>
+                    <div class="kpi-refined-time-badge">Stock Value</div>
+                </div>
+                <div class="kpi-refined-value inv-text-green" id="kpi-cash">—</div>
+                <div class="kpi-refined-footer">
+                    <div class="kpi-refined-trend up" id="cash-kpi-meta">↗ Total inventory value</div>
+                    <svg class="kpi-refined-sparkline" viewBox="0 0 100 30"><polyline fill="none" stroke="#059669" stroke-width="2" points="0,25 20,15 40,20 60,5 80,10 100,0"/></svg>
+                </div>
             </div>
-            <div class="inv-kpi">
-                <div class="inv-kpi-label">Items to Restock (14 Days)</div>
-                <div class="inv-kpi-value inv-text-amber" id="kpi-restock">—</div>
-                <div class="inv-kpi-meta">Running out soon</div>
+            <div class="inv-kpi kpi-refined-card">
+                <div class="kpi-refined-header">
+                    <div class="kpi-refined-title-group">
+                        <div class="kpi-refined-icon-box"><svg viewBox="0 0 24 24"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4z"/></svg></div>
+                        <div class="kpi-refined-title">Items to Restock</div>
+                    </div>
+                    <div class="kpi-refined-time-badge">14 Days</div>
+                </div>
+                <div class="kpi-refined-value inv-text-amber" id="kpi-restock">—</div>
+                <div class="kpi-refined-footer">
+                    <div class="kpi-refined-trend down">⚠ Running out soon</div>
+                    <svg class="kpi-refined-sparkline" viewBox="0 0 100 30"><polyline fill="none" stroke="#F59E0B" stroke-width="2" points="0,10 20,20 40,15 60,25 80,20 100,25"/></svg>
+                </div>
             </div>
-            <div class="inv-kpi">
-                <div class="inv-kpi-label">Dead Stock Items (60 Days)</div>
-                <div class="inv-kpi-value inv-text-red" id="kpi-dead">—</div>
-                <div class="inv-kpi-meta">No sales velocity</div>
+            <div class="inv-kpi kpi-refined-card">
+                <div class="kpi-refined-header">
+                    <div class="kpi-refined-title-group">
+                        <div class="kpi-refined-icon-box"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+                        <div class="kpi-refined-title">Dead Stock</div>
+                    </div>
+                    <div class="kpi-refined-time-badge">60 Days</div>
+                </div>
+                <div class="kpi-refined-value inv-text-red" id="kpi-dead">—</div>
+                <div class="kpi-refined-footer">
+                    <div class="kpi-refined-trend down">↓ No sales velocity</div>
+                    <svg class="kpi-refined-sparkline" viewBox="0 0 100 30"><polyline fill="none" stroke="#E11D48" stroke-width="2" points="0,5 20,10 40,5 60,15 80,20 100,25"/></svg>
+                </div>
             </div>
         </div>
 
