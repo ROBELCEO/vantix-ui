@@ -40,7 +40,24 @@
         <p>Vantix shall not be liable for any indirect, incidental, or consequential damages resulting from the use or inability to use the service.</p>
 
         <!-- SECURE BACK BUTTON -->
-        <a href="javascript:history.back()" class="back-btn">← Go Back</a>
+        <button onclick="handleBack()" class="back-btn" style="cursor: pointer; border: none; font-family: inherit;">← Close / Go Back</button>
     </div>
+
+    <script>
+        function handleBack() {
+            // If the page was opened in a new tab, history length is 1
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // Try to close the tab
+                window.close();
+                // If the browser blocks window.close(), fallback to index
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 100);
+            }
+        }
+    </script>
+    
 </body>
 </html>
