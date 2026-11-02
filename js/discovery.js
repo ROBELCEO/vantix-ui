@@ -1,3 +1,15 @@
+window.getAuthToken = function() {
+    try {
+        const key = Object.keys(localStorage).find(k => k.includes('auth-token'));
+        if (!key) return null;
+        const data = JSON.parse(localStorage.getItem(key));
+        return data.access_token;
+    } catch(e) {
+        console.error("Token error:", e);
+        return null;
+    }
+};
+
 ﻿let allTrends = [];
 let currentPrefs = { auto_detect: true, selected_categories: [] };
 let backendCategories = {};
