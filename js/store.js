@@ -49,8 +49,7 @@ function renderChart(chartData) {
                 y: { 
                     grid: { color: "#E5E7EB" }, 
                     ticks: { color: "#6B7280", font: { size: 10 } },
-                    min: -7000, 
-                    max: 1000
+                    beginAtZero: true
                 }
             }
         }
