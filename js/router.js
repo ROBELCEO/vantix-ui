@@ -1,3 +1,14 @@
+
+// Exempt legal pages from SPA router
+document.addEventListener('click', function(e) {
+    const link = e.target.closest('a');
+    if (link && (link.href.includes('terms.html') || link.href.includes('privacy.html'))) {
+        // Let the browser handle it normally (open in new tab)
+        return;
+    }
+}, true);
+
+
 ﻿const VIEW_ROUTES = {
     connect:     { html: "index.html",       init: ["checkConnectionStatus"] },
     overview:    { html: "overview.html",    init: ["loadOverview"] },
