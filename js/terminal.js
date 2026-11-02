@@ -189,9 +189,7 @@ function renderSafeFloor(product) {
     if (!container) return;
 
     const cost = parseFloat(product.my_cost);
-    const hasCost = !isNaN(cost) && cost > 0;
-
-    if (hasCost) {
+    if (!isNaN(cost) && cost > 0) {
         const safeFloor = cost / 0.85;
         container.innerHTML = `
             <div style="font-size: 28px; font-weight: 900; color: #059669; margin-bottom: 4px;">$${safeFloor.toFixed(2)}</div>
@@ -200,12 +198,8 @@ function renderSafeFloor(product) {
         `;
     } else {
         container.innerHTML = `
-            <div style="font-size: 15px; font-weight: 900; color: #E11D48; margin-bottom: 16px;">COGS MISSING</div>
-            <div style="display: flex; gap: 8px;">
-                <input type="number" id="manual-cogs-input" placeholder="Enter Cost ($)" style="flex: 1; padding: 10px; border: 1px solid #D1D5DB; border-radius: 4px; font-weight: 700; outline: none;">
-                <button onclick="saveManualCOGS('${product.my_product}')" style="padding: 10px 16px; background: #09090B; color: #FFF; font-weight: 800; border-radius: 4px; cursor: pointer;">Save</button>
-            </div>
-            <div style="margin-top: 12px; font-size: 11px; color: #71717A;">Enter your cost to calculate the safe floor.</div>
+            <div style="font-size: 15px; font-weight: 900; color: #E11D48; margin-bottom: 8px;">COGS NOT SYNCED</div>
+            <div style="font-size: 12px; color: #71717A;">Shopify has not provided a cost for this product. Please add a "Cost per item" in your Shopify admin and wait for the next sync.</div>
         `;
     }
 }
