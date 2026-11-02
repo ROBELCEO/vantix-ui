@@ -300,3 +300,107 @@ body, .screen {
     background-color: #8B5CF6 !important;
     color: #FFFFFF !important;
 }
+
+
+/* ==========================================
+   POLARIS EXACT DESIGN REPLICATION
+   ========================================== */
+
+/* 1. Sharper Cards (12px radius, crisp borders) */
+.ov-panel, .st-panel, .cmp-panel, .trm-panel, .alrt-panel, .inv-panel, .ov-kpi, .st-kpi, .inv-kpi {
+    border-radius: 12px !important;
+    border: 1px solid #E5E7EB !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+    background-color: #FFFFFF !important;
+}
+
+/* 2. Exact KPI Layout */
+.kpi-refined-card {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding: 20px !important;
+}
+.kpi-refined-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+.kpi-refined-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.kpi-refined-icon-box {
+    width: 28px;
+    height: 28px;
+    background: #F4F4F5;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.kpi-refined-icon-box svg {
+    width: 14px;
+    height: 14px;
+    stroke: #71717A;
+    stroke-width: 2.5;
+    fill: none;
+}
+.kpi-refined-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #52525B;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.kpi-refined-time-badge {
+    font-size: 10px;
+    font-weight: 600;
+    color: #A1A1AA;
+    background: #F8FAFC;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+.kpi-refined-value {
+    font-size: 28px !important;
+    font-weight: 900 !important;
+    color: #09090B !important;
+    letter-spacing: -0.5px !important;
+    margin-top: 4px;
+}
+.kpi-refined-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 8px;
+}
+.kpi-refined-trend {
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.kpi-refined-trend.up { color: #059669; }
+.kpi-refined-trend.down { color: #E11D48; }
+.kpi-refined-sparkline {
+    width: 60px;
+    height: 24px;
+}
+
+/* 3. Sidebar SVG Icons */
+.header .tab {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+.nav-svg-icon {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
