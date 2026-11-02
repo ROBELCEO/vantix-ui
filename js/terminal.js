@@ -185,65 +185,31 @@ function renderChart(product) {
 }
 
 function renderSafeFloor(product) {
-    const div = document.getElementById('safe-floor-content');
-    
-    // BULLETPROOF LOCK CHECK
-    if (window.userTier === 'starter' || (product.competitor_matches && product.competitor_matches.length > 0 && product.competitor_matches[0].war_status === 'LOCKED')) {
-        div.style.position = 'relative';
-        div.innerHTML = `
-            <div style="position: absolute; inset: 0; z-index: 10; backdrop-filter: blur(4px); background: rgba(255,255,255,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 2px;">
-                <div style="font-size: 24px; margin-bottom: 8px;">🔒</div>
-                <div style="font-weight: 800; font-size: 14px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
-                <a href="membership.html" style="background: #0284C7; color: #FFF; padding: 6px 12px; border-radius: 2px; text-decoration: none; font-size: 11px; font-weight: 800;">Unlock Safe Floor</a>
-            </div>
-            <div class="trm-empty" style="min-height: 120px;">&nbsp;</div>
+    const container = document.getElementById('safe-floor-content');
+    if (!container) return;
+
+    const cost = parseFloat(product.my_cost);
+    const hasCost = !isNaN(cost) && cost > 0;
+
+    if (hasCost) {
+        const safeFloor = cost / 0.85;
+        container.innerHTML = `
+            <div style="font-size: 28px; font-weight: 900; color: #059669; margin-bottom: 4px;">$${safeFloor.toFixed(2)}</div>
+            <div style="font-size: 12px; color: #52525B; font-weight: 600;">Lowest price before losing money</div>
+            <div style="margin-top: 16px; font-size: 12px; color: #71717A;">Your Cost (COGS): <b>$${cost.toFixed(2)}</b></div>
         `;
-        return;
-    }
-
-    if (!product.competitor_matches || product.competitor_matches.length === 0) {
-        div.innerHTML = '<div class="trm-empty">No competitor data available.</div>';
-        return;
-    }
-    
-    const match = product.competitor_matches[0];
-
-    let badgeColor = "#059669";
-    let statusText = "SAFE TO HOLD";
-    let adviceText = "You can safely drop your price to match them.";
-    
-    if (match.war_status === "UNKNOWN_COST") {
-        badgeColor = "#71717A";
-        statusText = "COGS MISSING";
-        adviceText = "Enter your COGS in Shopify to calculate your safe floor.";
-    } else if (match.war_status === "DANGER") {
-        badgeColor = "#E11D48";
-        statusText = "DO NOT MATCH";
-        adviceText = "If you match them, you drop below your 15% margin floor.";
-    } else if (match.war_status === "WARNING") {
-        badgeColor = "#D97706";
-        statusText = "CAUTION";
-        adviceText = "You can safely drop your price to match them.";
-    }
-
-    div.innerHTML = `
-        <div style="font-size: 20px; font-weight: 900; color: ${badgeColor}; margin-bottom: 16px;">${statusText}</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-            <div class="trm-stat-box">
-                <div class="trm-stat-label">Your Cost (COGS)</div>
-                <div class="trm-stat-value">${product.my_cost !== null && product.my_cost !== undefined ? fmtMoney(product.my_cost) : 'MISSING'}</div>
+    } else {
+        container.innerHTML = `
+            <div style="font-size: 15px; font-weight: 900; color: #E11D48; margin-bottom: 16px;">COGS MISSING</div>
+            <div style="display: flex; gap: 8px;">
+                <input type="number" id="manual-cogs-input" placeholder="Enter Cost ($)" style="flex: 1; padding: 10px; border: 1px solid #D1D5DB; border-radius: 4px; font-weight: 700; outline: none;">
+                <button onclick="saveManualCOGS('${product.my_product}')" style="padding: 10px 16px; background: #09090B; color: #FFF; font-weight: 800; border-radius: 4px; cursor: pointer;">Save</button>
             </div>
-            <div class="trm-stat-box" style="border-color: ${badgeColor};">
-                <div class="trm-stat-label">Safe Floor</div>
-                <div class="trm-stat-value" style="color: ${badgeColor};">${match.safe_floor !== null && match.safe_floor !== undefined ? fmtMoney(match.safe_floor) : 'N/A'}</div>
-            </div>
-        </div>
-        <div class="trm-advice-box">
-            Competitor price: <b>${fmtMoney(match.comp_price)}</b>. 
-            ${adviceText}
-        </div>
-    `;
+            <div style="margin-top: 12px; font-size: 11px; color: #71717A;">Enter your cost to calculate the safe floor.</div>
+        `;
+    }
 }
+
 
 function renderSimulator(product) {
     const div = document.getElementById('simulator-content');
