@@ -171,3 +171,80 @@ body, .screen {
     display: flex;
     align-items: center;
 }
+
+
+/* ==========================================
+   MY STORE SPECIFIC MASTERPIECE STYLES
+   ========================================== */
+
+/* KPI Cards */
+.st-kpi {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+}
+.st-kpi-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.st-kpi-icon {
+    width: 28px;
+    height: 28px;
+    background: #F4F4F5;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+.st-kpi-label {
+    font-size: 13px !important;
+    color: #71717A !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+}
+.st-kpi-value {
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    color: #09090B !important;
+    margin: 4px 0 !important;
+    letter-spacing: -0.5px !important;
+}
+.st-kpi-footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-top: auto;
+}
+.st-kpi-meta {
+    font-size: 11px !important;
+    color: #A1A1AA !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
+}
+.st-sparkline {
+    width: 60px;
+    height: 24px;
+    opacity: 0.8;
+}
+
+/* Floating List Items */
+.st-list {
+    background: transparent !important;
+    padding: 0 !important;
+    border: none !important;
+}
+.st-product-row {
+    background: #FFFFFF !important;
+    border-radius: 10px !important;
+    border: 1px solid #F1F5F9 !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02) !important;
+    padding: 12px !important;
+    margin-bottom: 8px !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+}
+.st-product-row:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+}

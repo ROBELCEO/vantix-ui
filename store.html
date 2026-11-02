@@ -297,32 +297,72 @@
             </div>
         </div>
 
-        <!-- ROW B: 5 KPI CARDS -->
+                <!-- ROW B: 5 KPI CARDS -->
         <div class="st-kpi-grid">
             <div class="st-kpi">
-                <div class="st-kpi-label">Revenue (30d)</div>
+                <div class="st-kpi-header">
+                    <div class="st-kpi-icon">💰</div>
+                    <div class="st-kpi-label">Revenue (30d)</div>
+                </div>
                 <div class="st-kpi-value" id="kpi-revenue">—</div>
-                <div class="st-kpi-meta">Gross from orders</div>
+                <div class="st-kpi-footer">
+                    <div class="st-kpi-meta">Gross from orders</div>
+                    <svg class="st-sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
+                        <polyline fill="none" stroke="#059669" stroke-width="2" points="0,25 20,15 40,20 60,5 80,10 100,0"/>
+                    </svg>
+                </div>
             </div>
             <div class="st-kpi">
-                <div class="st-kpi-label">Net Profit (30d)</div>
+                <div class="st-kpi-header">
+                    <div class="st-kpi-icon">📈</div>
+                    <div class="st-kpi-label">Net Profit (30d)</div>
+                </div>
                 <div class="st-kpi-value st-green" id="kpi-net-profit">—</div>
-                <div class="st-kpi-meta" id="kpi-net-profit-meta">Revenue − COGS</div>
+                <div class="st-kpi-footer">
+                    <div class="st-kpi-meta" id="kpi-net-profit-meta">Revenue − COGS</div>
+                    <svg class="st-sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
+                        <polyline fill="none" stroke="#E11D48" stroke-width="2" points="0,5 20,10 40,5 60,15 80,20 100,25"/>
+                    </svg>
+                </div>
             </div>
             <div class="st-kpi">
-                <div class="st-kpi-label">Orders (30d)</div>
+                <div class="st-kpi-header">
+                    <div class="st-kpi-icon">🛍️</div>
+                    <div class="st-kpi-label">Orders (30d)</div>
+                </div>
                 <div class="st-kpi-value" id="kpi-orders">—</div>
-                <div class="st-kpi-meta">Real order count</div>
+                <div class="st-kpi-footer">
+                    <div class="st-kpi-meta">Real order count</div>
+                    <svg class="st-sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
+                        <polyline fill="none" stroke="#059669" stroke-width="2" points="0,20 20,20 40,10 60,15 80,5 100,5"/>
+                    </svg>
+                </div>
             </div>
             <div class="st-kpi">
-                <div class="st-kpi-label">Avg Order Value</div>
+                <div class="st-kpi-header">
+                    <div class="st-kpi-icon">🧾</div>
+                    <div class="st-kpi-label">Avg Order Value</div>
+                </div>
                 <div class="st-kpi-value" id="kpi-aov">—</div>
-                <div class="st-kpi-meta">Revenue / orders</div>
+                <div class="st-kpi-footer">
+                    <div class="st-kpi-meta">Revenue / orders</div>
+                    <svg class="st-sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
+                        <polyline fill="none" stroke="#0284C7" stroke-width="2" points="0,15 20,15 40,20 60,10 80,10 100,5"/>
+                    </svg>
+                </div>
             </div>
             <div class="st-kpi">
-                <div class="st-kpi-label">Abandoned Carts</div>
+                <div class="st-kpi-header">
+                    <div class="st-kpi-icon">🛒</div>
+                    <div class="st-kpi-label">Abandoned Carts</div>
+                </div>
                 <div class="st-kpi-value st-amber" id="kpi-abandoned">—</div>
-                <div class="st-kpi-meta">Recoverable value</div>
+                <div class="st-kpi-footer">
+                    <div class="st-kpi-meta">Recoverable value</div>
+                    <svg class="st-sparkline" viewBox="0 0 100 30" preserveAspectRatio="none">
+                        <polyline fill="none" stroke="#F59E0B" stroke-width="2" points="0,10 20,20 40,15 60,25 80,20 100,25"/>
+                    </svg>
+                </div>
             </div>
         </div>
 
