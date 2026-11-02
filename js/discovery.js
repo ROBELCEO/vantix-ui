@@ -338,19 +338,23 @@ async function pushToShopify(index) {
 async function saveOpportunity(index) {
     const item = allTrends[index];
     const btn = document.getElementById(`save-btn-${index}`);
+    const originalText = btn.innerText;
+    
     btn.innerText = "Saving...";
     btn.disabled = true;
 
     try {
-        const token = JSON.parse(localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token')))).access_token;
+        const token = getAuthToken();
+        if (!token) throw new Error("Not logged in");
+
         const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
             body: JSON.stringify({
-                title: item.ali_title,
-                price: item.shop_avg_price,
+                title: item.ali_title || item.title,
+                price: item.shop_avg_price || item.price || 0,
                 image_url: item.image_url,
-                store_url: item.store_url
+                store_url: item.aliexpress_url || item.alibaba_url || ''
             })
         });
         
@@ -359,10 +363,12 @@ async function saveOpportunity(index) {
             btn.style.color = "#D97706";
             btn.style.borderColor = "#D97706";
         } else {
-            btn.innerText = "Error";
+            throw new Error(`HTTP ${res.status}`);
         }
     } catch(e) {
-        btn.innerText = "Network Error";
+        console.error(e);
+        btn.innerText = "Error - Try Again";
+        setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 2000);
     }
 }
 
