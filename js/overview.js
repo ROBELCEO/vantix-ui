@@ -103,7 +103,7 @@ async function loadOverview() {
     let detailed = storeDetailedRes.ok ? storeDetailedRes.data : null;
     if (detailed) {
         console.log("CHART DATA RECEIVED:", detailed.chart);
-        renderChart(detailed.chart || { labels: [], data: [] });
+        renderChart(detailed.profit_chart || { labels: [], data: [] });
         const dk = detailed.kpis || {};
         ovSet("ov-chart-revenue", Number.isFinite(Number(dk.total_revenue)) ? ovMoney(dk.total_revenue) : "—");
         ovSet("ov-chart-profit", Number.isFinite(Number(dk.net_profit)) ? ovMoney(dk.net_profit) : "—");
