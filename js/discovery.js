@@ -106,7 +106,7 @@ function renderDiscoveryCards(trends) {
         return `
         <div class="god-card" style="display: flex; flex-direction: column; background: #FFF; border: 1px solid #E4E4E7; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); overflow: hidden;">
             <div style="position: relative; height: 240px;">
-                <img src="${item.image_url || 'https://ui-avatars.com/api/?name=V&background=F4F4F5'}" style="width:100%; height:100%; object-fit:cover;">
+                <img src="${item.image_url ? 'https://images.weserv.nl/?url=' + encodeURIComponent(item.image_url) : 'https://ui-avatars.com/api/?name=V&background=F4F4F5'}" onerror="this.onerror=null; this.src='https://placehold.co/300x300?text=Image+Not+Found';" style="width:100%; height:100%; object-fit:cover;">
                 <div style="position: absolute; top: 12px; right: 12px; background: #FFF; border: 1px solid ${scoreColor}33; color: ${scoreColor}; padding: 4px 8px; border-radius: 2px; font-size: 11px; font-weight: 900; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                     SCORE<br>${score}
                 </div>
@@ -228,7 +228,7 @@ async function loadWatchlist() {
 
             return `
             <div class="god-card" style="background:#FFF; border:1px solid #E4E4E7; border-radius:4px; overflow:hidden; padding:16px; display:flex; flex-direction:column; gap:12px;">
-                <img src="${item.image_url || 'https://ui-avatars.com/api/?name=V&background=F4F4F5'}" style="width:100%; height:200px; object-fit:cover; border-radius:4px; display:block;">
+                <img src="${item.image_url ? 'https://images.weserv.nl/?url=' + encodeURIComponent(item.image_url) : 'https://ui-avatars.com/api/?name=V&background=F4F4F5'}" onerror="this.onerror=null; this.src='https://placehold.co/300x300?text=Image+Not+Found';" style="width:100%; height:200px; object-fit:cover; border-radius:4px; display:block;">
                 <div style="font-size: 13px; font-weight: 800; color: #09090B; line-height: 1.3;">${dscEsc(cleanTitle)}</div>
                 
                 <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-top:auto;">
