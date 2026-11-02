@@ -175,6 +175,7 @@ window.saveOpportunity = async function(index) {
             body: JSON.stringify({
                 title: item.ali_title || item.title,
                 price: item.shop_avg_price || item.price || 0,
+                cost: item.ali_price_usd || 0,
                 image_url: item.image_url,
                 store_url: item.aliexpress_url || item.alibaba_url || ''
             })
@@ -221,11 +222,24 @@ async function loadWatchlist() {
 
         container.innerHTML = items.map((item) => {
             let cleanTitle = (item.title || 'Untitled').replace(/ETB[\d\.]+/gi, '').replace(/\$[\d\.]+/gi, '').replace(/-\d+%/gi, '').trim();
+            let sourcePrice = item.cost ? `$${Number(item.cost).toFixed(2)}` : '—';
+            let sellPrice = item.price ? `$${Number(item.price).toFixed(2)}` : '—';
+            let link = item.store_url || '#';
+
             return `
             <div class="god-card" style="background:#FFF; border:1px solid #E4E4E7; border-radius:4px; overflow:hidden; padding:16px; display:flex; flex-direction:column; gap:12px;">
-                <img src="${item.image_url || 'https://ui-avatars.com/api/?name=V&background=F4F4F5'}" style="width:100%; height:240px; object-fit:cover; border-radius:4px; display:block;">
-                <div style="font-size: 14px; font-weight: 800; color: #09090B; line-height: 1.3;">${dscEsc(cleanTitle)}</div>
-                <button onclick="removeWlItem('${item.id}', this)" style="width:100%; padding:10px; background:#FFF; border:1px solid #E11D48; color:#E11D48; font-weight:800; font-size:12px; border-radius:2px; cursor:pointer;">Remove</button>
+                <img src="${item.image_url || 'https://ui-avatars.com/api/?name=V&background=F4F4F5'}" style="width:100%; height:200px; object-fit:cover; border-radius:4px; display:block;">
+                <div style="font-size: 13px; font-weight: 800; color: #09090B; line-height: 1.3;">${dscEsc(cleanTitle)}</div>
+                
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-top:auto;">
+                    <div style="color:#71717A;">Cost: <b style="color:#09090B;">${sourcePrice}</b></div>
+                    <div style="color:#059669; font-weight:800;">Sell: <b>${sellPrice}</b></div>
+                </div>
+
+                <div style="display:flex; gap:8px; margin-top:4px;">
+                    <a href="${link}" target="_blank" style="flex:1; padding:8px; background:#F8FAFC; border:1px solid #E4E4E7; color:#09090B; font-weight:800; font-size:11px; border-radius:2px; text-align:center; text-decoration:none;">Source ↗</a>
+                    <button onclick="removeWlItem('${item.id}', this)" style="flex:1; padding:8px; background:#FFF; border:1px solid #E11D48; color:#E11D48; font-weight:800; font-size:11px; border-radius:2px; cursor:pointer;">Remove</button>
+                </div>
             </div>`;
         }).join('');
     } catch (e) {
@@ -411,7 +425,7 @@ window.savePreferences = async function() {
             setTimeout(() => { 
                 closePreferences(); 
                 btn.innerText = origText; 
-                loadDiscovery(); // Refresh feed with new prefs
+                loadDiscovery(); 
             }, 1000);
         } else {
             throw new Error("Failed");

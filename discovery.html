@@ -28,9 +28,13 @@
     /* Status Banner */
     .dsc-status-banner { background: #F8FAFC; border: 1px solid #E4E4E7; color: #09090B; padding: 16px; border-radius: 4px; margin-bottom: 24px; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
 
-    /* Grid */
+    /* Grids */
     .dsc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    #watchlist-results { grid-template-columns: repeat(4, 1fr) !important; }
+    
+    @media (max-width: 1200px) { #watchlist-results { grid-template-columns: repeat(3, 1fr) !important; } }
     @media (max-width: 1100px) { .dsc-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 900px) { #watchlist-results { grid-template-columns: repeat(2, 1fr) !important; } }
     @media (max-width: 768px) { .dsc-grid { grid-template-columns: 1fr; } .dsc-tree-children { grid-template-columns: 1fr; } }
 
     /* Modal */
