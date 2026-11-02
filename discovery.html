@@ -1,139 +1,70 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix — Discovery</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2270">
+<link rel="stylesheet" href="css/style.css?v=9999">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-    .dsc-screen { padding-top: 12px !important; }
+    .dsc-screen { padding-top: 4px !important; }
     .dsc-wrap { max-width: 1400px; margin: 0 auto; padding: 0 20px 64px !important; }
-    
-    /* Header Action Bar */
-    .dsc-header-bar { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
-    .dsc-btn-configure { background: #09090B; color: #FFF; padding: 10px 16px; font-size: 13px; font-weight: 800; border: none; border-radius: 2px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
-    .dsc-btn-configure:hover { background: #27272A; }
-    
-    /* Modal Overlay */
-    .dsc-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
-    .dsc-modal { background: #FFFFFF; border-radius: 4px; width: 100%; max-width: 700px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.2); overflow: hidden; }
-    .dsc-modal-header { padding: 20px 24px; border-bottom: 1px solid #E4E4E7; display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; }
-    .dsc-modal-title { font-size: 18px; font-weight: 900; color: #09090B !important; }
-    .dsc-modal-close { background: none; border: none; font-size: 24px; color: #A1A1AA; cursor: pointer; }
-    .dsc-modal-body { padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 32px; }
-    .dsc-modal-footer { padding: 16px 24px; border-top: 1px solid #E4E4E7; background: #FFFFFF; display: flex; justify-content: flex-end; gap: 12px; }
 
-    /* Preference Sections */
-    .dsc-pref-section h3 { font-size: 15px; font-weight: 900; color: #09090B !important; margin-bottom: 12px; border-bottom: 1px solid #F1F5F9; padding-bottom: 8px; }
+    /* Header Layout */
+    .dsc-header-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+    .dsc-header-left { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+    .dsc-title { font-size: 20px; font-weight: 900; color: #09090B; margin: 0; line-height: 1.2; }
+    .dsc-eyebrow { font-size: 10px; font-weight: 800; color: #0284C7; text-transform: uppercase; letter-spacing: 1.4px; margin: 0; }
+    .dsc-sub { width: 100%; font-size: 13px; color: #52525B; margin: 4px 0 0 0; line-height: 1.5; }
     
+    /* Header Buttons */
+    .dsc-header-right { display: flex; gap: 12px; align-items: center; }
+    .dsc-tab-btn { background: #FFF; color: #09090B; border: 1px solid #E4E4E7; padding: 8px 16px; font-weight: 800; font-size: 12px; border-radius: 2px; cursor: pointer; transition: 0.2s; }
+    .dsc-tab-btn.active { background: #09090B; color: #FFF; border-color: #09090B; }
+    .dsc-btn-configure { background: #09090B; color: #FFF; padding: 8px 16px; font-size: 12px; font-weight: 800; border: none; border-radius: 2px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+    .dsc-btn-configure:hover { background: #27272A; }
+
+    /* Status Banner */
+    .dsc-status-banner { background: #F8FAFC; border: 1px solid #E4E4E7; color: #09090B; padding: 16px; border-radius: 4px; margin-bottom: 24px; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+
+    /* Grid */
+    .dsc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    @media (max-width: 1100px) { .dsc-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { .dsc-grid { grid-template-columns: 1fr; } .dsc-tree-children { grid-template-columns: 1fr; } }
+
+    /* Modal */
+    .dsc-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .dsc-modal { background: #FFFFFF; border-radius: 4px; width: 100%; max-width: 700px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.2); overflow: hidden; }
+    .dsc-modal-header { padding: 20px 24px; border-bottom: 1px solid #E4E4E7; display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; }
+    .dsc-modal-title { font-size: 18px; font-weight: 900; color: #09090B; }
+    .dsc-modal-close { background: none; border: none; font-size: 24px; color: #A1A1AA; cursor: pointer; }
+    
+    /* Clean Scrollbar for Modal */
+    .dsc-modal-body { padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 32px; scrollbar-width: thin; scrollbar-color: #E4E4E7 transparent; }
+    .dsc-modal-body::-webkit-scrollbar { width: 6px; background: transparent; }
+    .dsc-modal-body::-webkit-scrollbar-track { background: transparent; }
+    .dsc-modal-body::-webkit-scrollbar-thumb { background: #E4E4E7; border-radius: 4px; }
+
+    /* Preferences */
+    .dsc-pref-section h3 { font-size: 15px; font-weight: 900; color: #09090B; margin-bottom: 12px; border-bottom: 1px solid #F1F5F9; padding-bottom: 8px; }
     .dsc-auto-box { background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 4px; padding: 16px; display: flex; align-items: flex-start; gap: 12px; }
     .dsc-auto-box input[type="checkbox"] { margin-top: 4px; width: 16px; height: 16px; cursor: pointer; accent-color: #0284C7; }
     .dsc-auto-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
     .dsc-auto-tag { background: #FFF; border: 1px solid #BAE6FD; color: #0284C7; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 2px; }
-
-    /* Checkbox Tree */
     .dsc-tree { display: flex; flex-direction: column; gap: 16px; }
     .dsc-tree-group { border: 1px solid #E4E4E7; border-radius: 2px; overflow: hidden; }
-    .dsc-tree-parent { background: #F8FAFC; padding: 12px 16px; display: flex; align-items: center; gap: 12px; font-weight: 900; font-size: 14px; color: #09090B !important; cursor: pointer; border-bottom: 1px solid #E4E4E7; }
-    .dsc-tree-parent input { width: 16px; height: 16px; accent-color: #09090B; cursor: pointer; border: 1px solid #A1A1AA; }
+    .dsc-tree-parent { background: #F8FAFC; padding: 12px 16px; display: flex; align-items: center; gap: 12px; font-weight: 900; font-size: 14px; color: #09090B; cursor: pointer; border-bottom: 1px solid #E4E4E7; }
+    .dsc-tree-parent input { width: 16px; height: 16px; accent-color: #09090B; cursor: pointer; }
     .dsc-tree-children { padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .dsc-tree-child { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #09090B !important; cursor: pointer; }
-    .dsc-tree-child input { width: 16px; height: 16px; accent-color: #0284C7; cursor: pointer; border: 1px solid #A1A1AA; }
-
-    /* Results Grid */
-    .dsc-status-banner { background: #F8FAFC; border: 1px solid #E4E4E7; color: #09090B; padding: 16px; border-radius: 4px; margin-bottom: 24px; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
-    .dsc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-    @media (max-width: 1100px) { .dsc-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 768px) { .dsc-grid { grid-template-columns: 1fr; } .dsc-tree-children { grid-template-columns: 1fr; } }
-</style>
-<style>
-    /* FORCE DARK TEXT IN MODAL */
-    .dsc-modal-body, 
-    .dsc-modal-body label,
-    .dsc-tree-parent,
-    .dsc-tree-child {
-        color: #000000 !important; 
-        font-weight: 800 !important;
-    }
+    .dsc-tree-child { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #09090B; cursor: pointer; }
+    .dsc-tree-child input { width: 16px; height: 16px; accent-color: #0284C7; cursor: pointer; }
     
-    .dsc-tree-parent {
-        background: #F8FAFC !important;
-        border-bottom: 1px solid #E4E4E7 !important;
-    }
-
-    .dsc-tree-child {
-        color: #09090B !important;
-        font-weight: 700 !important;
-    }
-
-    /* Make checkboxes more visible */
-    .dsc-tree-parent input[type="checkbox"],
-    .dsc-tree-child input[type="checkbox"] {
-        accent-color: #0284C7 !important;
-        border: 1px solid #71717A !important;
-        width: 16px !important;
-        height: 16px !important;
-    }
-
-    /* Fix modal header text */
-    .dsc-modal-title {
-        color: #000000 !important;
-    }
-    
-    .dsc-pref-section h3 {
-        color: #000000 !important;
-    }
-</style>
-<style>
-    /* FORCE BLACK TEXT EVERYWHERE IN THE MODAL */
-    .dsc-modal-body label,
-    .dsc-tree-parent,
-    .dsc-tree-child,
-    .dsc-tree-parent span,
-    .dsc-tree-child span {
-        color: #000000 !important; 
-        font-weight: 800 !important;
-    }
-    
-    .dsc-tree-parent {
-        background: #F8FAFC !important;
-        border-bottom: 1px solid #E4E4E7 !important;
-        font-size: 14px !important;
-    }
-
-    .dsc-tree-child {
-        color: #09090B !important;
-        font-weight: 700 !important;
-    }
-</style>
-<style>
-    /* FORCE BLACK TEXT EVERYWHERE IN THE MODAL */
-    .dsc-modal-body label,
-    .dsc-tree-parent,
-    .dsc-tree-child,
-    .dsc-tree-parent span,
-    .dsc-tree-child span {
-        color: #000000 !important; 
-        font-weight: 800 !important;
-    }
-    
-    .dsc-tree-parent {
-        background: #F8FAFC !important;
-        border-bottom: 1px solid #E4E4E7 !important;
-        font-size: 14px !important;
-    }
-
-    .dsc-tree-child {
-        color: #09090B !important;
-        font-weight: 700 !important;
-    }
+    .dsc-modal-footer { padding: 16px 24px; border-top: 1px solid #E4E4E7; background: #FFFFFF; display: flex; justify-content: flex-end; gap: 12px; }
 </style>
 </head>
 <body>
 
-<!-- HEADER & DRAWER (Standard Vantix Nav) -->
 <div class="drawer-overlay" id="drawer-overlay" onclick="toggleMenu()"></div>
 <div class="drawer" id="mobile-drawer">
     <div class="drawer-header">
@@ -178,20 +109,19 @@
 
 <div class="screen dsc-screen">
     <div class="dsc-wrap">
-        
-        <!-- HEADER BAR -->
         <div class="dsc-header-bar">
-            <div>
-                <div style="font-size: 10px; letter-spacing: 1.6px; font-weight: 800; color: #0284C7; text-transform: uppercase; margin-bottom: 4px;">GOLDMINE ENGINE</div>
-                <h1 style="font-size: 24px; font-weight: 900; color: #09090B; margin: 0 0 8px;">Discovery</h1>
-                <p style="font-size: 14px; color: #52525B; margin: 0;">Based on your preferences, our bots found these daily opportunities.</p>
+            <div class="dsc-header-left">
+                <h1 class="dsc-title">Discovery</h1>
+                <div class="dsc-eyebrow">GOLDMINE ENGINE</div>
+                <p class="dsc-sub">Based on your preferences, our bots found these daily opportunities.</p>
             </div>
-            <button class="dsc-btn-configure" onclick="openPreferences()">
-                <span>⚙️</span> Configure Preferences
-            </button>
+            <div class="dsc-header-right">
+                <button id="btn-tab-discover" onclick="switchDiscoveryTab('discover')" class="dsc-tab-btn active">Discover</button>
+                <button id="btn-tab-watchlist" onclick="switchDiscoveryTab('watchlist')" class="dsc-tab-btn">Watchlist</button>
+                <button class="dsc-btn-configure" onclick="openPreferences()">⚙️ Configure Preferences</button>
+            </div>
         </div>
 
-        <!-- STATUS BANNER -->
         <div class="dsc-status-banner">
             <div>🔄 Next automated scan: <b>12:00 AM UTC</b></div>
             <div id="dsc-count" style="font-family: var(--font-mono); font-weight: 800;">0 Goldmines</div>
@@ -200,15 +130,20 @@
         <!-- RESULTS GRID -->
         <div id="discovery-results" class="dsc-grid">
             <div class="dsc-empty" style="grid-column: 1 / -1; padding: 60px; text-align: center; color: #71717A;">
-                <div class="dsc-spinner" style="margin: 0 auto 16px;"></div>
                 Loading your daily goldmines...
             </div>
         </div>
 
+        <!-- WATCHLIST GRID (Hidden by default) -->
+        <div id="watchlist-results" class="dsc-grid" style="display: none;">
+            <div class="dsc-empty" style="grid-column: 1 / -1; padding: 60px; text-align: center; color: #71717A;">
+                Loading watchlist...
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- PREFERENCES MODAL OVERLAY -->
+<!-- PREFERENCES MODAL -->
 <div id="preferences-modal" class="dsc-modal-overlay">
     <div class="dsc-modal">
         <div class="dsc-modal-header">
@@ -216,8 +151,6 @@
             <button class="dsc-modal-close" onclick="closePreferences()">✕</button>
         </div>
         <div class="dsc-modal-body">
-            
-            <!-- Auto Detect Section -->
             <div class="dsc-pref-section">
                 <h3>Auto-Detected Categories</h3>
                 <div class="dsc-auto-box">
@@ -225,21 +158,16 @@
                     <div style="flex:1;">
                         <div style="font-weight:800; font-size:13px; color:#0284C7;">Use my store's current niches</div>
                         <div style="font-size:12px; color:#52525B; margin-top:2px;">We extracted these categories from your Shopify products.</div>
-                        <div class="dsc-auto-tags" id="auto-tags-container">
-                            <!-- Filled by JS -->
-                        </div>
+                        <div class="dsc-auto-tags" id="auto-tags-container"></div>
                     </div>
                 </div>
             </div>
-
-            <!-- Manual Category Tree -->
             <div class="dsc-pref-section">
                 <h3>Or Select Custom Categories</h3>
                 <div class="dsc-tree" id="category-tree">
-                    <!-- Filled by JS -->
+                    <div style="text-align:center; padding:20px; color:#71717A;">Loading categories...</div>
                 </div>
             </div>
-
         </div>
         <div class="dsc-modal-footer">
             <button style="padding:10px 16px; font-weight:800; font-size:13px; background:#FFF; border:1px solid #D1D5DB; border-radius:2px; cursor:pointer;" onclick="closePreferences()">Cancel</button>
@@ -248,13 +176,7 @@
     </div>
 </div>
 
-<script src="js/app.js?v=2188"></script>
-<script src="js/discovery.js?v=2290"></script>
+<script src="js/app.js?v=9999"></script>
+<script src="js/discovery.js?v=8888"></script>
 </body>
 </html>
-
-
-
-
-
-
