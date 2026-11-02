@@ -1,0 +1,84 @@
+﻿/* ==========================================
+   VANTIX MASTERPIECE UI — PREMIUM ELEVATION
+   ========================================== */
+
+/* 1. Soft, warm background for the main content area */
+body, .screen {
+    background-color: #F6F7FB !important;
+}
+
+/* 2. Pure white cards with soft shadows and rounded corners */
+.ov-panel, .st-panel, .cmp-panel, .trm-panel, .alrt-panel, .inv-panel, .set-panel, .cnx-panel, .dsc-card, .god-card {
+    background-color: #FFFFFF !important;
+    border-radius: 16px !important;
+    border: none !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04) !important;
+    padding: 24px !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* Hover effect to make it feel alive */
+.ov-panel:hover, .st-panel:hover, .cmp-panel:hover, .trm-panel:hover, .god-card:hover {
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* 3. KPI Cards (Make them pop) */
+.ov-kpi, .st-kpi, .inv-kpi {
+    background-color: #FFFFFF !important;
+    border-radius: 16px !important;
+    border: none !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05) !important;
+    padding: 20px 24px !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.ov-kpi:hover, .st-kpi:hover, .inv-kpi:hover {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* 4. Make the inner lists/sub-boxes soft and rounded */
+.ov-list, .st-list, .cmp-list, .trm-list, .inv-list {
+    background-color: #F8FAFC !important;
+    border-radius: 12px !important;
+    padding: 12px !important;
+    border: 1px solid #F1F5F9 !important;
+}
+
+/* 5. Chart wrappers should be clean */
+.ov-chart-wrap, .st-chart-wrap, .trm-chart-wrap {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* 6. Inner items (like rows in lists) */
+.ov-kpi-meta, .st-kpi-meta {
+    color: #71717A !important;
+    font-weight: 500 !important;
+}
+
+/* 7. Make the header text pop more */
+.ov-title, .st-title, .cmp-title, .trm-title, .dsc-title, .alrt-title, .inv-title, .set-title {
+    letter-spacing: -0.5px !important;
+    color: #09090B !important;
+}
+
+/* 8. Badges */
+.ov-badge, .st-badge, .cmp-badge, .trm-badge, .dsc-badge {
+    border-radius: 6px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* 9. Buttons - make them rounded and modern */
+.ov-btn-primary, .st-view-all-btn, .cmp-view-all-btn, .plan-btn, .cnx-btn-primary {
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+}
+
+.ov-btn-primary:hover, .st-view-all-btn:hover, .cmp-view-all-btn:hover, .plan-btn:hover, .cnx-btn-primary:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
