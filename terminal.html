@@ -292,6 +292,15 @@
                         </div>
                         <div class="trm-badge trm-badge-violet">GROQ AI</div>
                     </div>
+
+                    <!-- AI ADVISOR LOCK -->
+                    <div id="ai-advisor-content-lock" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: #F8FAFC; border: 1px dashed #D1D5DB; border-radius: 8px; text-align: center; width: 100%; min-height: 150px;">
+                        <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
+                        <div style="font-weight: 900; font-size: 16px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+                        <div style="font-size: 13px; color: #52525B; margin-bottom: 20px;">Get ruthless, profit-driven pricing strategies.</div>
+                        <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
+                    </div>
+
                     <div id="ai-advisor-content" style="font-size: 13px; color: #52525B; line-height: 1.6;">
                         Select a product to generate a strategy.
                     </div>
@@ -322,6 +331,15 @@
                             </div>
                             <div class="trm-badge trm-badge-amber">MARGIN</div>
                         </div>
+
+                        <!-- SAFE FLOOR LOCK -->
+                        <div id="safe-floor-content-lock" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: #F8FAFC; border: 1px dashed #D1D5DB; border-radius: 8px; text-align: center; width: 100%; min-height: 150px;">
+                            <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
+                            <div style="font-weight: 900; font-size: 16px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+                            <div style="font-size: 13px; color: #52525B; margin-bottom: 20px;">Know the exact lowest price you can charge without losing money.</div>
+                            <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
+                        </div>
+
                         <div id="safe-floor-content">
                             <div class="trm-empty">Select a product to analyze.</div>
                         </div>
@@ -346,13 +364,28 @@
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const token = localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token'))) ? JSON.parse(localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token')))).access_token : null;
+        if (!token) return;
+        const res = await fetch('https://api.midra.xyz/api/auth/status', { headers: { 'Authorization': 'Bearer ' + token } });
+        const data = await res.json();
+        if (data.plan !== 'pro' && data.plan !== 'scale') {
+            const lockIds = ['ai-advisor-content', 'safe-floor-content'];
+            lockIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+                const lock = document.getElementById(id + '-lock');
+                if (lock) lock.style.display = 'flex';
+            });
+        }
+    } catch(e) {
+        console.error("Paywall check failed:", e);
+    }
+});
+</script>
 <script src="js/app.js?v=1428"></script>
 <script src="js/terminal.js?v=1428"></script>
 </body>
 </html>
-
-
-
-
-
-
