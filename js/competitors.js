@@ -285,7 +285,9 @@ async function loadBestSellers() {
         window.cmpAllBestSellers = data.best_sellers || [];
         const list = document.getElementById('bestsellers-list');
         
-        if (window.cmpAllBestSellers.length > 0) {
+        if (window.cmpAllBestSellers.length === 0) {
+            list.innerHTML = '<div class="cmp-empty" style="text-align:center; padding:20px; color:#71717A;">No best seller tags found on these stores.</div>';
+        } else if (window.cmpAllBestSellers.length > 0) {
             list.innerHTML = window.cmpAllBestSellers.slice(0, 5).map(p => `
                 <div class="cmp-product-row">
                     <img class="cmp-avatar" src="${cmpEsc(p.image || '')}" onerror="this.style.visibility='hidden'">
