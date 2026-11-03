@@ -139,6 +139,7 @@
     </style>
 
 <link rel="stylesheet" href="css/masterpiece.css?v=1428">
+<link rel="icon" type="image/png" href="midra-icon.png?v=1">
 </head>
 <body>
 
@@ -161,11 +162,11 @@
 </div>
 
 <div class="header">
-    <a href="index.html" class="brand" style="gap: 8px !important;">
+    <a href="index.html" class="brand" style="gap: 8px !important; justify-content: flex-start !important; width: 100% !important;">
             <div class="mark" style="background: transparent !important; border: none !important; width: auto !important; height: auto !important; padding: 0 !important; margin-right: 0 !important;">
-                <img src="midra-icon.png" alt="Midra" style="width: 36px; height: 36px; object-fit: contain;">
+                <img src="midra-icon.png" alt="Midra" style="width: 32px; height: 32px; object-fit: contain;">
             </div>
-            <div style="font-size: 24px !important; font-weight: 900 !important; letter-spacing: 1px !important; color: #FFFFFF !important;">MIDRA</div>
+            <div style="font-size: 20px !important; font-weight: 900 !important; letter-spacing: 0.5px !important; color: #FFFFFF !important;">MIDRA</div>
         </a>
     <div class="tabs">
         <a href="index.html" class="tab"><svg class="nav-svg-icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Connect</a>
@@ -278,7 +279,7 @@
             </div>
         </div>
 
-                        <div class="ov-kpi-grid">
+        <div class="ov-kpi-grid">
             <div class="ov-kpi kpi-refined-card">
                 <div class="kpi-refined-header">
                     <div class="kpi-refined-title-group">
@@ -378,6 +379,15 @@
                     </div>
                     <div class="ov-badge ov-badge-violet">AI</div>
                 </div>
+                
+                <!-- TOP OPPORTUNITIES LOCK -->
+                <div id="ov-opportunities-lock" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: #F8FAFC; border: 1px dashed #D1D5DB; border-radius: 8px; text-align: center; width: 100%; min-height: 200px;">
+                    <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
+                    <div style="font-weight: 900; font-size: 16px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+                    <div style="font-size: 13px; color: #52525B; margin-bottom: 20px;">Unlock AI-driven pricing strategies based on your store data.</div>
+                    <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
+                </div>
+
                 <div id="ov-opportunities" class="ov-list">
                     <div class="ov-empty">Analyzing store data…</div>
                 </div>
@@ -415,7 +425,6 @@
                         <div class="ov-panel-title">Top Products</div>
                         <div class="ov-panel-sub">By revenue, last 30 days</div>
                     </div>
-                    
                 </div>
                 <div id="ov-top-products" class="ov-list">
                     <div class="ov-empty">Loading products…</div>
@@ -426,15 +435,24 @@
             <div class="ov-panel ov-ai-panel">
                 <div class="ov-panel-head">
                     <div>
-                        <div class="ov-panel-title">MIDRAX AI Assistant</div>
+                        <div class="ov-panel-title">MIDRA AI Assistant</div>
                         <div class="ov-panel-sub">Profit-aware recommendations</div>
                     </div>
                     <div class="ov-badge ov-badge-cyan">GROQ</div>
                 </div>
-                <div class="ov-ai-copy">
+                
+                <!-- AI ASSISTANT LOCK -->
+                <div id="ov-ai-panel-lock" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: #F8FAFC; border: 1px dashed #D1D5DB; border-radius: 8px; text-align: center; width: 100%; min-height: 200px;">
+                    <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
+                    <div style="font-weight: 900; font-size: 16px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+                    <div style="font-size: 13px; color: #52525B; margin-bottom: 20px;">Get AI-powered recommendations to improve your store.</div>
+                    <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
+                </div>
+
+                <div class="ov-ai-copy" id="ov-ai-copy">
                     Ask the Terminal to compare your margin against a competitor price, or review today’s actions above.
                 </div>
-                <a href="terminal.html" class="ov-btn-primary">Open Terminal →</a>
+                <a href="terminal.html" class="ov-btn-primary" id="ov-ai-btn">Open Terminal →</a>
                 <div class="ov-ai-note" id="ov-ai-assistant-note">AI status: standby</div>
             </div>
         </div>
@@ -456,26 +474,37 @@
 
 </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const token = localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token'))) ? JSON.parse(localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token')))).access_token : null;
+        if (!token) return;
+        const res = await fetch('https://api.midra.xyz/api/auth/status', { headers: { 'Authorization': 'Bearer ' + token } });
+        const data = await res.json();
+        if (data.plan !== 'pro' && data.plan !== 'scale') {
+            // Lock Top Opportunities
+            const opps = document.getElementById('ov-opportunities');
+            if (opps) opps.style.display = 'none';
+            const oppsLock = document.getElementById('ov-opportunities-lock');
+            if (oppsLock) oppsLock.style.display = 'flex';
+
+            // Lock AI Assistant
+            const aiCopy = document.getElementById('ov-ai-copy');
+            const aiBtn = document.getElementById('ov-ai-btn');
+            const aiNote = document.getElementById('ov-ai-assistant-note');
+            if (aiCopy) aiCopy.style.display = 'none';
+            if (aiBtn) aiBtn.style.display = 'none';
+            if (aiNote) aiNote.style.display = 'none';
+            const aiLock = document.getElementById('ov-ai-panel-lock');
+            if (aiLock) aiLock.style.display = 'flex';
+        }
+    } catch(e) {
+        console.error("Paywall check failed:", e);
+    }
+});
+</script>
 <script src="js/app.js?v=1428"></script>
 <script src="js/overview.js?v=1428"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
