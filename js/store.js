@@ -114,7 +114,7 @@ async function loadStoreData() {
     nameEl.innerText = "Loading...";
 
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/store/detailed');
+        const res = await fetch('https://api.midra.xyz/api/store/detailed');
         const data = await res.json();
 
         if (data.profile) {

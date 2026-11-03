@@ -1,6 +1,6 @@
 ﻿async function loadSocial() {
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/social/summary');
+        const res = await fetch('https://api.midra.xyz/api/social/summary');
         const data = await res.json();
 
         // 1. Render Scorecard

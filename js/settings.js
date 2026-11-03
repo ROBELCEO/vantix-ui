@@ -1,6 +1,6 @@
 ﻿async function loadProfile() {
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/auth/profile');
+        const res = await fetch('https://api.midra.xyz/api/auth/profile');
         if (!res.ok) return;
         const data = await res.json();
 
@@ -47,7 +47,7 @@ async function confirmDelete() {
     btn.disabled = true;
 
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/auth/delete-account', {
+        const res = await fetch('https://api.midra.xyz/api/auth/delete-account', {
             method: 'DELETE'
         });
 

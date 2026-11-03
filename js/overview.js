@@ -37,10 +37,10 @@ async function loadOverview() {
     ovSet("ov-last-updated", "Updated: " + new Date().toLocaleTimeString());
 
     const [summaryRes, storeStatusRes, storeDetailedRes, alertsRes] = await Promise.all([
-        ovFetchJson("https://vantix-my5f.onrender.com/api/overview/summary"),
-        ovFetchJson("https://vantix-my5f.onrender.com/api/shopify/status"),
-        ovFetchJson("https://vantix-my5f.onrender.com/api/store/detailed?t=" + Date.now()), // Cache buster
-        ovFetchJson("https://vantix-my5f.onrender.com/api/alerts/list")
+        ovFetchJson("https://api.midra.xyz/api/overview/summary"),
+        ovFetchJson("https://api.midra.xyz/api/shopify/status"),
+        ovFetchJson("https://api.midra.xyz/api/store/detailed?t=" + Date.now()), // Cache buster
+        ovFetchJson("https://api.midra.xyz/api/alerts/list")
     ]);
 
     if (storeStatusRes.ok && storeStatusRes.data && storeStatusRes.data.connected) {

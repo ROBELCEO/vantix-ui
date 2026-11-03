@@ -9,7 +9,7 @@ window.fetch = function(resource, config) {
     config = config || {};
     config.headers = config.headers || {};
     if (window.currentSession && window.currentSession.access_token) {
-        if (typeof resource === 'string' && resource.includes('vantix-my5f.onrender.com')) {
+        if (typeof resource === 'string' && resource.includes('api.midra.xyz')) {
             config.headers['Authorization'] = `Bearer ${window.currentSession.access_token}`;
         }
     }
@@ -95,7 +95,7 @@ const dscObserver = new MutationObserver(() => {
     if (dscWrap && !window.dscPaywallApplied) {
         window.dscPaywallApplied = true;
         
-        fetch('https://vantix-my5f.onrender.com/api/auth/status')
+        fetch('https://api.midra.xyz/api/auth/status')
             .then(r => r.json())
             .then(d => {
                 if (d.plan === 'starter') {

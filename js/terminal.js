@@ -28,7 +28,7 @@ async function loadTerminal() {
 
     try {
         // 1. Get tier
-        const statusRes = await fetch('https://vantix-my5f.onrender.com/api/auth/status');
+        const statusRes = await fetch('https://api.midra.xyz/api/auth/status');
         if (statusRes.ok) {
             const statusData = await statusRes.json();
             window.userTier = statusData.plan || 'trial';
@@ -38,7 +38,7 @@ async function loadTerminal() {
         const token = window.getAuthToken();
         if (!token) throw new Error("Not logged in. Please refresh or log in again.");
         
-        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison', {
+        const res = await fetch('https://api.midra.xyz/api/competitors/price-comparison', {
             headers: { 'Authorization': 'Bearer ' + token }
         });
         if(!res.ok) throw new Error("HTTP " + res.status);
@@ -303,7 +303,7 @@ async function fetchAIAdvice(productName, myPrice, myCost, compPrice, safeFloor)
     }
 
     try {
-        const url = new URL('https://vantix-my5f.onrender.com/api/ai/advisor');
+        const url = new URL('https://api.midra.xyz/api/ai/advisor');
         url.searchParams.append('product_name', productName);
         if (myPrice !== undefined && myPrice !== null) url.searchParams.append('my_price', myPrice);
         if (myCost !== undefined && myCost !== null) url.searchParams.append('my_cost', myCost);

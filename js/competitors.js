@@ -43,7 +43,7 @@ async function fetchCompetitors() {
     if (!list) return;
 
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/list');
+        const res = await fetch('https://api.midra.xyz/api/competitors/list');
         if (!res.ok) throw new Error("HTTP " + res.status);
 
         const data = await res.json();
@@ -84,7 +84,7 @@ async function refreshCompetitor(domain, btn) {
     btn.innerText = "…";
     btn.disabled = true;
     try {
-        const res = await fetch(`https://vantix-my5f.onrender.com/api/competitors/add?domain=${encodeURIComponent(domain)}`, { method: 'POST' });
+        const res = await fetch(`https://api.midra.xyz/api/competitors/add?domain=${encodeURIComponent(domain)}`, { method: 'POST' });
         const data = await res.json();
         if (res.ok && data.status === "success") {
             fetchCompetitors();
@@ -111,7 +111,7 @@ async function autoDiscover() {
     results.innerHTML = '<div class="cmp-empty">Analyzing your catalog and querying the network...</div>';
 
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/discover');
+        const res = await fetch('https://api.midra.xyz/api/competitors/discover');
         const data = await res.json();
         if (!res.ok) throw new Error(data.detail || "Network error");
 
@@ -171,7 +171,7 @@ async function addCompetitor(domain) {
     status.innerText = "Scraping competitor products (takes 5-10s)…";
 
     try {
-        const res = await fetch(`https://vantix-my5f.onrender.com/api/competitors/add?domain=${encodeURIComponent(domain)}`, { method: 'POST' });
+        const res = await fetch(`https://api.midra.xyz/api/competitors/add?domain=${encodeURIComponent(domain)}`, { method: 'POST' });
         const data = await res.json();
 
         if (res.ok && data.status === "success") {
@@ -205,7 +205,7 @@ async function addCompetitor(domain) {
 
 async function loadCompetitorIntel() {
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/opportunities');
+        const res = await fetch('https://api.midra.xyz/api/competitors/opportunities');
         if (!res.ok) return;
         const data = await res.json();
 
@@ -251,7 +251,7 @@ async function loadCatalogGaps() {
     if (!list) return;
 
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/gaps');
+        const res = await fetch('https://api.midra.xyz/api/competitors/gaps');
         if (!res.ok) return;
         const data = await res.json();
 
@@ -278,7 +278,7 @@ async function loadCatalogGaps() {
 
 async function loadBestSellers() {
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/best-sellers');
+        const res = await fetch('https://api.midra.xyz/api/competitors/best-sellers');
         if (!res.ok) return;
         const data = await res.json();
 

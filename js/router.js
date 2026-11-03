@@ -142,7 +142,7 @@ function applyDiscoveryPaywall(routeName) {
 
     if (routeName !== 'discovery') return;
 
-    fetch('https://vantix-my5f.onrender.com/api/auth/status')
+    fetch('https://api.midra.xyz/api/auth/status')
         .then(r => r.json())
         .then(d => {
             if (d.plan === 'starter') {

@@ -68,7 +68,7 @@ async function loadDiscovery() {
         const token = window.getAuthToken();
         if (!token) throw new Error("Not logged in");
 
-        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/trends', {
+        const res = await fetch('https://api.midra.xyz/api/discovery/trends', {
             headers: { 'Authorization': 'Bearer ' + token }
         });
         
@@ -169,7 +169,7 @@ window.saveOpportunity = async function(index) {
         const token = window.getAuthToken();
         if (!token) throw new Error("Not logged in");
 
-        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/save', {
+        const res = await fetch('https://api.midra.xyz/api/discovery/save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
             body: JSON.stringify({
@@ -207,7 +207,7 @@ async function loadWatchlist() {
         const token = window.getAuthToken();
         if (!token) throw new Error("Not logged in");
 
-        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/saved', {
+        const res = await fetch('https://api.midra.xyz/api/discovery/saved', {
             headers: { 'Authorization': 'Bearer ' + token }
         });
         
@@ -253,7 +253,7 @@ window.removeWlItem = async function(id, btn) {
     btn.innerText = "Removing...";
     try {
         const token = window.getAuthToken();
-        const res = await fetch(`https://vantix-my5f.onrender.com/api/discovery/saved/${id}`, {
+        const res = await fetch(`https://api.midra.xyz/api/discovery/saved/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': 'Bearer ' + token }
         });
@@ -276,7 +276,7 @@ window.removeWlItem = async function(id, btn) {
 async function fetchCategories() {
     try {
         const token = window.getAuthToken();
-        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/categories', {
+        const res = await fetch('https://api.midra.xyz/api/discovery/categories', {
             headers: { 'Authorization': 'Bearer ' + token }
         });
         const data = await res.json();
@@ -376,7 +376,7 @@ async function loadPreferences() {
         const token = window.getAuthToken();
         if (!token) return;
         
-        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/preferences', {
+        const res = await fetch('https://api.midra.xyz/api/discovery/preferences', {
             headers: { 'Authorization': 'Bearer ' + token }
         });
         const data = await res.json();
@@ -414,7 +414,7 @@ window.savePreferences = async function() {
 
     try {
         const token = window.getAuthToken();
-        const res = await fetch('https://vantix-my5f.onrender.com/api/discovery/preferences', {
+        const res = await fetch('https://api.midra.xyz/api/discovery/preferences', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
             body: JSON.stringify(currentPrefs)

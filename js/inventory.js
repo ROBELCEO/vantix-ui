@@ -10,7 +10,7 @@ let _invTierPromise = null;
 function ensureInvTier() {
     if (window.invTier) return Promise.resolve(window.invTier);
     if (_invTierPromise) return _invTierPromise;
-    _invTierPromise = fetch('https://vantix-my5f.onrender.com/api/auth/status')
+    _invTierPromise = fetch('https://api.midra.xyz/api/auth/status')
         .then(r => r.ok ? r.json() : { plan: 'trial' })
         .then(d => {
             window.invTier = d.plan || 'trial';
@@ -71,7 +71,7 @@ async function loadInventory() {
 
     // 2. Fetch data
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/inventory/analytics');
+        const res = await fetch('https://api.midra.xyz/api/inventory/analytics');
         if (!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
 

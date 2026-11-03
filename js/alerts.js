@@ -145,7 +145,7 @@ async function loadAlerts() {
     if (!container) return;
 
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/alerts/list');
+        const res = await fetch('https://api.midra.xyz/api/alerts/list');
         if (!res.ok) {
             container.innerHTML = '<div class="alrt-empty alrt-text-red">Failed to load alerts.</div>';
             if (statusEl) statusEl.innerText = "Error";

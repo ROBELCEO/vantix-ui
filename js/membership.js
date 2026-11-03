@@ -34,7 +34,7 @@ async function checkSubscription() {
         resetBtn(btnPro, "Upgrade to Pro →", proUrl);
         resetBtn(btnScale, "Select Scale", scaleUrl);
 
-        const res = await fetch('https://vantix-my5f.onrender.com/api/auth/status');
+        const res = await fetch('https://api.midra.xyz/api/auth/status');
         if (!res.ok) throw new Error("Failed to load status");
 
         const data = await res.json();

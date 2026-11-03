@@ -12,7 +12,7 @@ async function checkConnectionStatus() {
     if (!loadingView || !unconnectedView || !connectedView) return;
 
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/shopify/status');
+        const res = await fetch('https://api.midra.xyz/api/shopify/status');
         if (res.status === 401) {
             if (statusEl) statusEl.innerText = "Unauthorized";
             return;
@@ -47,14 +47,14 @@ async function checkConnectionStatus() {
             }
 
             // AUTO-SYNC IN THE BACKGROUND
-            fetch('https://vantix-my5f.onrender.com/api/shopify/sync')
+            fetch('https://api.midra.xyz/api/shopify/sync')
                 .then(r => r.json())
                 .then(syncData => console.log("Background sync complete:", syncData))
                 .catch(err => console.error("Background sync failed:", err));
             
             // Load saved settings without flashing
             try {
-                const settingsRes = await fetch('https://vantix-my5f.onrender.com/api/store/settings');
+                const settingsRes = await fetch('https://api.midra.xyz/api/store/settings');
                 if (settingsRes.ok) {
                     const settings = await settingsRes.json();
                     document.getElementById('profit-goal').value = settings.profit_goal || '';
@@ -97,7 +97,7 @@ async function saveSettings(btn) {
     status.style.display = 'none';
 
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/store/settings', {
+        const res = await fetch('https://api.midra.xyz/api/store/settings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ profit_goal: goal, avg_shipping_cost: shipping, gateway_fee: gateway })
@@ -128,7 +128,7 @@ async function checkTelegramStatus() {
     if(!btn || !statusText) return;
 
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/telegram/status');
+        const res = await fetch('https://api.midra.xyz/api/telegram/status');
         if (!res.ok) return;
         const data = await res.json();
         
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { data: { session } } = await window.supabaseClient.auth.getSession();
             if (session) {
                 link.onclick = () => {
-                    window.location.href = `https://vantix-my5f.onrender.com/api/shopify/install?shop=${domain}&token=${session.access_token}`;
+                    window.location.href = `https://api.midra.xyz/api/shopify/install?shop=${domain}&token=${session.access_token}`;
                 };
             }
         };

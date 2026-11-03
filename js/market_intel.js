@@ -5,7 +5,7 @@
     const timeoutId = setTimeout(() => controller.abort(), 45000); 
 
     try {
-        const res = await fetch('https://vantix-my5f.onrender.com/api/market-intel/intelligence', { signal: controller.signal });
+        const res = await fetch('https://api.midra.xyz/api/market-intel/intelligence', { signal: controller.signal });
         clearTimeout(timeoutId);
 
         if (!res.ok) { throw new Error(`Server returned ${res.status}`); }
