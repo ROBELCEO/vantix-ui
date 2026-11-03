@@ -296,7 +296,7 @@
 
                 const { data, error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
-                    options: { redirectTo: new URL('index.html', window.location.href).href }
+                    options: { redirectTo: 'https://robelceo.github.io/vantix-ui/index.html' }
                 });
 
                 if (error) throw error;
