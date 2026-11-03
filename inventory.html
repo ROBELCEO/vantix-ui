@@ -254,7 +254,7 @@
         </div>
 
         <!-- KPIs -->
-                <div class="inv-kpi-grid">
+        <div class="inv-kpi-grid">
             <div class="inv-kpi kpi-refined-card">
                 <div class="kpi-refined-header">
                     <div class="kpi-refined-title-group">
@@ -307,6 +307,14 @@
                     <div class="inv-panel-sub">Sorted by urgency based on recent sales velocity.</div>
                 </div>
             </div>
+
+            <!-- INVENTORY LIST LOCK -->
+            <div id="inventory-list-lock" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; background: #F8FAFC; border: 1px dashed #D1D5DB; border-radius: 8px; text-align: center; width: 100%; min-height: 200px; margin-top: 16px;">
+                <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
+                <div style="font-weight: 900; font-size: 16px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+                <div style="font-size: 13px; color: #52525B; margin-bottom: 20px;">Track sales velocity, restock alerts, and cash tied up in stock.</div>
+                <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
+            </div>
             
             <div id="inventory-list" class="inv-list">
                 <div class="inv-empty">
@@ -319,42 +327,25 @@
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const token = localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token'))) ? JSON.parse(localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token')))).access_token : null;
+        if (!token) return;
+        const res = await fetch('https://api.midra.xyz/api/auth/status', { headers: { 'Authorization': 'Bearer ' + token } });
+        const data = await res.json();
+        if (data.plan !== 'pro' && data.plan !== 'scale') {
+            const el = document.getElementById('inventory-list');
+            if (el) el.style.display = 'none';
+            const lock = document.getElementById('inventory-list-lock');
+            if (lock) lock.style.display = 'flex';
+        }
+    } catch(e) {
+        console.error("Paywall check failed:", e);
+    }
+});
+</script>
 <script src="js/app.js?v=1428"></script>
 <script src="js/inventory.js?v=1428"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
