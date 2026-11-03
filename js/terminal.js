@@ -1,3 +1,15 @@
+window.getAuthToken = function() {
+    try {
+        const key = Object.keys(localStorage).find(k => k.includes('auth-token'));
+        if (!key) return null;
+        const data = JSON.parse(localStorage.getItem(key));
+        return data.access_token;
+    } catch(e) {
+        console.error("Token error:", e);
+        return null;
+    }
+};
+
 ﻿let chartInstance = null;
 let allComparisons = [];
 let activeIndex = 0;
@@ -23,7 +35,12 @@ async function loadTerminal() {
         }
 
         // 2. Fetch data
-        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison');
+        const token = window.getAuthToken();
+        if (!token) throw new Error("Not logged in. Please refresh or log in again.");
+        
+        const res = await fetch('https://vantix-my5f.onrender.com/api/competitors/price-comparison', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
         if(!res.ok) throw new Error("HTTP " + res.status);
         
         const data = await res.json();
