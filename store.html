@@ -11,36 +11,22 @@
 
     <!-- CLEAN MODAL SCROLLBAR -->
     <style>
-        /* Clean, thin scrollbar for the modal */
         #st-modal-body {
             scrollbar-width: thin !important;
             scrollbar-color: #E4E4E7 transparent !important;
             overflow-y: auto !important;
         }
-        #st-modal-body::-webkit-scrollbar {
-            width: 6px !important;
-            height: 6px !important;
-        }
-        #st-modal-body::-webkit-scrollbar-track {
-            background: transparent !important;
-        }
-        #st-modal-body::-webkit-scrollbar-thumb {
-            background: #E4E4E7 !important;
-            border-radius: 4px !important;
-        }
-        #st-modal-body::-webkit-scrollbar-thumb:hover {
-            background: #D4D4D8 !important;
-        }
+        #st-modal-body::-webkit-scrollbar { width: 6px !important; height: 6px !important; }
+        #st-modal-body::-webkit-scrollbar-track { background: transparent !important; }
+        #st-modal-body::-webkit-scrollbar-thumb { background: #E4E4E7 !important; border-radius: 4px !important; }
+        #st-modal-body::-webkit-scrollbar-thumb:hover { background: #D4D4D8 !important; }
     </style>
-
 
     <!-- GLOBAL LEFT SIDEBAR NAVIGATION -->
     <style>
-        /* 1. Make the header a fixed left sidebar */
         .header {
             position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
+            top: 0 !important; left: 0 !important;
             width: 240px !important;
             height: 100vh !important;
             flex-direction: column !important;
@@ -52,15 +38,11 @@
             z-index: 1000 !important;
             background-color: #000000 !important;
         }
-
-        /* 2. Brand Logo spacing */
         .header .brand {
             margin-bottom: 32px !important;
             width: 100% !important;
             justify-content: flex-start !important;
         }
-
-        /* 3. Stack the navigation tabs vertically */
         .header .tabs {
             flex-direction: column !important;
             width: 100% !important;
@@ -68,10 +50,9 @@
             border: none !important;
             padding: 0 !important;
             gap: 8px !important;
-            flex: 1 !important; /* Pushes the user profile to the bottom */
+            flex: 1 !important;
             overflow-y: auto !important;
         }
-        
         .header .tab {
             width: 100% !important;
             text-align: left !important;
@@ -81,19 +62,8 @@
             color: #A1A1AA !important;
             transition: all 0.2s !important;
         }
-        
-        .header .tab:hover {
-            background-color: transparent !important;
-            color: #FFFFFF !important;
-        }
-        
-        .header .tab.active {
-            background-color: transparent !important;
-            color: #00E5FF !important;
-            font-weight: 800 !important;
-        }
-
-        /* 4. User profile & Logout at the bottom */
+        .header .tab:hover { background-color: transparent !important; color: #FFFFFF !important; }
+        .header .tab.active { background-color: transparent !important; color: #00E5FF !important; font-weight: 800 !important; }
         .header > div:last-child {
             width: 100% !important;
             flex-direction: column !important;
@@ -101,19 +71,12 @@
             gap: 16px !important;
             margin-top: auto !important;
         }
-        
-        .header > div:last-child button {
-            width: 100% !important;
-        }
-
-        /* 5. Push the main page content to the right */
+        .header > div:last-child button { width: 100% !important; }
         .screen {
             margin-left: 240px !important;
             width: calc(100% - 240px) !important;
             padding-top: 24px !important;
         }
-
-        /* 6. Mobile Fix: Revert to top bar on small screens */
         @media (max-width: 900px) {
             .header {
                 width: 100% !important;
@@ -130,37 +93,22 @@
             .header > div:last-child { flex-direction: row !important; width: auto !important; margin-top: 0 !important; gap: 12px !important; }
             .header > div:last-child button { width: auto !important; }
             .screen {
-                margin-left: 0 !important;
-                width: 100% !important;
-                margin-top: 56px !important; 
-                height: calc(100vh - 56px) !important;
+                margin-left: 0 !important; width: 100% !important;
+                margin-top: 56px !important; height: calc(100vh - 56px) !important;
                 padding-top: 16px !important;
             }
         }
     </style>
 
-
     <!-- FULL WIDTH CONTENT FIX -->
     <style>
-        /* 1. Reduce padding on the screen container */
-        .screen {
-            padding-left: 16px !important;
-            padding-right: 16px !important;
-        }
-
-        /* 2. Remove max-width limits on all page wrappers so they stretch */
+        .screen { padding-left: 16px !important; padding-right: 16px !important; }
         .ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
             max-width: 100% !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
+            padding-left: 0 !important; padding-right: 0 !important;
+            margin-left: 0 !important; margin-right: 0 !important;
         }
-
-        /* 3. Mobile adjustments */
-        @media (max-width: 900px) {
-            .screen { padding-left: 12px !important; padding-right: 12px !important; }
-        }
+        @media (max-width: 900px) { .screen { padding-left: 12px !important; padding-right: 12px !important; } }
     </style>
 
 <link rel="stylesheet" href="css/masterpiece.css?v=1428">
@@ -221,71 +169,19 @@
 <div class="screen st-screen">
     <!-- MY STORE PAGE — COMPACT LAYOUT FIX -->
     <style>
-        /* 1. Remove vertical gap */
         .st-screen .st-wrap { padding-top: 0 !important; }
         .st-screen .st-header-row { margin-bottom: 16px !important; align-items: flex-start !important; }
-
-        /* 2. Title & Eyebrow on same line (Blue Eyebrow) */
         .st-screen .st-identity > div:last-child {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: baseline;
-            gap: 8px;
+            display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px;
         }
-        .st-screen .st-title {
-            font-size: 20px !important;
-            margin: 0 !important;
-            line-height: 1.2 !important;
-            font-weight: 900 !important;
-        }
-        .st-screen .st-eyebrow {
-            font-size: 10px !important;
-            margin: 0 !important;
-            letter-spacing: 1.4px !important;
-            text-transform: uppercase !important;
-            font-weight: 800 !important;
-            color: #0284C7 !important;
-        }
-        .st-screen .st-domain {
-            width: 100%; /* Forces domain to next row */
-            font-size: 13px !important;
-            margin-top: 4px !important;
-            line-height: 1.5 !important;
-            color: #52525B !important;
-        }
-
-        /* 3. Status Chips */
+        .st-screen .st-title { font-size: 20px !important; margin: 0 !important; line-height: 1.2 !important; font-weight: 900 !important; }
+        .st-screen .st-eyebrow { font-size: 10px !important; margin: 0 !important; letter-spacing: 1.4px !important; text-transform: uppercase !important; font-weight: 800 !important; color: #0284C7 !important; }
+        .st-screen .st-domain { width: 100%; font-size: 13px !important; margin-top: 4px !important; line-height: 1.5 !important; color: #52525B !important; }
         .st-screen .st-status-group { gap: 8px !important; }
-        .st-screen .st-chip {
-            font-size: 10px !important;
-            padding: 4px 8px !important;
-            height: 26px !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            margin-top: 4px !important;
-        }
-
-        /* 4. Panels & Flex layout to push button to bottom */
+        .st-screen .st-chip { font-size: 10px !important; padding: 4px 8px !important; height: 26px !important; display: inline-flex !important; align-items: center !important; margin-top: 4px !important; }
         .st-screen .st-panel { display: flex; flex-direction: column; }
-
-        /* 5. The new full-width View All button */
-        .st-screen .st-view-all-btn {
-            width: 100%;
-            margin-top: 16px;
-            padding: 10px;
-            background: #FAFAFA;
-            border: 1px dashed #D1D5DB;
-            color: #0284C7;
-            font-size: 12px;
-            font-weight: 800;
-            border-radius: 2px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .st-screen .st-view-all-btn:hover {
-            background: #F4F4F5;
-            color: #0369A1;
-        }
+        .st-screen .st-view-all-btn { width: 100%; margin-top: 16px; padding: 10px; background: #FAFAFA; border: 1px dashed #D1D5DB; color: #0284C7; font-size: 12px; font-weight: 800; border-radius: 2px; cursor: pointer; transition: 0.2s; }
+        .st-screen .st-view-all-btn:hover { background: #F4F4F5; color: #0369A1; }
     </style>
 
     <div class="st-wrap">
@@ -306,8 +202,8 @@
             </div>
         </div>
 
-                <!-- ROW B: 5 KPI CARDS -->
-                <div class="st-kpi-grid">
+        <!-- ROW B: 5 KPI CARDS -->
+        <div class="st-kpi-grid">
             <div class="st-kpi kpi-refined-card">
                 <div class="kpi-refined-header">
                     <div class="kpi-refined-title-group">
@@ -421,6 +317,15 @@
                                                 <div class="st-badge st-badge-amber">RECOVER</div>
                     </div>
                 </div>
+                
+                <!-- ABANDONED CARTS LOCK -->
+                <div id="carts-list-lock" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: #F8FAFC; border: 1px dashed #D1D5DB; border-radius: 8px; text-align: center; width: 100%; min-height: 200px;">
+                    <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
+                    <div style="font-weight: 900; font-size: 16px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+                    <div style="font-size: 13px; color: #52525B; margin-bottom: 20px;">Recover lost sales from abandoned checkouts.</div>
+                    <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
+                </div>
+
                 <div id="carts-list" class="st-list" style="flex: 1;">
                     <div class="st-empty">Loading abandoned carts…</div>
                 </div>
@@ -437,6 +342,15 @@
                                                 <div class="st-badge st-badge-red">CASH TRAPPED</div>
                     </div>
                 </div>
+
+                <!-- DEAD STOCK LOCK -->
+                <div id="dead-stock-list-lock" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: #F8FAFC; border: 1px dashed #D1D5DB; border-radius: 8px; text-align: center; width: 100%; min-height: 200px;">
+                    <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
+                    <div style="font-weight: 900; font-size: 16px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+                    <div style="font-size: 13px; color: #52525B; margin-bottom: 20px;">Find the cash trapped in your slow-moving inventory.</div>
+                    <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
+                </div>
+
                 <div id="dead-stock-list" class="st-list" style="flex: 1;">
                     <div class="st-empty">Analyzing inventory…</div>
                 </div>
@@ -451,6 +365,15 @@
                     </div>
                     <div class="st-badge st-badge-violet">AI</div>
                 </div>
+
+                <!-- AOV BUNDLE LOCK -->
+                <div id="bundle-container-lock" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: #F8FAFC; border: 1px dashed #D1D5DB; border-radius: 8px; text-align: center; width: 100%; min-height: 200px;">
+                    <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
+                    <div style="font-weight: 900; font-size: 16px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+                    <div style="font-size: 13px; color: #52525B; margin-bottom: 20px;">Discover products frequently bought together to boost AOV.</div>
+                    <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
+                </div>
+
                 <div id="bundle-container">
                     <div class="st-empty">Analyzing order history…</div>
                 </div>
@@ -464,6 +387,15 @@
                     </div>
                     <div class="st-badge st-badge-cyan">TOP 10%</div>
                 </div>
+
+                <!-- LTV LOCK -->
+                <div id="ltv-list-lock" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: #F8FAFC; border: 1px dashed #D1D5DB; border-radius: 8px; text-align: center; width: 100%; min-height: 200px;">
+                    <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
+                    <div style="font-weight: 900; font-size: 16px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+                    <div style="font-size: 13px; color: #52525B; margin-bottom: 20px;">Identify your highest-spending customers.</div>
+                    <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
+                </div>
+
                 <div id="ltv-list" class="st-list">
                     <div class="st-empty">Loading VIP customers…</div>
                 </div>
@@ -523,17 +455,28 @@
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const token = localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token'))) ? JSON.parse(localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token')))).access_token : null;
+        if (!token) return;
+        const res = await fetch('https://api.midra.xyz/api/auth/status', { headers: { 'Authorization': 'Bearer ' + token } });
+        const data = await res.json();
+        if (data.plan !== 'pro' && data.plan !== 'scale') {
+            const lockIds = ['carts-list', 'dead-stock-list', 'bundle-container', 'ltv-list'];
+            lockIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+                const lock = document.getElementById(id + '-lock');
+                if (lock) lock.style.display = 'flex';
+            });
+        }
+    } catch(e) {
+        console.error("Paywall check failed:", e);
+    }
+});
+</script>
 <script src="js/app.js?v=1428"></script>
 <script src="js/store.js?v=1428"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
