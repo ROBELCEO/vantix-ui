@@ -98,8 +98,7 @@ const dscObserver = new MutationObserver(() => {
         fetch('https://api.midra.xyz/api/auth/status')
             .then(r => r.json())
             .then(d => {
-                if (d.plan !== 'pro' && d.plan !== 'scale') { document.body.classList.add('is-locked-tier'); }
-        if (d.plan === 'starter') {
+                if (d.plan === 'starter') {
                     const overlay = document.createElement('div');
                     overlay.id = 'dsc-paywall-overlay';
                     overlay.style.cssText = "position: fixed; top: 56px; left: 0; right: 0; bottom: 0; z-index: 9999; backdrop-filter: blur(8px); background: rgba(248, 250, 252, 0.85); display: flex; flex-direction: column; align-items: center; justify-content: center;";

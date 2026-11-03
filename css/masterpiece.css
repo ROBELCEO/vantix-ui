@@ -1397,16 +1397,3 @@ body, .screen, .st-modal-body, * {
     color: #FFFFFF;
     border-color: #3F3F46;
 }
-
-/* ==========================================
-   DISCOVERY PAYWALL (CSS ONLY)
-   ========================================== */
-body.is-locked-tier #discovery-results,
-body.is-locked-tier #watchlist-results,
-body.is-locked-tier .dsc-status-banner,
-body.is-locked-tier .dsc-header-right {
-    display: none !important;
-}
-body.is-locked-tier #dsc-paywall-css {
-    display: flex !important;
-}
