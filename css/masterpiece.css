@@ -1320,3 +1320,80 @@ body, .screen, .st-modal-body, * {
 .set-btn-danger:hover {
     background-color: #BE123C !important;
 }
+
+
+/* ==========================================
+   PROFESSIONAL SIDEBAR PROFILE
+   ========================================== */
+
+.nav-profile-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin-top: auto;
+}
+
+.nav-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+
+.nav-profile-header:hover {
+    background: #18181B;
+}
+
+.nav-profile-header img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid #27272A;
+    object-fit: cover;
+}
+
+.nav-profile-text {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.nav-profile-text span:first-child {
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.nav-profile-text span:last-child {
+    font-size: 11px;
+    color: #A1A1AA;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.nav-logout-btn {
+    background: transparent;
+    border: 1px solid #27272A;
+    color: #A1A1AA;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.nav-logout-btn:hover {
+    background: #18181B;
+    color: #FFFFFF;
+    border-color: #3F3F46;
+}

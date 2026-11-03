@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Vantix</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=1428">
+<link rel="stylesheet" href="css/style.css?v=2255">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -152,27 +152,33 @@
         <a href="#membership" class="tab" data-route="membership">Membership</a>
         <a href="#settings" class="tab" data-route="settings">Settings</a>
     </div>
-    <div style="display: flex; align-items: center; gap: 12px;">
-        <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
-        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
+    <div class="nav-profile-container">
+        <div class="nav-profile-header">
+            <img id="nav-avatar" src="https://ui-avatars.com/api/?name=V&background=27272A&color=FFF" alt="Profile">
+            <div class="nav-profile-text">
+                <span id="nav-user-name">Merchant</span>
+                <span id="user-email">loading...</span>
+            </div>
+        </div>
+        <button onclick="logOut()" id="logout-btn" class="nav-logout-btn" style="display: none;">Log Out</button>
         <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
     </div>
 </div>
 
 <div id="view-root"></div>
 
-<script src="js/app.js?v=2250"></script>
-<script src="js/router.js?v=2250"></script>
-<script src="js/connect.js?v=2250"></script>
-<script src="js/overview.js?v=2250"></script>
-<script src="js/store.js?v=2250"></script>
-<script src="js/competitors.js?v=2250"></script>
-<script src="js/terminal.js?v=2250"></script>
-<script src="js/discovery.js?v=2250"></script>
-<script src="js/alerts.js?v=2250"></script>
-<script src="js/inventory.js?v=2250"></script>
-<script src="js/membership.js?v=2250"></script>
-<script src="js/settings.js?v=2250"></script>
+<script src="js/app.js?v=2255"></script>
+<script src="js/router.js?v=2255"></script>
+<script src="js/connect.js?v=2255"></script>
+<script src="js/overview.js?v=2255"></script>
+<script src="js/store.js?v=2255"></script>
+<script src="js/competitors.js?v=2255"></script>
+<script src="js/terminal.js?v=2255"></script>
+<script src="js/discovery.js?v=2255"></script>
+<script src="js/alerts.js?v=2255"></script>
+<script src="js/inventory.js?v=2255"></script>
+<script src="js/membership.js?v=2255"></script>
+<script src="js/settings.js?v=2255"></script>
 </body>
 </html>
 

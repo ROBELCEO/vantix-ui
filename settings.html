@@ -176,9 +176,15 @@
         <a href="membership.html" class="tab"><svg class="nav-svg-icon" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Membership</a>
         <a href="settings.html" class="tab active">Settings</a>
     </div>
-    <div style="display: flex; align-items: center; gap: 12px;">
-        <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
-        <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none;">Log Out</button>
+    <div class="nav-profile-container">
+        <div class="nav-profile-header">
+            <img id="nav-avatar" src="https://ui-avatars.com/api/?name=V&background=27272A&color=FFF" alt="Profile">
+            <div class="nav-profile-text">
+                <span id="nav-user-name">Merchant</span>
+                <span id="user-email">loading...</span>
+            </div>
+        </div>
+        <button onclick="logOut()" id="logout-btn" class="nav-logout-btn" style="display: none;">Log Out</button>
         <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
     </div>
 </div>
