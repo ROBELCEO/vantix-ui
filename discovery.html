@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Midra â€” Discovery</title>
+<title>Midra — Discovery</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=1428">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -22,8 +22,10 @@
     .dsc-header-right { display: flex; gap: 12px; align-items: center; }
     .dsc-tab-btn { background: #FFF; color: #09090B; border: 1px solid #E4E4E7; padding: 8px 16px; font-weight: 800; font-size: 12px; border-radius: 2px; cursor: pointer; transition: 0.2s; }
     .dsc-tab-btn.active { background: #09090B; color: #FFF; border-color: #09090B; }
+    .dsc-tab-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .dsc-btn-configure { background: #09090B; color: #FFF; padding: 8px 16px; font-size: 12px; font-weight: 800; border: none; border-radius: 2px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
     .dsc-btn-configure:hover { background: #27272A; }
+    .dsc-btn-configure:disabled { opacity: 0.5; cursor: not-allowed; }
 
     /* Status Banner */
     .dsc-status-banner { background: #F8FAFC; border: 1px solid #E4E4E7; color: #09090B; padding: 16px; border-radius: 4px; margin-bottom: 24px; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
@@ -226,7 +228,7 @@
 <div class="drawer" id="mobile-drawer">
     <div class="drawer-header">
         <div class="brand"><div>MIDRA</div></div>
-        <button class="drawer-close" onclick="toggleMenu()">âœ•</button>
+        <button class="drawer-close" onclick="toggleMenu()">✕</button>
     </div>
     <a href="index.html" class="drawer-tab">Connect</a>
     <a href="overview.html" class="drawer-tab">Overview</a>
@@ -262,7 +264,7 @@
     <div style="display: flex; align-items: center; gap: 12px;">
         <div id="user-email" style="font-size: 11px; color: #A1A1AA; font-family: var(--font-mono);">loading...</div>
         <button onclick="logOut()" id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px; display: none; background: #222 !important; color: #FFF !important; border-color: #333 !important;">Log Out</button>
-        <button class="mobile-menu-btn" onclick="toggleMenu()">â˜°</button>
+        <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
     </div>
 </div>
 
@@ -277,13 +279,23 @@
             <div class="dsc-header-right">
                 <button id="btn-tab-discover" onclick="switchDiscoveryTab('discover')" class="dsc-tab-btn active">Discover</button>
                 <button id="btn-tab-watchlist" onclick="switchDiscoveryTab('watchlist')" class="dsc-tab-btn">Watchlist</button>
-                <button class="dsc-btn-configure" onclick="openPreferences()">⚙️ Configure Preferences</button>
+                <button class="dsc-btn-configure" onclick="openPreferences()">⚙️ Configure Preferences</button>
             </div>
         </div>
 
         <div class="dsc-status-banner">
             <div>🔄 Next automated scan: <b>12:00 AM UTC</b></div>
             <div id="dsc-count" style="font-family: var(--font-mono); font-weight: 800;">0 Goldmines</div>
+        </div>
+
+        <!-- HIDDEN PAYWALL LOCK -->
+        <div id="discovery-results-lock" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; background: #FFFFFF; border: 1px dashed #D1D5DB; border-radius: 4px; text-align: center; width: 100%; margin-top: 24px;">
+            <div style="font-size: 32px; margin-bottom: 16px;">🔒</div>
+            <div style="font-weight: 900; font-size: 20px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+            <div style="font-size: 14px; color: #52525B; margin-bottom: 24px; max-width: 400px;">
+                The Global Discovery Engine scans 29,000+ stores to find your next winning product. Upgrade to Pro to unlock the Goldmines.
+            </div>
+            <a href="membership.html" style="background: #0284C7; color: #FFF; padding: 12px 24px; border-radius: 4px; font-size: 14px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
         </div>
 
         <!-- RESULTS GRID -->
@@ -307,7 +319,7 @@
     <div class="dsc-modal">
         <div class="dsc-modal-header">
             <div class="dsc-modal-title">Configure Discovery Preferences</div>
-            <button class="dsc-modal-close" onclick="closePreferences()">âœ•</button>
+            <button class="dsc-modal-close" onclick="closePreferences()">✕</button>
         </div>
         <div class="dsc-modal-body">
             <div class="dsc-pref-section">
@@ -335,6 +347,38 @@
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const token = localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token'))) ? JSON.parse(localStorage.getItem(Object.keys(localStorage).find(k=>k.includes('auth-token')))).access_token : null;
+        if (!token) return;
+        const res = await fetch('https://api.midra.xyz/api/auth/status', { headers: { 'Authorization': 'Bearer ' + token } });
+        const data = await res.json();
+        if (data.plan !== 'pro' && data.plan !== 'scale') {
+            const lockIds = ['discovery-results'];
+            lockIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+                const lock = document.getElementById(id + '-lock');
+                if (lock) lock.style.display = 'flex';
+            });
+            
+            // Also hide the status banner and disable buttons
+            const banner = document.querySelector('.dsc-status-banner');
+            if (banner) banner.style.display = 'none';
+            
+            const btnDiscover = document.getElementById('btn-tab-discover');
+            const btnWatchlist = document.getElementById('btn-tab-watchlist');
+            const btnPrefs = document.querySelector('.dsc-btn-configure');
+            if (btnDiscover) btnDiscover.disabled = true;
+            if (btnWatchlist) btnWatchlist.disabled = true;
+            if (btnPrefs) btnPrefs.disabled = true;
+        }
+    } catch(e) {
+        console.error("Paywall check failed:", e);
+    }
+});
+</script>
 <script src="js/app.js?v=1428"></script>
 <script src="js/discovery.js?v=1428"></script>
 </body>
