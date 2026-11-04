@@ -106,7 +106,7 @@ async function autoDiscover() {
     const results = document.getElementById('discovery-results');
     if (!btn || !results) return;
 
-    btn.innerText = "Scanning 29,000 stores...";
+    btn.innerText = "Scanning 100,000+ stores...";
     btn.disabled = true;
     results.innerHTML = '<div class="cmp-empty">Analyzing your catalog and querying the network...</div>';
 
