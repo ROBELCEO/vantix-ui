@@ -311,6 +311,21 @@
         });
     });
 </script>
+
+    <!-- AUTO-REDIRECT IF ALREADY LOGGED IN -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Wait for Supabase client to be available
+            const client = window.supabaseClient || (typeof supabase !== 'undefined' ? supabase : null);
+            if (!client) return;
+            
+            const { data: { session } } = await client.auth.getSession();
+            if (session) {
+                // If a session exists, immediately send them to the dashboard
+                window.location.href = 'overview.html';
+            }
+        });
+    </script>
 </body>
 </html>
 
