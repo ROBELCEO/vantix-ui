@@ -297,7 +297,7 @@
 
                 const { data, error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
-                    options: { redirectTo: 'https://midra.xyz/index.html' }
+                    options: { redirectTo: 'https://midra.xyz/overview.html' }
                 });
 
                 if (error) throw error;

@@ -10,7 +10,7 @@ document.addEventListener('click', function(e) {
 
 
 ﻿const VIEW_ROUTES = {
-    connect:     { html: "index.html",       init: ["checkConnectionStatus"] },
+    connect:     { html: "connect.html",       init: ["checkConnectionStatus"] },
     overview:    { html: "overview.html",    init: ["loadOverview"] },
     store:       { html: "store.html",       init: ["loadStoreData"] },
     competitors: { html: "competitors.html", init: ["fetchCompetitors", "loadCompetitorIntel", "loadCatalogGaps"] },
