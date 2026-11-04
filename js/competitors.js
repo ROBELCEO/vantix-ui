@@ -70,6 +70,7 @@ async function fetchCompetitors() {
                 <div style="display:flex; align-items:center; gap:8px;">
                     ${cmpFreshBadge(c)}
                     <button onclick="refreshCompetitor('${cmpEsc(c.domain)}', this)" class="cmp-btn-small">Refresh</button>
+                    <button onclick="removeCompetitor('${cmpEsc(c.domain)}', this)" class="cmp-btn-small" style="color:#E11D48; border-color:#FECDD3;" onmouseover="this.style.background='#FFF1F2'" onmouseout="this.style.background='#FFFFFF'">Remove</button>
                 </div>
             </div>
         `).join('');
@@ -413,3 +414,32 @@ document.addEventListener('DOMContentLoaded', () => {
         loadBestSellers();
     }, 500);
 });
+async function removeCompetitor(domain, btn) {
+    if (!confirm(`Are you sure you want to remove ${domain}?`)) return;
+    
+    const original = btn.innerText;
+    btn.innerText = "…";
+    btn.disabled = true;
+    
+    try {
+        const res = await fetch(`https://api.midra.xyz/api/competitors/remove?domain=${encodeURIComponent(domain)}`, {
+            method: 'DELETE'
+        });
+        
+        if (res.ok) {
+            fetchCompetitors();
+            loadCompetitorIntel();
+            loadCatalogGaps();
+            loadBestSellers();
+        } else {
+            const data = await res.json();
+            alert(data.detail || "Failed to remove competitor.");
+            btn.innerText = original;
+            btn.disabled = false;
+        }
+    } catch (e) {
+        alert("Network error removing competitor.");
+        btn.innerText = original;
+        btn.disabled = false;
+    }
+}
