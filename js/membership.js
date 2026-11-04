@@ -18,10 +18,10 @@ async function checkSubscription() {
             if (session) userId = session.user.id;
         }
 
-        const suffix = userId ? `?checkout[custom][user_id]=${userId}` : '';
-        const starterUrl = `https://vantix-app.lemonsqueezy.com/checkout/buy/d5f53e33-3d35-4cc5-aaca-3ca5a3236ed7${suffix}`;
-        const proUrl = `https://vantix-app.lemonsqueezy.com/checkout/buy/422c4e93-6071-457c-90b6-a648c5dee4c4${suffix}`;
-        const scaleUrl = `https://vantix-app.lemonsqueezy.com/checkout/buy/789d4ae0-cc01-462d-a074-78a360971168${suffix}`;
+        const suffix = userId ? `&checkout[custom][user_id]=${userId}` : '';
+        const starterUrl = `https://midra.lemonsqueezy.com/checkout/buy/d5f53e33-3d35-4cc5-aaca-3ca5a3236ed7?discount=0${suffix}`;
+        const proUrl = `https://midra.lemonsqueezy.com/checkout/buy/422c4e93-6071-457c-90b6-a648c5dee4c4?discount=0${suffix}`;
+        const scaleUrl = `https://midra.lemonsqueezy.com/checkout/buy/789d4ae0-cc01-462d-a074-78a360971168?discount=0${suffix}`;
 
         const resetBtn = (btn, text, url) => {
             if(!btn) return;
