@@ -23,9 +23,13 @@ window.addEventListener('load', async () => {
     const { data: { session } } = await window.supabaseClient.auth.getSession();
     
     if (!session) {
-        window.location.href = "login.html";
-        return;
-    }
+            if (window.location.hash.includes('access_token')) {
+                console.log("OAuth token detected. Waiting for Supabase...");
+                return;
+            }
+            window.location.href = "login.html";
+            return;
+        }
 
     window.currentSession = session;
 
