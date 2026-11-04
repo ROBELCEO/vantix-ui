@@ -184,16 +184,23 @@ async function addCompetitor(domain) {
             loadCatalogGaps();
             loadBestSellers();
         } else if (res.status === 403) {
+            // POLITE PLAN LIMIT MESSAGE
             status.className = 'cmp-status-msg cmp-text-red';
             const detail = data.detail || "Plan limit reached.";
-            status.innerHTML = `${cmpEsc(detail)} <a href="membership.html" style="margin-left:8px; font-weight:800; color:#0284C7; text-decoration:underline;">Upgrade to Pro →</a>`;
+            status.innerHTML = `🔒 ${cmpEsc(detail)} <a href="membership.html" style="margin-left:8px; font-weight:800; color:#0284C7; text-decoration:underline;">Upgrade to Pro →</a>`;
         } else {
+            // CATCH BACKEND ERRORS (like the missing database column) GRACEFULLY
             status.className = 'cmp-status-msg cmp-text-red';
-            status.innerText = data.detail || data.message || "Error adding.";
+            // Don't show raw JSON errors to the user
+            if (res.status >= 500) {
+                status.innerHTML = `⚠️ Server error. Please try again later or contact support.`;
+            } else {
+                status.innerText = data.detail || data.message || "Error adding.";
+            }
         }
     } catch (e) {
         status.className = 'cmp-status-msg cmp-text-red';
-        status.innerText = "Error adding competitor. Check backend.";
+        status.innerText = "Network error adding competitor. Check backend.";
     } finally {
         setTimeout(() => {
             if (status.innerText.includes("Scraping")) {
@@ -406,4 +413,3 @@ document.addEventListener('DOMContentLoaded', () => {
         loadBestSellers();
     }, 500);
 });
-
