@@ -42,12 +42,15 @@ function cmpBestSellerBadge(isBestSeller, rank, prevRank) {
 // ==========================================
 // PRODUCT DETAILS MODAL LOGIC
 // ==========================================
-window.showProductDetails = function(store, title, price, image) {
+window.showProductDetails = function(store, title, price, image, url) {
     document.getElementById('pm-store').innerText = store;
     document.getElementById('pm-title').innerText = title;
     document.getElementById('pm-price').innerText = '$' + Number(price).toFixed(2);
     document.getElementById('pm-image').src = image || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(title) + '&background=F4F4F5';
-    document.getElementById('pm-link').href = 'https://www.google.com/search?q=' + encodeURIComponent(title + ' ' + store);
+    
+    // Use the actual product URL if available, otherwise fallback to search
+    document.getElementById('pm-link').href = url || 'https://www.google.com/search?q=' + encodeURIComponent(title + ' ' + store);
+    
     document.getElementById('cmp-product-modal').style.display = 'flex';
 };
 
@@ -183,7 +186,6 @@ async function autoDiscover() {
                 ? '<div class="cmp-badge cmp-badge-green" style="font-size: 9px;">TRACKED</div>'
                 : `<button onclick="addCompetitor('${cmpEsc(domain)}')" class="cmp-btn-small">+ Add</button>`;
 
-            // Display matched products as chips
             let chipsHtml = '';
             if (c.matched_products && c.matched_products.length > 0) {
                 chipsHtml = c.matched_products.map(p => `
@@ -288,9 +290,9 @@ async function loadCompetitorIntel() {
         const stockList = document.getElementById('stockout-list');
         if (window.cmpAllStockouts.length > 0) {
             stockList.innerHTML = window.cmpAllStockouts.slice(0, 4).map(p => `
-                <div onclick="showProductDetails('${cmpEsc(p.store)}', '${cmpEsc(p.title)}', ${p.price}, '${cmpEsc(p.image)}')" style="cursor: pointer; background: #FFF; border: 1px solid #E4E4E7; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                    <div style="position: relative; height: 160px; background: #F8FAFC;">
-                        <img src="${cmpEsc(p.image || '')}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://placehold.co/300x160?text=No+Image'">
+                <div onclick="showProductDetails('${cmpEsc(p.store)}', '${cmpEsc(p.title)}', ${p.price}, '${cmpEsc(p.image)}', '${cmpEsc(p.url)}')" style="cursor: pointer; background: #FFF; border: 1px solid #E4E4E7; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                    <div style="position: relative; height: 180px; padding: 12px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #F1F5F9;">
+                        <img src="${cmpEsc(p.image || '')}" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.src='https://placehold.co/300x180?text=No+Image'">
                         <div style="position: absolute; top: 8px; right: 8px; background: #E11D48; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Out of Stock</div>
                     </div>
                     <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
@@ -308,9 +310,9 @@ async function loadCompetitorIntel() {
         const launchList = document.getElementById('launch-list');
         if (window.cmpAllLaunches.length > 0) {
             launchList.innerHTML = window.cmpAllLaunches.slice(0, 4).map(p => `
-                <div onclick="showProductDetails('${cmpEsc(p.store)}', '${cmpEsc(p.title)}', ${p.price}, '${cmpEsc(p.image)}')" style="cursor: pointer; background: #FFF; border: 1px solid #E4E4E7; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                    <div style="position: relative; height: 160px; background: #F8FAFC;">
-                        <img src="${cmpEsc(p.image || '')}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://placehold.co/300x160?text=No+Image'">
+                <div onclick="showProductDetails('${cmpEsc(p.store)}', '${cmpEsc(p.title)}', ${p.price}, '${cmpEsc(p.image)}', '${cmpEsc(p.url)}')" style="cursor: pointer; background: #FFF; border: 1px solid #E4E4E7; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                    <div style="position: relative; height: 180px; padding: 12px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #F1F5F9;">
+                        <img src="${cmpEsc(p.image || '')}" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.src='https://placehold.co/300x180?text=No+Image'">
                         <div style="position: absolute; top: 8px; right: 8px; background: #10B981; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">New Launch</div>
                     </div>
                     <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
@@ -339,9 +341,9 @@ async function loadCatalogGaps() {
 
         if (window.cmpAllGaps.length > 0) {
             list.innerHTML = window.cmpAllGaps.slice(0, 4).map(g => `
-                <div onclick="showProductDetails('${cmpEsc(g.store || 'Competitor')}', '${cmpEsc(g.title)}', ${g.price}, '${cmpEsc(g.image)}')" style="cursor: pointer; background: #FFF; border: 1px solid #E4E4E7; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                    <div style="position: relative; height: 160px; background: #F8FAFC;">
-                        <img src="${cmpEsc(g.image || '')}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://placehold.co/300x160?text=No+Image'">
+                <div onclick="showProductDetails('${cmpEsc(g.store || 'Competitor')}', '${cmpEsc(g.title)}', ${g.price}, '${cmpEsc(g.image)}', '${cmpEsc(g.url)}')" style="cursor: pointer; background: #FFF; border: 1px solid #E4E4E7; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                    <div style="position: relative; height: 180px; padding: 12px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #F1F5F9;">
+                        <img src="${cmpEsc(g.image || '')}" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.src='https://placehold.co/300x180?text=No+Image'">
                         <div style="position: absolute; top: 8px; right: 8px; background: #8B5CF6; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">GAP</div>
                     </div>
                     <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
@@ -372,9 +374,9 @@ async function loadBestSellers() {
             list.innerHTML = '<div class="cmp-empty" style="grid-column: span 4; text-align:center; padding:20px; color:#71717A;">No best seller tags found on these stores.</div>';
         } else {
             list.innerHTML = window.cmpAllBestSellers.slice(0, 4).map(p => `
-                <div onclick="showProductDetails('${cmpEsc(p.store)}', '${cmpEsc(p.title)}', ${p.price}, '${cmpEsc(p.image)}')" style="cursor: pointer; background: #FFF; border: 1px solid #F59E0B; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                    <div style="position: relative; height: 160px; background: #FFFBEB;">
-                        <img src="${cmpEsc(p.image || '')}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://placehold.co/300x160?text=No+Image'">
+                <div onclick="showProductDetails('${cmpEsc(p.store)}', '${cmpEsc(p.title)}', ${p.price}, '${cmpEsc(p.image)}', '${cmpEsc(p.url)}')" style="cursor: pointer; background: #FFF; border: 1px solid #F59E0B; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                    <div style="position: relative; height: 180px; padding: 12px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #F1F5F9;">
+                        <img src="${cmpEsc(p.image || '')}" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.src='https://placehold.co/300x180?text=No+Image'">
                         <div style="position: absolute; top: 8px; right: 8px; background: #F59E0B; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px;">#${p.rank || 1} BEST SELLER</div>
                     </div>
                     <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
@@ -402,16 +404,16 @@ function openCmpModal(type) {
     list.style.gridTemplateColumns = "1fr 1fr";
     list.style.gap = "16px";
 
-    const createCard = (store, title, price, image, badgeText, badgeColor, extraText = "") => `
-        <div onclick="showProductDetails('${cmpEsc(store)}', '${cmpEsc(title)}', ${price}, '${cmpEsc(image)}')" style="cursor: pointer; background: #FFF; border: 1px solid #E4E4E7; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
-            <div style="position: relative; height: 120px; background: #F8FAFC;">
-                <img src="${cmpEsc(image || '')}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://placehold.co/300x120?text=No+Image'">
-                ${badgeText ? `<div style="position: absolute; top: 6px; right: 6px; background: ${badgeColor}; color: #FFF; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">${badgeText}</div>` : ''}
+    const createCard = (store, title, price, image, badgeText, badgeColor, extraText = "", url = "") => `
+        <div onclick="showProductDetails('${cmpEsc(store)}', '${cmpEsc(title)}', ${price}, '${cmpEsc(image)}', '${cmpEsc(url)}')" style="cursor: pointer; background: #FFF; border: 1px solid #E4E4E7; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="position: relative; height: 200px; padding: 12px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #F1F5F9;">
+                <img src="${cmpEsc(image || '')}" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.src='https://placehold.co/300x200?text=No+Image'">
+                ${badgeText ? `<div style="position: absolute; top: 8px; right: 8px; background: ${badgeColor}; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">${badgeText}</div>` : ''}
             </div>
-            <div style="padding: 12px; flex: 1; display: flex; flex-direction: column;">
-                <div style="font-size: 9px; font-weight: 800; color: #71717A; text-transform: uppercase; margin-bottom: 4px;">${cmpEsc(store)} ${extraText}</div>
-                <div style="font-size: 12px; font-weight: 800; color: #09090B; line-height: 1.3; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${cmpEsc(title)}</div>
-                <div style="margin-top: auto; font-size: 14px; font-weight: 900; color: #09090B;">$${Number(price).toFixed(2)}</div>
+            <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
+                <div style="font-size: 10px; font-weight: 800; color: #71717A; text-transform: uppercase; margin-bottom: 6px;">${cmpEsc(store)} ${extraText}</div>
+                <div style="font-size: 13px; font-weight: 800; color: #09090B; line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${cmpEsc(title)}</div>
+                <div style="margin-top: auto; font-size: 16px; font-weight: 900; color: #09090B;">$${Number(price).toFixed(2)}</div>
             </div>
         </div>
     `;
@@ -436,22 +438,22 @@ function openCmpModal(type) {
     else if (type === 'stockouts') {
         title.innerText = "All Stock-Out Opportunities";
         if (window.cmpAllStockouts.length === 0) html = '<div class="cmp-empty" style="grid-column: span 2;">No stock-outs detected.</div>';
-        else html = window.cmpAllStockouts.map(p => createCard(p.store, p.title, p.price, p.image, 'Out of Stock', '#E11D48')).join("");
+        else html = window.cmpAllStockouts.map(p => createCard(p.store, p.title, p.price, p.image, 'Out of Stock', '#E11D48', '', p.url)).join("");
     }
     else if (type === 'launches') {
         title.innerText = "All New Launches";
         if (window.cmpAllLaunches.length === 0) html = '<div class="cmp-empty" style="grid-column: span 2;">No new launches detected.</div>';
-        else html = window.cmpAllLaunches.map(p => createCard(p.store, p.title, p.price, p.image, 'New Launch', '#10B981', '• ' + cmpFormatDate(p.date))).join("");
+        else html = window.cmpAllLaunches.map(p => createCard(p.store, p.title, p.price, p.image, 'New Launch', '#10B981', '• ' + cmpFormatDate(p.date), p.url)).join("");
     }
     else if (type === 'bestsellers') {
         title.innerText = "All Competitor Best Sellers";
         if (window.cmpAllBestSellers.length === 0) html = '<div class="cmp-empty" style="grid-column: span 2;">No best sellers found.</div>';
-        else html = window.cmpAllBestSellers.map(p => createCard(p.store, p.title, p.price, p.image, `#${p.rank || 1} Best Seller`, '#F59E0B')).join("");
+        else html = window.cmpAllBestSellers.map(p => createCard(p.store, p.title, p.price, p.image, `#${p.rank || 1} Best Seller`, '#F59E0B', '', p.url)).join("");
     }
     else if (type === 'gaps') {
         title.innerText = "All Catalog Gaps";
         if (window.cmpAllGaps.length === 0) html = '<div class="cmp-empty" style="grid-column: span 2;">No gaps found.</div>';
-        else html = window.cmpAllGaps.map(g => createCard(g.store || 'Competitor', g.title, g.price, g.image, 'Gap', '#8B5CF6', `• You sell 0 ${g.keyword}s`)).join("");
+        else html = window.cmpAllGaps.map(g => createCard(g.store || 'Competitor', g.title, g.price, g.image, 'Gap', '#8B5CF6', `• You sell 0 ${g.keyword}s`, g.url)).join("");
     }
 
     list.innerHTML = html;
