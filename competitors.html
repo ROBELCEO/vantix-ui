@@ -55,19 +55,33 @@
     .cmp-lock-desc { font-size: 14px; color: #52525B; margin-bottom: 24px; max-width: 400px; }
     .cmp-lock-btn { background: #0284C7; color: #FFF; padding: 12px 24px; border-radius: 4px; font-size: 14px; font-weight: 800; text-decoration: none; }
 
-    /* HORIZONTAL SLIDER SETUP */
+    /* Grids (Reverted to standard grids) */
+    .cmp-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .cmp-product-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    
+    /* BEST SELLERS HORIZONTAL SLIDER */
     .cmp-slider { display: flex; flex-direction: row; overflow-x: auto; gap: 16px; padding-bottom: 12px; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: #E4E4E7 transparent; }
     .cmp-slider::-webkit-scrollbar { height: 6px; }
     .cmp-slider::-webkit-scrollbar-track { background: transparent; }
     .cmp-slider::-webkit-scrollbar-thumb { background: #E4E4E7; border-radius: 4px; }
     .cmp-slider::-webkit-scrollbar-thumb:hover { background: #D4D4D8; }
-
-    /* 3 ITEMS PER ROW */
+    
+    /* 3 ITEMS PER ROW FOR BEST SELLERS ONLY */
     .cmp-slider > div { flex: 0 0 calc(33.333% - 11px); scroll-snap-align: start; display: flex; flex-direction: column; }
     @media (max-width: 1024px) { .cmp-slider > div { flex: 0 0 calc(50% - 8px); } }
     @media (max-width: 768px) { .cmp-slider > div { flex: 0 0 100%; } }
 
-    .cmp-grid-2 { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    /* Modals */
+    .cmp-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .cmp-modal { background: #FFFFFF; border-radius: 4px; width: 100%; max-width: 900px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.2); overflow: hidden; }
+    .cmp-modal-header { padding: 20px 24px; border-bottom: 1px solid #E4E4E7; display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; }
+    .cmp-modal-title { font-size: 18px; font-weight: 900; color: #09090B; }
+    .cmp-modal-close { background: none; border: none; font-size: 24px; color: #A1A1AA; cursor: pointer; }
+    
+    .cmp-modal-body { padding: 24px; overflow-y: auto; flex: 1; scrollbar-width: thin; scrollbar-color: #E4E4E7 transparent; }
+    .cmp-modal-body::-webkit-scrollbar { width: 6px; background: transparent; }
+    .cmp-modal-body::-webkit-scrollbar-track { background: transparent; }
+    .cmp-modal-body::-webkit-scrollbar-thumb { background: #E4E4E7; border-radius: 4px; }
 </style>
 
     <!-- GLOBAL LEFT SIDEBAR NAVIGATION -->
@@ -162,7 +176,7 @@
         </div>
 
         <!-- ROW B: ACTION PANELS -->
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px;">
+        <div class="cmp-grid-2" style="margin-bottom: 20px;">
             <div class="cmp-panel">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <div>
@@ -235,9 +249,9 @@
                     <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
                 </div>
 
-                <!-- SLIDER CLASS ADDED HERE -->
-                <div id="stockout-list" class="cmp-list cmp-slider">
-                    <div class="cmp-empty" style="width: 100%; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning stock…</div>
+                <!-- GRID (Not Slider) -->
+                <div id="stockout-list" class="cmp-list cmp-product-grid-2">
+                    <div class="cmp-empty" style="grid-column: span 2; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning stock…</div>
                 </div>
                 <button class="cmp-view-all-btn" onclick="openCmpModal('stockouts')">Show All Stock-Outs ↓</button>
             </div>
@@ -259,60 +273,60 @@
                     <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
                 </div>
 
-                <!-- SLIDER CLASS ADDED HERE -->
-                <div id="launch-list" class="cmp-list cmp-slider">
-                    <div class="cmp-empty" style="width: 100%; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning launches…</div>
+                <!-- GRID (Not Slider) -->
+                <div id="launch-list" class="cmp-list cmp-product-grid-2">
+                    <div class="cmp-empty" style="grid-column: span 2; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning launches…</div>
                 </div>
                 <button class="cmp-view-all-btn" onclick="openCmpModal('launches')">Show All Launches ↓</button>
             </div>
+        </div>
 
-            <!-- BEST SELLERS -->
-            <div class="cmp-panel">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <div>
-                        <div class="cmp-panel-title">🔥 Competitor Best Sellers</div>
-                        <div class="cmp-panel-sub">The top-selling products across all competitors.</div>
-                    </div>
-                    <div class="cmp-badge cmp-badge-cyan">TOP 5</div>
+        <!-- BEST SELLERS (HORIZONTAL SLIDER) -->
+        <div class="cmp-panel" style="margin-top: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div>
+                    <div class="cmp-panel-title">🔥 Competitor Best Sellers</div>
+                    <div class="cmp-panel-sub">The top-selling products across all competitors.</div>
                 </div>
-
-                <div id="bestsellers-list-lock" class="cmp-lock-box">
-                    <div class="cmp-lock-icon">🔒</div>
-                    <div class="cmp-lock-title">Pro Feature</div>
-                    <div class="cmp-lock-desc">Track the most popular products across your rivals.</div>
-                    <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
-                </div>
-
-                <!-- SLIDER CLASS ADDED HERE -->
-                <div id="bestsellers-list" class="cmp-list cmp-slider">
-                    <div class="cmp-empty" style="width: 100%; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning best sellers…</div>
-                </div>
-                <button class="cmp-view-all-btn" onclick="openCmpModal('bestsellers')">Show All Best Sellers ↓</button>
+                <div class="cmp-badge cmp-badge-cyan">TOP 5</div>
             </div>
 
-            <!-- CATALOG GAP ANALYZER -->
-            <div class="cmp-panel">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <div>
-                        <div class="cmp-panel-title">Catalog Gap Analyzer</div>
-                        <div class="cmp-panel-sub">Items your competitors sell, but you don't.</div>
-                    </div>
-                    <div class="cmp-badge cmp-badge-violet">MISSED REVENUE</div>
-                </div>
-
-                <div id="gap-list-lock" class="cmp-lock-box">
-                    <div class="cmp-lock-icon">🔒</div>
-                    <div class="cmp-lock-title">Pro Feature</div>
-                    <div class="cmp-lock-desc">Discover items your competitors sell, but you don't.</div>
-                    <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
-                </div>
-
-                <!-- SLIDER CLASS ADDED HERE -->
-                <div id="gap-list" class="cmp-list cmp-slider">
-                    <div class="cmp-empty" style="width: 100%; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning catalogs…</div>
-                </div>
-                <button class="cmp-view-all-btn" onclick="openCmpModal('gaps')">Show All Gaps ↓</button>
+            <div id="bestsellers-list-lock" class="cmp-lock-box">
+                <div class="cmp-lock-icon">🔒</div>
+                <div class="cmp-lock-title">Pro Feature</div>
+                <div class="cmp-lock-desc">Track the most popular products across your rivals.</div>
+                <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
             </div>
+
+            <!-- SLIDER CLASS APPLIED HERE ONLY -->
+            <div id="bestsellers-list" class="cmp-list cmp-slider">
+                <div class="cmp-empty" style="width: 100%; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning best sellers…</div>
+            </div>
+            <button class="cmp-view-all-btn" onclick="openCmpModal('bestsellers')">Show All Best Sellers ↓</button>
+        </div>
+
+        <!-- CATALOG GAP ANALYZER -->
+        <div class="cmp-panel" style="margin-top: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div>
+                    <div class="cmp-panel-title">Catalog Gap Analyzer</div>
+                    <div class="cmp-panel-sub">Items your competitors sell, but you don't.</div>
+                </div>
+                <div class="cmp-badge cmp-badge-violet">MISSED REVENUE</div>
+            </div>
+
+            <div id="gap-list-lock" class="cmp-lock-box">
+                <div class="cmp-lock-icon">🔒</div>
+                <div class="cmp-lock-title">Pro Feature</div>
+                <div class="cmp-lock-desc">Discover items your competitors sell, but you don't.</div>
+                <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
+            </div>
+
+            <!-- GRID (Not Slider) -->
+            <div id="gap-list" class="cmp-list cmp-product-grid-2">
+                <div class="cmp-empty" style="grid-column: span 2; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning catalogs…</div>
+            </div>
+            <button class="cmp-view-all-btn" onclick="openCmpModal('gaps')">Show All Gaps ↓</button>
         </div>
 
     </div>
@@ -328,7 +342,7 @@
             </div>
             <button onclick="closeCmpModal()" class="cmp-modal-close">✕</button>
         </div>
-        <!-- Changed to 3 columns -->
+        <!-- Grid Layout for Modal -->
         <div id="cmp-modal-body" class="cmp-modal-body" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
             <!-- Content injected here -->
         </div>
@@ -392,7 +406,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 </script>
-<script src="js/app.js?v=0003"></script>
-<script src="js/competitors.js?v=0003"></script>
+<script src="js/app.js?v=0009"></script>
+<script src="js/competitors.js?v=0009"></script>
 </body>
 </html>
