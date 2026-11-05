@@ -33,8 +33,6 @@
     .cmp-btn-primary:hover { background: #27272A; }
     .cmp-btn-secondary { background: #FFF; color: #09090B; border: 1px solid #E4E4E7; padding: 8px 16px; font-weight: 800; font-size: 12px; border-radius: 2px; cursor: pointer; transition: 0.2s; }
     .cmp-btn-secondary:hover { background: #F8FAFC; }
-    .cmp-btn-small { background: #FFF; color: #0284C7; border: 1px solid #BAE6FD; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 2px; cursor: pointer; }
-    .cmp-btn-small:hover { background: #F0F9FF; }
 
     /* Inputs */
     .cmp-input { width: 100%; background: #FFF; border: 1px solid #E4E4E7; border-radius: 2px; padding: 8px 12px; font-size: 13px; color: #09090B; outline: none; }
@@ -58,33 +56,54 @@
     /* Grids */
     .cmp-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
     
-    /* 2 ROWS (6 ITEMS) WITH VERTICAL SCROLL */
-    .cmp-product-grid-3 { 
+    /* ==========================================
+       DISCOVERY DNA CARD STYLES 
+       ========================================== */
+    .cmp-list-grid { 
         display: grid; 
         grid-template-columns: repeat(3, 1fr); 
-        gap: 16px; 
-        max-height: 840px; /* Shows 2 rows of ~400px cards before scrolling */
+        gap: 20px; 
+        align-items: start;
+        max-height: 620px; /* 2 rows visible before scrolling */
         overflow-y: auto; 
         padding-right: 8px;
         scrollbar-width: thin; 
         scrollbar-color: #E4E4E7 transparent;
     }
-    .cmp-product-grid-3::-webkit-scrollbar { width: 6px; }
-    .cmp-product-grid-3::-webkit-scrollbar-track { background: transparent; }
-    .cmp-product-grid-3::-webkit-scrollbar-thumb { background: #E4E4E7; border-radius: 4px; }
+    .cmp-list-grid::-webkit-scrollbar { width: 6px; }
+    .cmp-list-grid::-webkit-scrollbar-track { background: transparent; }
+    .cmp-list-grid::-webkit-scrollbar-thumb { background: #E4E4E7; border-radius: 4px; }
     
-    @media (max-width: 1100px) { .cmp-product-grid-3 { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 768px) { .cmp-product-grid-3 { grid-template-columns: 1fr; } }
-    
+    @media (max-width: 1100px) { .cmp-list-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { .cmp-list-grid { grid-template-columns: 1fr; } }
+
+    .cmp-card {
+        background: #FFFFFF; 
+        border: 1px solid #E4E4E7; 
+        border-radius: 8px; 
+        overflow: hidden; 
+        display: flex; 
+        flex-direction: column; 
+        transition: box-shadow 0.2s, transform 0.2s;
+        cursor: pointer;
+    }
+    .cmp-card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.08); transform: translateY(-2px); }
+    .cmp-card-img-wrap { position: relative; width: 100%; height: 220px; background: #F8FAFC; }
+    .cmp-card-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .cmp-card-content { padding: 16px; display: flex; flex-direction: column; flex: 1; }
+    .cmp-card-store { font-size: 11px; font-weight: 800; color: #0284C7; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+    .cmp-card-title { font-size: 14px; font-weight: 700; color: #09090B; line-height: 1.4; margin-bottom: 16px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+    .cmp-card-price-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+    .cmp-card-price { font-size: 18px; font-weight: 900; color: #059669; }
+
     /* BEST SELLERS HORIZONTAL SLIDER */
-    .cmp-slider { display: flex; flex-direction: row; overflow-x: auto; gap: 16px; padding-bottom: 12px; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: #E4E4E7 transparent; }
+    .cmp-slider { display: flex; flex-direction: row; overflow-x: auto; gap: 20px; padding-bottom: 12px; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: #E4E4E7 transparent; }
     .cmp-slider::-webkit-scrollbar { height: 6px; }
     .cmp-slider::-webkit-scrollbar-track { background: transparent; }
     .cmp-slider::-webkit-scrollbar-thumb { background: #E4E4E7; border-radius: 4px; }
-    .cmp-slider::-webkit-scrollbar-thumb:hover { background: #D4D4D8; }
     
-    .cmp-slider > div { flex: 0 0 calc(33.333% - 11px); scroll-snap-align: start; display: flex; flex-direction: column; }
-    @media (max-width: 1024px) { .cmp-slider > div { flex: 0 0 calc(50% - 8px); } }
+    .cmp-slider > div { flex: 0 0 calc(33.333% - 14px); scroll-snap-align: start; display: flex; flex-direction: column; }
+    @media (max-width: 1024px) { .cmp-slider > div { flex: 0 0 calc(50% - 10px); } }
     @media (max-width: 768px) { .cmp-slider > div { flex: 0 0 100%; } }
 
     /* Modals */
@@ -100,7 +119,7 @@
         flex: 1; 
         display: grid !important; 
         grid-template-columns: repeat(3, 1fr) !important; 
-        gap: 16px !important; 
+        gap: 20px !important; 
         align-items: start !important;
         scrollbar-width: thin; 
         scrollbar-color: #E4E4E7 transparent; 
@@ -274,7 +293,7 @@
                     <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
                 </div>
 
-                <div id="stockout-list" class="cmp-list cmp-product-grid-3">
+                <div id="stockout-list" class="cmp-list cmp-list-grid">
                     <div class="cmp-empty" style="grid-column: span 3; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning stock…</div>
                 </div>
                 <button class="cmp-view-all-btn" onclick="openCmpModal('stockouts')">Show All Stock-Outs ↓</button>
@@ -297,7 +316,7 @@
                     <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
                 </div>
 
-                <div id="launch-list" class="cmp-list cmp-product-grid-3">
+                <div id="launch-list" class="cmp-list cmp-list-grid">
                     <div class="cmp-empty" style="grid-column: span 3; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning launches…</div>
                 </div>
                 <button class="cmp-view-all-btn" onclick="openCmpModal('launches')">Show All Launches ↓</button>
@@ -344,7 +363,7 @@
                 <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
             </div>
 
-            <div id="gap-list" class="cmp-list cmp-product-grid-3">
+            <div id="gap-list" class="cmp-list cmp-list-grid">
                 <div class="cmp-empty" style="grid-column: span 3; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning catalogs…</div>
             </div>
             <button class="cmp-view-all-btn" onclick="openCmpModal('gaps')">Show All Gaps ↓</button>
@@ -382,16 +401,13 @@
         <div style="width: 50%; padding: 32px; display: flex; flex-direction: column; background: #FFFFFF;">
             <div style="font-size: 10px; font-weight: 800; color: #0284C7; letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 8px;" id="pm-store">Store Name</div>
             
-            <!-- Smaller Title -->
             <h2 style="font-size: 16px; font-weight: 800; color: #09090B; margin: 0 0 16px 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;" id="pm-title">Product Title</h2>
             
             <div style="margin-top: auto; border-top: 1px solid #E4E4E7; padding-top: 20px;">
                 <div style="font-size: 10px; font-weight: 800; color: #52525B; text-transform: uppercase; margin-bottom: 4px;">Competitor Price</div>
                 
-                <!-- Smaller Price -->
                 <div style="font-size: 24px; font-weight: 800; color: #059669; margin-bottom: 24px; letter-spacing: -0.5px;" id="pm-price">$0.00</div>
                 
-                <!-- Sharp, smaller button -->
                 <a id="pm-link" href="#" target="_blank" class="cmp-btn-primary" style="padding: 10px 20px; font-size: 12px; border-radius: 2px; width: fit-content;">
                     View Original Product ↗
                 </a>
@@ -432,7 +448,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 </script>
-<script src="js/app.js?v=0955"></script>
-<script src="js/competitors.js?v=0955"></script>
+<script src="js/app.js?v=1109"></script>
+<script src="js/competitors.js?v=1109"></script>
 </body>
 </html>
