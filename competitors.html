@@ -8,154 +8,114 @@
 <link rel="stylesheet" href="css/style.css?v=0244">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- CLEAN MODAL SCROLLBAR (COMPETITORS) -->
-    <style>
-        #cmp-modal-body {
-            scrollbar-width: thin !important;
-            scrollbar-color: #E4E4E7 transparent !important;
-            overflow-y: auto !important;
-        }
-        #cmp-modal-body::-webkit-scrollbar { width: 6px !important; height: 6px !important; }
-        #cmp-modal-body::-webkit-scrollbar-track { background: transparent !important; }
-        #cmp-modal-body::-webkit-scrollbar-thumb { background: #E4E4E7 !important; border-radius: 4px !important; }
-        #cmp-modal-body::-webkit-scrollbar-thumb:hover { background: #D4D4D8 !important; }
-    </style>
+<style>
+    /* ==========================================
+       MIDRA DNA ENFORCEMENT (MATCHES DISCOVERY)
+       ========================================== */
+    
+    .cmp-screen { padding-top: 4px !important; }
+    .cmp-wrap { max-width: 1400px; margin: 0 auto; padding: 0 20px 64px !important; }
 
-    <!-- EXACT MATCH TO MY STORE MODAL -->
-    <style>
-        #cmp-modal-body.cmp-list {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            max-height: none !important;
-            height: 100% !important;
-            padding: 0 8px 0 0 !important;
-            margin: 0 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 8px !important;
-            overflow-y: auto !important;
-        }
-        #cmp-modal-body > div {
-            width: 100% !important;
-            box-sizing: border-box !important;
-        }
-    </style>
+    /* Header Layout */
+    .cmp-header-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+    .cmp-header-left { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+    .cmp-title { font-size: 20px; font-weight: 900; color: #09090B; margin: 0; line-height: 1.2; }
+    .cmp-eyebrow { font-size: 10px; font-weight: 800; color: #0284C7; text-transform: uppercase; letter-spacing: 1.4px; margin: 0; }
+    .cmp-sub { width: 100%; font-size: 13px; color: #52525B; margin: 4px 0 0 0; line-height: 1.5; }
+
+    /* Panels & Cards (4px curve, crisp border) */
+    .cmp-panel { display: flex; flex-direction: column; padding: 20px !important; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 4px; }
+    .cmp-panel-title { font-size: 15px; font-weight: 800; color: #09090B; }
+    .cmp-panel-sub { font-size: 12px; color: #52525B; margin-top: 2px; }
+
+    /* Buttons (2px curve, 12px font, 800 weight) */
+    .cmp-btn-primary { background: #09090B; color: #FFF; border: 1px solid #09090B; padding: 8px 16px; font-weight: 800; font-size: 12px; border-radius: 2px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
+    .cmp-btn-primary:hover { background: #27272A; }
+    .cmp-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    
+    .cmp-btn-secondary { background: #FFF; color: #09090B; border: 1px solid #E4E4E7; padding: 8px 16px; font-weight: 800; font-size: 12px; border-radius: 2px; cursor: pointer; transition: 0.2s; }
+    .cmp-btn-secondary:hover { background: #F8FAFC; }
+    
+    .cmp-btn-small { background: #FFF; color: #0284C7; border: 1px solid #BAE6FD; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 2px; cursor: pointer; }
+    .cmp-btn-small:hover { background: #F0F9FF; }
+
+    /* Inputs */
+    .cmp-input { width: 100%; background: #FFF; border: 1px solid #E4E4E7; border-radius: 2px; padding: 8px 12px; font-size: 13px; color: #09090B; outline: none; transition: border-color 0.2s; }
+    .cmp-input:focus { border-color: #0284C7; }
+
+    /* Status Banner */
+    .cmp-status-banner { background: #F8FAFC; border: 1px solid #E4E4E7; color: #09090B; padding: 16px; border-radius: 4px; margin-bottom: 24px; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+
+    /* View All Button */
+    .cmp-view-all-btn { width: 100%; margin-top: 16px; padding: 10px; background: #F8FAFC; border: 1px dashed #D1D5DB; color: #0284C7; font-size: 12px; font-weight: 800; border-radius: 2px; cursor: pointer; transition: 0.2s; }
+    .cmp-view-all-btn:hover { background: #F4F4F5; color: #0369A1; }
+
+    /* Badges (2px curve) */
+    .cmp-badge { border-radius: 2px; font-weight: 800; font-size: 10px; padding: 2px 6px; text-transform: uppercase; letter-spacing: 0.5px; color: #FFF; }
+    .cmp-badge-cyan, .cmp-badge-amber, .cmp-badge-green, .cmp-badge-violet { background: #09090B; }
+
+    /* Spy Network Locks */
+    .cmp-lock-box { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: #FFFFFF; border: 1px dashed #D1D5DB; border-radius: 4px; text-align: center; width: 100%; min-height: 200px; }
+    .cmp-lock-icon { font-size: 32px; margin-bottom: 16px; }
+    .cmp-lock-title { font-weight: 900; font-size: 20px; color: #09090B; margin-bottom: 8px; }
+    .cmp-lock-desc { font-size: 14px; color: #52525B; margin-bottom: 24px; max-width: 400px; }
+    .cmp-lock-btn { background: #0284C7; color: #FFF; padding: 12px 24px; border-radius: 4px; font-size: 14px; font-weight: 800; text-decoration: none; }
+
+    /* Grid Layouts */
+    .cmp-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .cmp-product-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .cmp-product-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    
+    @media (max-width: 1200px) { .cmp-product-grid-4 { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 1100px) { .cmp-grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) { .cmp-product-grid-4 { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { .cmp-product-grid-2, .cmp-product-grid-4 { grid-template-columns: 1fr; } }
+
+    /* Scrollbar */
+    .cmp-list { scrollbar-width: thin; scrollbar-color: #E4E4E7 transparent; }
+    .cmp-list::-webkit-scrollbar { width: 6px; height: 6px; }
+    .cmp-list::-webkit-scrollbar-track { background: transparent; }
+    .cmp-list::-webkit-scrollbar-thumb { background: #E4E4E7; border-radius: 4px; }
+    .cmp-list::-webkit-scrollbar-thumb:hover { background: #D4D4D8; }
+
+    /* Modals */
+    .cmp-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .cmp-modal { background: #FFFFFF; border-radius: 4px; width: 100%; max-width: 900px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.2); overflow: hidden; }
+    .cmp-modal-header { padding: 20px 24px; border-bottom: 1px solid #E4E4E7; display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; }
+    .cmp-modal-title { font-size: 18px; font-weight: 900; color: #09090B; }
+    .cmp-modal-close { background: none; border: none; font-size: 24px; color: #A1A1AA; cursor: pointer; }
+    
+    .cmp-modal-body { padding: 24px; overflow-y: auto; flex: 1; scrollbar-width: thin; scrollbar-color: #E4E4E7 transparent; }
+    .cmp-modal-body::-webkit-scrollbar { width: 6px; background: transparent; }
+    .cmp-modal-body::-webkit-scrollbar-track { background: transparent; }
+    .cmp-modal-body::-webkit-scrollbar-thumb { background: #E4E4E7; border-radius: 4px; }
+</style>
 
     <!-- GLOBAL LEFT SIDEBAR NAVIGATION -->
     <style>
         .header {
-            position: fixed !important;
-            top: 0 !important; left: 0 !important;
-            width: 240px !important;
-            height: 100vh !important;
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            justify-content: flex-start !important;
-            padding: 24px 16px !important;
-            border-right: 1px solid #222222 !important;
-            border-bottom: none !important;
-            z-index: 1000 !important;
-            background-color: #000000 !important;
+            position: fixed !important; top: 0 !important; left: 0 !important;
+            width: 240px !important; height: 100vh !important;
+            flex-direction: column !important; align-items: flex-start !important; justify-content: flex-start !important;
+            padding: 24px 16px !important; border-right: 1px solid #222222 !important; border-bottom: none !important;
+            z-index: 1000 !important; background-color: #000000 !important;
         }
-        .header .brand {
-            margin-bottom: 32px !important;
-            width: 100% !important;
-            justify-content: flex-start !important;
-        }
-        .header .tabs {
-            flex-direction: column !important;
-            width: 100% !important;
-            background: transparent !important;
-            border: none !important;
-            padding: 0 !important;
-            gap: 8px !important;
-            flex: 1 !important;
-            overflow-y: auto !important;
-        }
-        .header .tab {
-            width: 100% !important;
-            text-align: left !important;
-            padding: 12px 16px !important;
-            border-radius: 6px !important;
-            font-size: 13px !important;
-            color: #A1A1AA !important;
-            transition: all 0.2s !important;
-        }
+        .header .brand { margin-bottom: 32px !important; width: 100% !important; justify-content: flex-start !important; }
+        .header .tabs { flex-direction: column !important; width: 100% !important; background: transparent !important; border: none !important; padding: 0 !important; gap: 8px !important; flex: 1 !important; overflow-y: auto !important; }
+        .header .tab { width: 100% !important; text-align: left !important; padding: 12px 16px !important; border-radius: 6px !important; font-size: 13px !important; color: #A1A1AA !important; transition: all 0.2s !important; }
         .header .tab:hover { background-color: transparent !important; color: #FFFFFF !important; }
         .header .tab.active { background-color: transparent !important; color: #00E5FF !important; font-weight: 800 !important; }
-        .header > div:last-child {
-            width: 100% !important;
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            gap: 16px !important;
-            margin-top: auto !important;
-        }
+        .header > div:last-child { width: 100% !important; flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; margin-top: auto !important; }
         .header > div:last-child button { width: 100% !important; }
-        .screen {
-            margin-left: 240px !important;
-            width: calc(100% - 240px) !important;
-            padding-top: 24px !important;
-        }
+        .screen { margin-left: 240px !important; width: calc(100% - 240px) !important; padding-top: 24px !important; }
         @media (max-width: 900px) {
-            .header {
-                width: 100% !important;
-                height: 56px !important;
-                flex-direction: row !important;
-                align-items: center !important;
-                justify-content: space-between !important;
-                padding: 0 16px !important;
-                border-right: none !important;
-                border-bottom: 1px solid #222222 !important;
-            }
+            .header { width: 100% !important; height: 56px !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important; padding: 0 16px !important; border-right: none !important; border-bottom: 1px solid #222222 !important; }
             .header .brand { margin-bottom: 0 !important; width: auto !important; }
             .header .tabs { display: none !important; }
             .header > div:last-child { flex-direction: row !important; width: auto !important; margin-top: 0 !important; gap: 12px !important; }
             .header > div:last-child button { width: auto !important; }
-            .screen {
-                margin-left: 0 !important; width: 100% !important;
-                margin-top: 56px !important; height: calc(100vh - 56px) !important;
-                padding-top: 16px !important;
-            }
+            .screen { margin-left: 0 !important; width: 100% !important; margin-top: 56px !important; height: calc(100vh - 56px) !important; padding-top: 16px !important; }
         }
-    </style>
-
-    <!-- FULL WIDTH CONTENT FIX -->
-    <style>
-        .screen { padding-left: 16px !important; padding-right: 16px !important; }
-        .ov-wrap, .st-wrap, .cmp-wrap, .trm-wrap, .dsc-wrap, .alrt-wrap, .inv-wrap, .mem-wrap, .set-wrap, .cnx-wrap {
-            max-width: 100% !important;
-            padding-left: 0 !important; padding-right: 0 !important;
-            margin-left: 0 !important; margin-right: 0 !important;
-        }
-        @media (max-width: 900px) { .screen { padding-left: 12px !important; padding-right: 12px !important; } }
-    </style>
-
-    <!-- PREMIUM GRID LAYOUTS -->
-    <style>
-        .cmp-screen .cmp-wrap { padding-top: 0 !important; }
-        .cmp-screen .cmp-row-a { margin-bottom: 16px !important; align-items: flex-start !important; }
-        .cmp-screen .cmp-row-a > div:first-child { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
-        .cmp-screen .cmp-title { font-size: 20px !important; margin: 0 !important; line-height: 1.2 !important; font-weight: 900 !important; }
-        .cmp-screen .cmp-eyebrow { font-size: 10px !important; margin: 0 !important; letter-spacing: 1.4px !important; text-transform: uppercase !important; font-weight: 800 !important; color: #0284C7 !important; }
-        .cmp-screen .cmp-sub { width: 100%; font-size: 13px !important; margin-top: 4px !important; line-height: 1.5 !important; color: #52525B !important; }
-        .cmp-screen .cmp-panel { display: flex; flex-direction: column; padding: 20px !important; }
-        .cmp-screen .cmp-view-all-btn { width: 100%; margin-top: 16px; padding: 10px; background: #FAFAFA; border: 1px dashed #D1D5DB; color: #0284C7; font-size: 12px; font-weight: 800; border-radius: 2px; cursor: pointer; transition: 0.2s; }
-        .cmp-screen .cmp-view-all-btn:hover { background: #F4F4F5; color: #0369A1; }
-        
-        /* Premium Grids */
-        .cmp-product-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-        .cmp-product-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-        @media (max-width: 1200px) { .cmp-product-grid-4 { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 900px) { .cmp-product-grid-4 { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 768px) { .cmp-product-grid-2, .cmp-product-grid-4 { grid-template-columns: 1fr; } }
-
-        /* Scrollbar */
-        .cmp-screen .cmp-list, #cmp-modal-body { scrollbar-width: thin !important; scrollbar-color: #E4E4E7 transparent !important; }
-        .cmp-screen .cmp-list::-webkit-scrollbar, #cmp-modal-body::-webkit-scrollbar { width: 6px !important; height: 6px !important; }
-        .cmp-screen .cmp-list::-webkit-scrollbar-track, #cmp-modal-body::-webkit-scrollbar-track { background: transparent !important; }
-        .cmp-screen .cmp-list::-webkit-scrollbar-thumb, #cmp-modal-body::-webkit-scrollbar-thumb { background: #E4E4E7 !important; border-radius: 4px !important; }
-        .cmp-screen .cmp-list::-webkit-scrollbar-thumb:hover, #cmp-modal-body::-webkit-scrollbar-thumb:hover { background: #D4D4D8 !important; }
     </style>
 
 <link rel="stylesheet" href="css/masterpiece.css?v=0244">
@@ -182,12 +142,12 @@
 </div>
 
 <div class="header">
-    <a href="connect.html" class="brand" style="gap: 8px !important; justify-content: flex-start !important; width: 100% !important;">
-            <div class="mark" style="background: transparent !important; border: none !important; width: auto !important; height: auto !important; padding: 0 !important; margin-right: 0 !important;">
-                <img src="midra-icon.png" alt="Midra" style="width: 32px; height: 32px; object-fit: contain;">
-            </div>
-            <div style="font-size: 20px !important; font-weight: 900 !important; letter-spacing: 0.5px !important; color: #FFFFFF !important;">MIDRA</div>
-        </a>
+    <a href="connect.html" class="brand" style="gap: 8px !important;">
+        <div class="mark" style="background: transparent !important; border: none !important; width: auto !important; height: auto !important; padding: 0 !important; margin-right: 0 !important;">
+            <img src="midra-icon.png" alt="Midra" style="width: 36px; height: 36px; object-fit: contain;">
+        </div>
+        <div style="font-size: 24px !important; font-weight: 900 !important; letter-spacing: 1px !important; color: #FFFFFF !important;">MIDRA</div>
+    </a>
     <div class="tabs">
         <a href="connect.html" class="tab"><svg class="nav-svg-icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Connect</a>
         <a href="overview.html" class="tab"><svg class="nav-svg-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Overview</a>
@@ -216,69 +176,67 @@
 <div class="screen cmp-screen">
     <div class="cmp-wrap">
 
-        <!-- ROW A -->
-        <div class="cmp-row-a">
-            <div>
+        <!-- HEADER -->
+        <div class="cmp-header-bar">
+            <div class="cmp-header-left">
                 <h1 class="cmp-title">Competitors</h1>
                 <div class="cmp-eyebrow">SPY NETWORK</div>
                 <p class="cmp-sub">Track rival stores, detect price drops, and find catalog gaps.</p>
             </div>
             <div class="cmp-status-group">
-                <div class="cmp-chip" id="cmp-plan-status">Loading plan info…</div>
+                <div class="cmp-badge" id="cmp-plan-status" style="background: #F8FAFC; color: #09090B; border: 1px solid #E4E4E7; padding: 6px 12px;">Loading plan info…</div>
             </div>
         </div>
 
         <!-- ROW B: ACTION PANELS -->
-        <div class="cmp-grid-2">
+        <div class="cmp-grid-2" style="margin-bottom: 20px;">
             <div class="cmp-panel">
-                <div class="cmp-panel-head">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <div>
                         <div class="cmp-panel-title">Auto-Discover Competitors</div>
                         <div class="cmp-panel-sub">AI scans your catalog and finds competing Shopify stores.</div>
                     </div>
                     <div class="cmp-badge cmp-badge-cyan">AI</div>
                 </div>
-                <button onclick="autoDiscover()" id="discover-btn" class="cmp-btn-primary" style="padding: 12px; font-size: 14px;">Find My Competitors →</button>
+                <button onclick="autoDiscover()" id="discover-btn" class="cmp-btn-primary">Find My Competitors →</button>
                 
                 <!-- AUTO-DISCOVER LOCK -->
-                <div id="discovery-results-lock" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: #F8FAFC; border: 1px dashed #D1D5DB; border-radius: 8px; text-align: center; width: 100%; margin-top: 16px;">
-                    <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
-                    <div style="font-weight: 900; font-size: 16px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
-                    <div style="font-size: 13px; color: #52525B; margin-bottom: 20px;">Scan the 100,000+ store database to find your true rivals.</div>
-                    <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
+                <div id="discovery-results-lock" class="cmp-lock-box">
+                    <div class="cmp-lock-icon">🔒</div>
+                    <div class="cmp-lock-title">Pro Feature</div>
+                    <div class="cmp-lock-desc">Scan the 100,000+ store database to find your true rivals.</div>
+                    <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
                 </div>
 
                 <div id="discovery-results" class="cmp-list" style="margin-top: 16px;"></div>
             </div>
 
             <div class="cmp-panel">
-                <div class="cmp-panel-head">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <div>
                         <div class="cmp-panel-title">Add Manually</div>
                         <div class="cmp-panel-sub">Enter a public Shopify store domain.</div>
                     </div>
                 </div>
-                <div class="cmp-input-row" style="display: flex; gap: 8px;">
-                    <input type="text" id="comp-domain" class="cmp-input" placeholder="competitor.com" onkeypress="handleAddKey(event)" style="flex: 1; padding: 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.2s;">
-                    <button onclick="addCompetitor(document.getElementById('comp-domain').value)" class="cmp-btn-secondary" style="padding: 0 24px; font-weight: 800;">Add</button>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="comp-domain" class="cmp-input" placeholder="competitor.com" onkeypress="handleAddKey(event)">
+                    <button onclick="addCompetitor(document.getElementById('comp-domain').value)" class="cmp-btn-secondary" style="padding: 0 24px;">Add</button>
                 </div>
                 <div id="comp-status" class="cmp-status-msg" style="display: none; margin-top: 12px; font-size: 13px; font-weight: 600;"></div>
             </div>
         </div>
 
         <!-- ROW C: TRACKED LIST -->
-        <div class="cmp-panel" style="margin-top: 12px; margin-bottom: 24px;">
-            <div class="cmp-panel-head">
+        <div class="cmp-panel" style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                 <div>
                     <div class="cmp-panel-title">Tracked Competitors</div>
                     <div class="cmp-panel-sub">Stores currently being monitored for price and stock changes.</div>
                 </div>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <div class="cmp-badge" id="comp-count">0 / 0</div>
-                </div>
+                <div class="cmp-badge" id="comp-count" style="background: #F8FAFC; color: #09090B; border: 1px solid #E4E4E7; padding: 6px 12px;">0 / 0</div>
             </div>
             <div id="competitors-list" class="cmp-list" style="flex: 1;">
-                <div class="cmp-empty">Loading competitors…</div>
+                <div class="cmp-empty" style="padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Loading competitors…</div>
             </div>
             <button class="cmp-view-all-btn" onclick="openCmpModal('competitors')">Show All Competitors ↓</button>
         </div>
@@ -288,106 +246,98 @@
 
         <div class="cmp-grid-2">
             <!-- STOCK OUT RADAR -->
-            <div class="cmp-panel cmp-panel-amber">
-                <div class="cmp-panel-head">
+            <div class="cmp-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <div>
                         <div class="cmp-panel-title">Stock-Out Radar</div>
                         <div class="cmp-panel-sub">High-ticket competitor items currently out of stock.</div>
                     </div>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <div class="cmp-badge cmp-badge-amber">OPPORTUNITY</div>
-                    </div>
+                    <div class="cmp-badge cmp-badge-amber">OPPORTUNITY</div>
                 </div>
                 
                 <!-- STOCKOUT LOCK -->
-                <div id="stockout-list-lock" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: #F8FAFC; border: 1px dashed #D1D5DB; border-radius: 8px; text-align: center; width: 100%; min-height: 200px;">
-                    <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
-                    <div style="font-weight: 900; font-size: 16px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
-                    <div style="font-size: 13px; color: #52525B; margin-bottom: 20px;">Find high-ticket competitor items that are out of stock.</div>
-                    <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
+                <div id="stockout-list-lock" class="cmp-lock-box">
+                    <div class="cmp-lock-icon">🔒</div>
+                    <div class="cmp-lock-title">Pro Feature</div>
+                    <div class="cmp-lock-desc">Find high-ticket competitor items that are out of stock.</div>
+                    <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
                 </div>
 
                 <div id="stockout-list" class="cmp-list cmp-product-grid-2" style="flex: 1;">
-                    <div class="cmp-empty" style="grid-column: span 2;">Scanning stock…</div>
+                    <div class="cmp-empty" style="grid-column: span 2; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning stock…</div>
                 </div>
                 <button class="cmp-view-all-btn" onclick="openCmpModal('stockouts')">Show All Stock-Outs ↓</button>
             </div>
 
             <!-- NEW LAUNCH TRACKER -->
-            <div class="cmp-panel cmp-panel-green">
-                <div class="cmp-panel-head">
+            <div class="cmp-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <div>
                         <div class="cmp-panel-title">New Launch Tracker</div>
                         <div class="cmp-panel-sub">Newest products your competitors recently launched.</div>
                     </div>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <div class="cmp-badge cmp-badge-green">LAST 30 DAYS</div>
-                    </div>
+                    <div class="cmp-badge cmp-badge-green">LAST 30 DAYS</div>
                 </div>
 
                 <!-- LAUNCH LOCK -->
-                <div id="launch-list-lock" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: #F8FAFC; border: 1px dashed #D1D5DB; border-radius: 8px; text-align: center; width: 100%; min-height: 200px;">
-                    <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
-                    <div style="font-weight: 900; font-size: 16px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
-                    <div style="font-size: 13px; color: #52525B; margin-bottom: 20px;">See what your competitors launched in the last 30 days.</div>
-                    <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
+                <div id="launch-list-lock" class="cmp-lock-box">
+                    <div class="cmp-lock-icon">🔒</div>
+                    <div class="cmp-lock-title">Pro Feature</div>
+                    <div class="cmp-lock-desc">See what your competitors launched in the last 30 days.</div>
+                    <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
                 </div>
 
                 <div id="launch-list" class="cmp-list cmp-product-grid-2" style="flex: 1;">
-                    <div class="cmp-empty" style="grid-column: span 2;">Scanning launches…</div>
+                    <div class="cmp-empty" style="grid-column: span 2; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning launches…</div>
                 </div>
                 <button class="cmp-view-all-btn" onclick="openCmpModal('launches')">Show All Launches ↓</button>
             </div>
         </div>
 
         <!-- BEST SELLERS -->
-        <div class="cmp-panel cmp-panel-cyan" style="margin-top: 12px;">
-            <div class="cmp-panel-head">
+        <div class="cmp-panel" style="margin-top: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                 <div>
                     <div class="cmp-panel-title">🔥 Competitor Best Sellers</div>
                     <div class="cmp-panel-sub">The top-selling products across all competitors.</div>
                 </div>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <div class="cmp-badge cmp-badge-cyan">TOP 5</div>
-                </div>
+                <div class="cmp-badge cmp-badge-cyan">TOP 5</div>
             </div>
 
             <!-- BESTSELLER LOCK -->
-            <div id="bestsellers-list-lock" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: #F8FAFC; border: 1px dashed #D1D5DB; border-radius: 8px; text-align: center; width: 100%; min-height: 200px;">
-                <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
-                <div style="font-weight: 900; font-size: 16px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
-                <div style="font-size: 13px; color: #52525B; margin-bottom: 20px;">Track the most popular products across your rivals.</div>
-                <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
+            <div id="bestsellers-list-lock" class="cmp-lock-box">
+                <div class="cmp-lock-icon">🔒</div>
+                <div class="cmp-lock-title">Pro Feature</div>
+                <div class="cmp-lock-desc">Track the most popular products across your rivals.</div>
+                <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
             </div>
 
             <div id="bestsellers-list" class="cmp-list cmp-product-grid-4" style="flex: 1;">
-                <div class="cmp-empty" style="grid-column: span 4;">Scanning best sellers…</div>
+                <div class="cmp-empty" style="grid-column: span 4; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning best sellers…</div>
             </div>
             <button class="cmp-view-all-btn" onclick="openCmpModal('bestsellers')">Show All Best Sellers ↓</button>
         </div>
 
         <!-- CATALOG GAP ANALYZER -->
-        <div class="cmp-panel cmp-panel-violet" style="margin-top: 12px;">
-            <div class="cmp-panel-head">
+        <div class="cmp-panel" style="margin-top: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                 <div>
                     <div class="cmp-panel-title">Catalog Gap Analyzer</div>
                     <div class="cmp-panel-sub">Items your competitors sell, but you don't.</div>
                 </div>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <div class="cmp-badge cmp-badge-violet">MISSED REVENUE</div>
-                </div>
+                <div class="cmp-badge cmp-badge-violet">MISSED REVENUE</div>
             </div>
 
             <!-- GAP LOCK -->
-            <div id="gap-list-lock" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: #F8FAFC; border: 1px dashed #D1D5DB; border-radius: 8px; text-align: center; width: 100%; min-height: 200px;">
-                <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
-                <div style="font-weight: 900; font-size: 16px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
-                <div style="font-size: 13px; color: #52525B; margin-bottom: 20px;">Discover items your competitors sell, but you don't.</div>
-                <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
+            <div id="gap-list-lock" class="cmp-lock-box">
+                <div class="cmp-lock-icon">🔒</div>
+                <div class="cmp-lock-title">Pro Feature</div>
+                <div class="cmp-lock-desc">Discover items your competitors sell, but you don't.</div>
+                <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
             </div>
 
             <div id="gap-list" class="cmp-list cmp-product-grid-2" style="flex: 1;">
-                <div class="cmp-empty" style="grid-column: span 2;">Scanning catalogs…</div>
+                <div class="cmp-empty" style="grid-column: span 2; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning catalogs…</div>
             </div>
             <button class="cmp-view-all-btn" onclick="openCmpModal('gaps')">Show All Gaps ↓</button>
         </div>
@@ -396,53 +346,43 @@
 </div>
 
 <!-- COMPETITORS OVERLAY MODAL (Show All) -->
-<div id="cmp-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px;">
-    <div class="cmp-panel" style="width: 100%; max-width: 900px; max-height: 85vh; display: flex; flex-direction: column; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
-        <div class="cmp-panel-head" style="margin-bottom: 16px;">
+<div id="cmp-modal" class="cmp-modal-overlay">
+    <div class="cmp-modal">
+        <div class="cmp-modal-header">
             <div>
-                <div class="cmp-panel-title" id="cmp-modal-title" style="font-size: 18px;">Full List</div>
+                <div class="cmp-modal-title" id="cmp-modal-title">Full List</div>
                 <div class="cmp-panel-sub">View all details</div>
             </div>
-            <button onclick="closeCmpModal()" style="background: none; border: 1px solid #E4E4E7; padding: 6px 12px; border-radius: 2px; cursor: pointer; font-weight: 800; color: #09090B;">✕ Close</button>
+            <button onclick="closeCmpModal()" class="cmp-modal-close">✕</button>
         </div>
-        <div id="cmp-modal-body" class="cmp-list" style="overflow-y: auto; flex: 1; padding-right: 8px;">
+        <div id="cmp-modal-body" class="cmp-modal-body" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
             <!-- Content injected here -->
         </div>
     </div>
 </div>
 
 <!-- PRODUCT DETAILS MODAL (Deep Dive) -->
-<div id="cmp-product-modal" style="display: none; position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px;">
-    <!-- Sharp Edge Modal Container -->
-    <div style="background: #FFFFFF; border-radius: 4px; border: 1px solid #E4E4E7; width: 100%; max-width: 900px; display: flex; flex-direction: row; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); position: relative;">
+<div id="cmp-product-modal" class="cmp-modal-overlay">
+    <div class="cmp-modal" style="max-width: 900px; flex-direction: row; overflow: hidden; position: relative;">
         
-        <!-- Close Button -->
-        <button onclick="closeProductModal()" style="position: absolute; top: 16px; right: 16px; background: #F4F4F5; border: 1px solid #E4E4E7; color: #09090B; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; font-size: 16px; z-index: 10; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#E4E4E7'" onmouseout="this.style.background='#F4F4F5'">✕</button>
+        <button onclick="closeProductModal()" style="position: absolute; top: 16px; right: 16px; background: #F8FAFC; border: 1px solid #E4E4E7; color: #09090B; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; font-size: 16px; z-index: 10; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#E4E4E7'" onmouseout="this.style.background='#F8FAFC'">✕</button>
         
-        <!-- LEFT SIDE: Large Image Container -->
         <div style="width: 50%; background: #F8FAFC; display: flex; align-items: center; justify-content: center; padding: 40px; border-right: 1px solid #E4E4E7; overflow-x: auto;">
             <img id="pm-image" src="" style="max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
         </div>
         
-        <!-- RIGHT SIDE: Product Details -->
         <div style="width: 50%; padding: 40px; display: flex; flex-direction: column; background: #FFFFFF;">
-            <!-- Store Name -->
-            <div style="font-size: 11px; font-weight: 800; color: #0284C7; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;" id="pm-store">Store Name</div>
+            <div style="font-size: 10px; font-weight: 800; color: #0284C7; letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 12px;" id="pm-store">Store Name</div>
+            <h2 style="font-size: 20px; font-weight: 900; color: #09090B; margin: 0 0 24px 0; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;" id="pm-title">Product Title</h2>
             
-            <!-- Title -->
-            <h2 style="font-size: 24px; font-weight: 900; color: #09090B; margin: 0 0 24px 0; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;" id="pm-title">Product Title</h2>
-            
-            <!-- Price & Button (Pushed to bottom) -->
-            <div style="margin-top: auto; border-top: 1px solid #F1F5F9; padding-top: 24px;">
-                <div style="font-size: 12px; font-weight: 800; color: #71717A; text-transform: uppercase; margin-bottom: 4px;">Competitor Price</div>
+            <div style="margin-top: auto; border-top: 1px solid #E4E4E7; padding-top: 24px;">
+                <div style="font-size: 11px; font-weight: 800; color: #52525B; text-transform: uppercase; margin-bottom: 4px;">Competitor Price</div>
                 <div style="font-size: 36px; font-weight: 900; color: #059669; margin-bottom: 32px; letter-spacing: -1px;" id="pm-price">$0.00</div>
-                
-                <a id="pm-link" href="#" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #09090B; color: #FFF; padding: 16px; border-radius: 4px; font-weight: 800; font-size: 14px; text-decoration: none; transition: 0.2s;" onmouseover="this.style.background='#27272A'" onmouseout="this.style.background='#09090B'">
+                <a id="pm-link" href="#" target="_blank" class="cmp-btn-primary" style="padding: 16px; font-size: 14px; border-radius: 4px;">
                     View Original Product ↗
                 </a>
             </div>
         </div>
-        
     </div>
 </div>
 
@@ -463,7 +403,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (lock) lock.style.display = 'flex';
             });
 
-            // Hide the view all buttons for these sections
             const viewAllBtns = document.querySelectorAll('.cmp-view-all-btn');
             viewAllBtns.forEach(btn => {
                 if (btn.closest('.cmp-panel') && !btn.closest('.cmp-panel').querySelector('.cmp-panel-title').innerText.includes('Tracked Competitors')) {
@@ -471,7 +410,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
 
-            // Disable Auto-Discover button
             const discoverBtn = document.getElementById('discover-btn');
             if (discoverBtn) discoverBtn.disabled = true;
         }
@@ -480,7 +418,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 </script>
-<script src="js/app.js?v=2337"></script>
-<script src="js/competitors.js?v=2337"></script>
+<script src="js/app.js?v=2351"></script>
+<script src="js/competitors.js?v=2351"></script>
 </body>
 </html>
