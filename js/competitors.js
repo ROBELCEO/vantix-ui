@@ -377,7 +377,7 @@ async function loadBestSellers() {
                 <div onclick="showProductDetails('${cmpEsc(p.store)}', '${cmpEsc(p.title)}', ${p.price}, '${cmpEsc(p.image)}', '${cmpEsc(p.url)}')" style="cursor: pointer; background: #FFF; border: 1px solid #F59E0B; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
                     <div style="position: relative; height: 180px; padding: 12px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #F1F5F9;">
                         <img src="${cmpEsc(p.image || '')}" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.src='https://placehold.co/300x180?text=No+Image'">
-                        <div style="position: absolute; top: 8px; right: 8px; background: #F59E0B; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px;">#${p.rank || 1} BEST SELLER</div>
+                        <div style="position: absolute; top: 8px; right: 8px; background: #F59E0B; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px;">TOP SELLER</div>
                     </div>
                     <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
                         <div style="font-size: 10px; font-weight: 800; color: #B45309; text-transform: uppercase; margin-bottom: 6px;">${cmpEsc(p.store)}</div>
