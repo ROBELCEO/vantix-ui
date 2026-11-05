@@ -9,6 +9,14 @@ function cmpEsc(str) {
     return String(str ?? "").replace(/[&<>"']/g, s => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[s]));
 }
 
+function cmpFormatDate(dateStr) {
+    if (!dateStr) return "";
+    try {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    } catch(e) { return dateStr; }
+}
+
 function cmpAge(hours) {
     if (hours === null || hours === undefined) return "never";
     if (hours < 0.02) return "just now";
@@ -23,11 +31,6 @@ function cmpFreshBadge(c) {
     return `<div class="cmp-badge cmp-badge-green">LIVE · ${cmpAge(c.age_hours)}</div>`;
 }
 
-function cmpPriceTag(price, priceAvailable, cls) {
-    if (!priceAvailable) return '<div class="cmp-row-price cmp-text-red" style="font-size:10px;font-weight:700;">PRICE N/A</div>';
-    return `<div class="cmp-row-price ${cls}">$${Number(price).toFixed(2)}</div>`;
-}
-
 function cmpBestSellerBadge(isBestSeller, rank, prevRank) {
     if (!isBestSeller) return '';
     if (rank === 1) return '<span class="cmp-badge cmp-badge-amber" style="font-size:9px; padding:2px 6px; margin-left:8px;">🔥 #1 BEST SELLER</span>';
@@ -36,6 +39,31 @@ function cmpBestSellerBadge(isBestSeller, rank, prevRank) {
     return `<span class="cmp-badge cmp-badge-amber" style="font-size:9px; padding:2px 6px; margin-left:8px;">🔥 TOP #${rank}</span>`;
 }
 
+// ==========================================
+// PRODUCT DETAILS MODAL LOGIC
+// ==========================================
+window.showProductDetails = function(store, title, price, image) {
+    document.getElementById('pm-store').innerText = store;
+    document.getElementById('pm-title').innerText = title;
+    document.getElementById('pm-price').innerText = '$' + Number(price).toFixed(2);
+    document.getElementById('pm-image').src = image || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(title) + '&background=F4F4F5';
+    document.getElementById('pm-link').href = 'https://www.google.com/search?q=' + encodeURIComponent(title + ' ' + store);
+    document.getElementById('cmp-product-modal').style.display = 'flex';
+};
+
+window.closeProductModal = function() {
+    document.getElementById('cmp-product-modal').style.display = 'none';
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('cmp-product-modal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeProductModal();
+    });
+});
+
+// ==========================================
+// FETCH COMPETITORS (TRACKED LIST)
+// ==========================================
 async function fetchCompetitors() {
     const list = document.getElementById('competitors-list');
     const countEl = document.getElementById('comp-count');
@@ -59,7 +87,7 @@ async function fetchCompetitors() {
         }
 
         list.innerHTML = allCompetitors.slice(0, 5).map(c => `
-            <div class="cmp-product-row" style="justify-content:space-between;">
+            <div class="cmp-product-row" style="justify-content:space-between; padding: 12px; border-bottom: 1px solid #F1F5F9;">
                 <div style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">
                     <img class="cmp-avatar" src="https://ui-avatars.com/api/?name=${cmpEsc(c.domain)}&background=FFFFFF&color=0284C7&bold=true" alt="">
                     <div class="cmp-row-body">
@@ -102,6 +130,32 @@ async function refreshCompetitor(domain, btn) {
     }
 }
 
+async function removeCompetitor(domain, btn) {
+    if (!confirm(`Are you sure you want to remove ${domain}?`)) return;
+    const original = btn.innerText;
+    btn.innerText = "…";
+    btn.disabled = true;
+    try {
+        const res = await fetch(`https://api.midra.xyz/api/competitors/remove?domain=${encodeURIComponent(domain)}`, { method: 'DELETE' });
+        if (res.ok) {
+            fetchCompetitors();
+            loadCompetitorIntel();
+            loadCatalogGaps();
+            loadBestSellers();
+        } else {
+            const data = await res.json();
+            alert(data.detail || "Failed to remove competitor.");
+            btn.innerText = original; btn.disabled = false;
+        }
+    } catch (e) {
+        alert("Network error removing competitor.");
+        btn.innerText = original; btn.disabled = false;
+    }
+}
+
+// ==========================================
+// AUTO DISCOVER
+// ==========================================
 async function autoDiscover() {
     const btn = document.getElementById('discover-btn');
     const results = document.getElementById('discovery-results');
@@ -133,8 +187,9 @@ async function autoDiscover() {
             let chipsHtml = '';
             if (c.matched_products && c.matched_products.length > 0) {
                 chipsHtml = c.matched_products.map(p => `
-                    <span style="background: #F0F9FF; color: #0284C7; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; border: 1px solid #BAE6FD;">
-                        ${cmpEsc(p.title)} ($${Number(p.price).toFixed(2)})
+                    <span style="background: #F0F9FF; color: #0284C7; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; border: 1px solid #BAE6FD; display: flex; flex-direction: column; gap: 2px;">
+                        <span>${cmpEsc(p.title)} ($${Number(p.price).toFixed(2)})</span>
+                        <span style="font-size: 9px; color: #64748B;">SKU: ${cmpEsc(p.sku || 'N/A')} | Barcode: ${cmpEsc(p.barcode || 'N/A')}</span>
                     </span>
                 `).join(' ');
             }
@@ -142,8 +197,14 @@ async function autoDiscover() {
             return `
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #E4E4E7; gap: 12px;">
                     <div style="flex: 1; min-width: 0;">
-                        <div style="font-weight: 800; font-size: 14px; color: #09090B;">${cmpEsc(domain)}</div>
-                        <div style="font-size: 12px; color: #71717A;">${c.category || 'Niche'} · ${c.product_count || 0} products</div>
+                        <div style="font-weight: 800; font-size: 14px; color: #09090B; display: flex; align-items: center; gap: 8px;">
+                            ${cmpEsc(domain)}
+                            ${c.exact_matches > 0 ? `<span style="background: #DCFCE7; color: #166534; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 800;">🟢 ${c.exact_matches} EXACT MATCHES</span>` : ''}
+                        </div>
+                        <div style="font-size: 12px; color: #71717A; display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                            <span style="background: #DCFCE7; color: #166534; padding: 2px 6px; border-radius: 4px; font-weight: 800; font-size: 10px;">${c.match_score || 99}% MATCH</span>
+                            <span>${c.product_count || 0} products found</span>
+                        </div>
                         ${chipsHtml ? `<div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;">${chipsHtml}</div>` : ''}
                     </div>
                     ${btnHtml}
@@ -185,18 +246,18 @@ async function addCompetitor(domain) {
             loadCatalogGaps();
             loadBestSellers();
         } else if (res.status === 403) {
-            // POLITE PLAN LIMIT MESSAGE
             status.className = 'cmp-status-msg cmp-text-red';
             const detail = data.detail || "Plan limit reached.";
             status.innerHTML = `🔒 ${cmpEsc(detail)} <a href="membership.html" style="margin-left:8px; font-weight:800; color:#0284C7; text-decoration:underline;">Upgrade to Pro →</a>`;
-        } else {
-            // CATCH BACKEND ERRORS (like the missing database column) GRACEFULLY
+        } else if (res.status === 404) {
             status.className = 'cmp-status-msg cmp-text-red';
-            // Don't show raw JSON errors to the user
+            status.innerHTML = `⚠️ ${cmpEsc(data.detail || "This store is not yet in our database.")}`;
+        } else {
+            status.className = 'cmp-status-msg cmp-text-red';
             if (res.status >= 500) {
-                status.innerHTML = `⚠️ Server error. Please try again later or contact support.`;
+                status.innerHTML = `⚠️ Server error. Please try again later.`;
             } else {
-                status.innerText = data.detail || data.message || "Error adding.";
+                status.innerText = data.detail || data.message || "Error adding competitor.";
             }
         }
     } catch (e) {
@@ -211,6 +272,9 @@ async function addCompetitor(domain) {
     }
 }
 
+// ==========================================
+// SPY NETWORK (GRID RENDERING)
+// ==========================================
 async function loadCompetitorIntel() {
     try {
         const res = await fetch('https://api.midra.xyz/api/competitors/opportunities');
@@ -220,36 +284,44 @@ async function loadCompetitorIntel() {
         window.cmpAllStockouts = data.stock_outs || [];
         window.cmpAllLaunches = data.new_launches || [];
 
+        // --- STOCK OUTS (2-Column Grid) ---
         const stockList = document.getElementById('stockout-list');
         if (window.cmpAllStockouts.length > 0) {
-            stockList.innerHTML = window.cmpAllStockouts.slice(0, 5).map(p => `
-                <div class="cmp-product-row">
-                    <img class="cmp-avatar" src="${cmpEsc(p.image || '')}" onerror="this.style.visibility='hidden'">
-                    <div class="cmp-row-body">
-                        <div class="cmp-row-title">${cmpEsc(p.title)}${cmpBestSellerBadge(p.is_best_seller, p.rank, p.prev_rank)}</div>
-                        <div class="cmp-row-meta">${cmpEsc(p.store)}</div>
+            stockList.innerHTML = window.cmpAllStockouts.slice(0, 4).map(p => `
+                <div onclick="showProductDetails('${cmpEsc(p.store)}', '${cmpEsc(p.title)}', ${p.price}, '${cmpEsc(p.image)}')" style="cursor: pointer; background: #FFF; border: 1px solid #E4E4E7; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                    <div style="position: relative; height: 160px; background: #F8FAFC;">
+                        <img src="${cmpEsc(p.image || '')}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://placehold.co/300x160?text=No+Image'">
+                        <div style="position: absolute; top: 8px; right: 8px; background: #E11D48; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Out of Stock</div>
                     </div>
-                    ${cmpPriceTag(p.price, p.price_available, 'cmp-text-amber')}
+                    <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
+                        <div style="font-size: 10px; font-weight: 800; color: #E11D48; text-transform: uppercase; margin-bottom: 6px;">${cmpEsc(p.store)}</div>
+                        <div style="font-size: 13px; font-weight: 800; color: #09090B; line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${cmpEsc(p.title)}</div>
+                        <div style="margin-top: auto; font-size: 16px; font-weight: 900; color: #09090B;">$${Number(p.price).toFixed(2)}</div>
+                    </div>
                 </div>
             `).join('');
         } else {
-            stockList.innerHTML = '<div class="cmp-empty">No stock-outs detected.</div>';
+            stockList.innerHTML = '<div class="cmp-empty" style="grid-column: span 2;">No stock-outs detected.</div>';
         }
 
+        // --- NEW LAUNCHES (2-Column Grid) ---
         const launchList = document.getElementById('launch-list');
         if (window.cmpAllLaunches.length > 0) {
-            launchList.innerHTML = window.cmpAllLaunches.slice(0, 5).map(p => `
-                <div class="cmp-product-row">
-                    <img class="cmp-avatar" src="${cmpEsc(p.image || '')}" onerror="this.style.visibility='hidden'">
-                    <div class="cmp-row-body">
-                        <div class="cmp-row-title">${cmpEsc(p.title)}${cmpBestSellerBadge(p.is_best_seller, p.rank, p.prev_rank)}</div>
-                        <div class="cmp-row-meta">${cmpEsc(p.store)} • ${p.date}</div>
+            launchList.innerHTML = window.cmpAllLaunches.slice(0, 4).map(p => `
+                <div onclick="showProductDetails('${cmpEsc(p.store)}', '${cmpEsc(p.title)}', ${p.price}, '${cmpEsc(p.image)}')" style="cursor: pointer; background: #FFF; border: 1px solid #E4E4E7; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                    <div style="position: relative; height: 160px; background: #F8FAFC;">
+                        <img src="${cmpEsc(p.image || '')}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://placehold.co/300x160?text=No+Image'">
+                        <div style="position: absolute; top: 8px; right: 8px; background: #10B981; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">New Launch</div>
                     </div>
-                    ${cmpPriceTag(p.price, p.price_available, 'cmp-text-green')}
+                    <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
+                        <div style="font-size: 10px; font-weight: 800; color: #059669; text-transform: uppercase; margin-bottom: 6px;">${cmpEsc(p.store)} • ${cmpFormatDate(p.date)}</div>
+                        <div style="font-size: 13px; font-weight: 800; color: #09090B; line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${cmpEsc(p.title)}</div>
+                        <div style="margin-top: auto; font-size: 16px; font-weight: 900; color: #09090B;">$${Number(p.price).toFixed(2)}</div>
+                    </div>
                 </div>
             `).join('');
         } else {
-            launchList.innerHTML = '<div class="cmp-empty">No new launches found.</div>';
+            launchList.innerHTML = '<div class="cmp-empty" style="grid-column: span 2;">No new launches found.</div>';
         }
     } catch (e) { console.error(e); }
 }
@@ -266,14 +338,17 @@ async function loadCatalogGaps() {
         window.cmpAllGaps = data.gaps || [];
 
         if (window.cmpAllGaps.length > 0) {
-            list.innerHTML = window.cmpAllGaps.slice(0, 5).map(g => `
-                <div class="cmp-product-row">
-                    <img class="cmp-avatar" src="${cmpEsc(g.image || '')}" onerror="this.style.visibility='hidden'">
-                    <div class="cmp-row-body">
-                        <div class="cmp-row-title">${cmpEsc(g.title)}${cmpBestSellerBadge(g.is_best_seller, g.rank, g.prev_rank)}</div>
-                        <div class="cmp-row-meta">You sell 0 ${cmpEsc(g.keyword)}s</div>
+            list.innerHTML = window.cmpAllGaps.slice(0, 4).map(g => `
+                <div onclick="showProductDetails('${cmpEsc(g.store || 'Competitor')}', '${cmpEsc(g.title)}', ${g.price}, '${cmpEsc(g.image)}')" style="cursor: pointer; background: #FFF; border: 1px solid #E4E4E7; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                    <div style="position: relative; height: 160px; background: #F8FAFC;">
+                        <img src="${cmpEsc(g.image || '')}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://placehold.co/300x160?text=No+Image'">
+                        <div style="position: absolute; top: 8px; right: 8px; background: #8B5CF6; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">GAP</div>
                     </div>
-                    <div class="cmp-row-price cmp-text-violet">$${Number(g.price).toFixed(2)}</div>
+                    <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
+                        <div style="font-size: 10px; font-weight: 800; color: #8B5CF6; text-transform: uppercase; margin-bottom: 6px;">You sell 0 ${cmpEsc(g.keyword)}s</div>
+                        <div style="font-size: 13px; font-weight: 800; color: #09090B; line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${cmpEsc(g.title)}</div>
+                        <div style="margin-top: auto; font-size: 16px; font-weight: 900; color: #09090B;">$${Number(g.price).toFixed(2)}</div>
+                    </div>
                 </div>
             `).join('');
         } else {
@@ -294,24 +369,28 @@ async function loadBestSellers() {
         const list = document.getElementById('bestsellers-list');
         
         if (window.cmpAllBestSellers.length === 0) {
-            list.innerHTML = '<div class="cmp-empty" style="text-align:center; padding:20px; color:#71717A;">No best seller tags found on these stores.</div>';
-        } else if (window.cmpAllBestSellers.length > 0) {
-            list.innerHTML = window.cmpAllBestSellers.slice(0, 5).map(p => `
-                <div class="cmp-product-row">
-                    <img class="cmp-avatar" src="${cmpEsc(p.image || '')}" onerror="this.style.visibility='hidden'">
-                    <div class="cmp-row-body">
-                        <div class="cmp-row-title">${cmpEsc(p.title)}${cmpBestSellerBadge(true, p.rank, p.prev_rank)}</div>
-                        <div class="cmp-row-meta">${cmpEsc(p.store)}</div>
+            list.innerHTML = '<div class="cmp-empty" style="grid-column: span 4; text-align:center; padding:20px; color:#71717A;">No best seller tags found on these stores.</div>';
+        } else {
+            list.innerHTML = window.cmpAllBestSellers.slice(0, 4).map(p => `
+                <div onclick="showProductDetails('${cmpEsc(p.store)}', '${cmpEsc(p.title)}', ${p.price}, '${cmpEsc(p.image)}')" style="cursor: pointer; background: #FFF; border: 1px solid #F59E0B; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                    <div style="position: relative; height: 160px; background: #FFFBEB;">
+                        <img src="${cmpEsc(p.image || '')}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://placehold.co/300x160?text=No+Image'">
+                        <div style="position: absolute; top: 8px; right: 8px; background: #F59E0B; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px;">#${p.rank || 1} BEST SELLER</div>
                     </div>
-                    ${cmpPriceTag(p.price, p.price_available, 'cmp-text-cyan')}
+                    <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
+                        <div style="font-size: 10px; font-weight: 800; color: #B45309; text-transform: uppercase; margin-bottom: 6px;">${cmpEsc(p.store)}</div>
+                        <div style="font-size: 13px; font-weight: 800; color: #09090B; line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${cmpEsc(p.title)}</div>
+                        <div style="margin-top: auto; font-size: 16px; font-weight: 900; color: #B45309;">$${Number(p.price).toFixed(2)}</div>
+                    </div>
                 </div>
             `).join('');
-        } else {
-            list.innerHTML = '<div class="cmp-empty">No best sellers found yet. Refresh a competitor.</div>';
         }
     } catch (e) { console.error(e); }
 }
 
+// ==========================================
+// SHOW ALL MODALS (Grid Layouts)
+// ==========================================
 function openCmpModal(type) {
     const modal = document.getElementById("cmp-modal");
     const list = document.getElementById("cmp-modal-body");
@@ -319,12 +398,30 @@ function openCmpModal(type) {
     if (!modal || !list) return;
 
     let html = "";
+    list.style.display = "grid";
+    list.style.gridTemplateColumns = "1fr 1fr";
+    list.style.gap = "16px";
+
+    const createCard = (store, title, price, image, badgeText, badgeColor, extraText = "") => `
+        <div onclick="showProductDetails('${cmpEsc(store)}', '${cmpEsc(title)}', ${price}, '${cmpEsc(image)}')" style="cursor: pointer; background: #FFF; border: 1px solid #E4E4E7; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="position: relative; height: 120px; background: #F8FAFC;">
+                <img src="${cmpEsc(image || '')}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://placehold.co/300x120?text=No+Image'">
+                ${badgeText ? `<div style="position: absolute; top: 6px; right: 6px; background: ${badgeColor}; color: #FFF; font-size: 8px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">${badgeText}</div>` : ''}
+            </div>
+            <div style="padding: 12px; flex: 1; display: flex; flex-direction: column;">
+                <div style="font-size: 9px; font-weight: 800; color: #71717A; text-transform: uppercase; margin-bottom: 4px;">${cmpEsc(store)} ${extraText}</div>
+                <div style="font-size: 12px; font-weight: 800; color: #09090B; line-height: 1.3; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${cmpEsc(title)}</div>
+                <div style="margin-top: auto; font-size: 14px; font-weight: 900; color: #09090B;">$${Number(price).toFixed(2)}</div>
+            </div>
+        </div>
+    `;
 
     if (type === 'competitors') {
         title.innerText = "All Tracked Competitors";
+        list.style.gridTemplateColumns = "1fr";
         if (window.cmpAllCompetitors.length === 0) html = '<div class="cmp-empty">No competitors found.</div>';
         else html = window.cmpAllCompetitors.map(c => `
-            <div class="cmp-product-row" style="justify-content:space-between;">
+            <div class="cmp-product-row" style="justify-content:space-between; padding: 12px; border-bottom: 1px solid #F1F5F9;">
                 <div style="display:flex; align-items:center; gap:12px;">
                     <img class="cmp-avatar" src="https://ui-avatars.com/api/?name=${cmpEsc(c.domain)}&background=FFFFFF&color=0284C7&bold=true">
                     <div class="cmp-row-body">
@@ -338,59 +435,23 @@ function openCmpModal(type) {
     }
     else if (type === 'stockouts') {
         title.innerText = "All Stock-Out Opportunities";
-        if (window.cmpAllStockouts.length === 0) html = '<div class="cmp-empty">No stock-outs detected.</div>';
-        else html = window.cmpAllStockouts.map(p => `
-            <div class="cmp-product-row">
-                <img class="cmp-avatar" src="${cmpEsc(p.image || '')}" onerror="this.style.visibility='hidden'">
-                <div class="cmp-row-body">
-                    <div class="cmp-row-title">${cmpEsc(p.title)}${cmpBestSellerBadge(p.is_best_seller, p.rank, p.prev_rank)}</div>
-                    <div class="cmp-row-meta">${cmpEsc(p.store)}</div>
-                </div>
-                ${cmpPriceTag(p.price, p.price_available, 'cmp-text-amber')}
-            </div>
-        `).join("");
+        if (window.cmpAllStockouts.length === 0) html = '<div class="cmp-empty" style="grid-column: span 2;">No stock-outs detected.</div>';
+        else html = window.cmpAllStockouts.map(p => createCard(p.store, p.title, p.price, p.image, 'Out of Stock', '#E11D48')).join("");
     }
     else if (type === 'launches') {
         title.innerText = "All New Launches";
-        if (window.cmpAllLaunches.length === 0) html = '<div class="cmp-empty">No new launches detected.</div>';
-        else html = window.cmpAllLaunches.map(p => `
-            <div class="cmp-product-row">
-                <img class="cmp-avatar" src="${cmpEsc(p.image || '')}" onerror="this.style.visibility='hidden'">
-                <div class="cmp-row-body">
-                    <div class="cmp-row-title">${cmpEsc(p.title)}${cmpBestSellerBadge(p.is_best_seller, p.rank, p.prev_rank)}</div>
-                    <div class="cmp-row-meta">${cmpEsc(p.store)} • ${p.date}</div>
-                </div>
-                ${cmpPriceTag(p.price, p.price_available, 'cmp-text-green')}
-            </div>
-        `).join("");
+        if (window.cmpAllLaunches.length === 0) html = '<div class="cmp-empty" style="grid-column: span 2;">No new launches detected.</div>';
+        else html = window.cmpAllLaunches.map(p => createCard(p.store, p.title, p.price, p.image, 'New Launch', '#10B981', '• ' + cmpFormatDate(p.date))).join("");
     }
     else if (type === 'bestsellers') {
         title.innerText = "All Competitor Best Sellers";
-        if (window.cmpAllBestSellers.length === 0) html = '<div class="cmp-empty">No best sellers found.</div>';
-        else html = window.cmpAllBestSellers.map(p => `
-            <div class="cmp-product-row">
-                <img class="cmp-avatar" src="${cmpEsc(p.image || '')}" onerror="this.style.visibility='hidden'">
-                <div class="cmp-row-body">
-                    <div class="cmp-row-title">${cmpEsc(p.title)}${cmpBestSellerBadge(true, p.rank, p.prev_rank)}</div>
-                    <div class="cmp-row-meta">${cmpEsc(p.store)}</div>
-                </div>
-                ${cmpPriceTag(p.price, p.price_available, 'cmp-text-cyan')}
-            </div>
-        `).join("");
+        if (window.cmpAllBestSellers.length === 0) html = '<div class="cmp-empty" style="grid-column: span 2;">No best sellers found.</div>';
+        else html = window.cmpAllBestSellers.map(p => createCard(p.store, p.title, p.price, p.image, `#${p.rank || 1} Best Seller`, '#F59E0B')).join("");
     }
     else if (type === 'gaps') {
         title.innerText = "All Catalog Gaps";
-        if (window.cmpAllGaps.length === 0) html = '<div class="cmp-empty">No gaps found.</div>';
-        else html = window.cmpAllGaps.map(g => `
-            <div class="cmp-product-row">
-                <img class="cmp-avatar" src="${cmpEsc(g.image || '')}" onerror="this.style.visibility='hidden'">
-                <div class="cmp-row-body">
-                    <div class="cmp-row-title">${cmpEsc(g.title)}${cmpBestSellerBadge(g.is_best_seller, g.rank, g.prev_rank)}</div>
-                    <div class="cmp-row-meta">You sell 0 ${cmpEsc(g.keyword)}s</div>
-                </div>
-                <div class="cmp-row-price cmp-text-violet">$${Number(g.price).toFixed(2)}</div>
-            </div>
-        `).join("");
+        if (window.cmpAllGaps.length === 0) html = '<div class="cmp-empty" style="grid-column: span 2;">No gaps found.</div>';
+        else html = window.cmpAllGaps.map(g => createCard(g.store || 'Competitor', g.title, g.price, g.image, 'Gap', '#8B5CF6', `• You sell 0 ${g.keyword}s`)).join("");
     }
 
     list.innerHTML = html;
@@ -414,32 +475,3 @@ document.addEventListener('DOMContentLoaded', () => {
         loadBestSellers();
     }, 500);
 });
-async function removeCompetitor(domain, btn) {
-    if (!confirm(`Are you sure you want to remove ${domain}?`)) return;
-    
-    const original = btn.innerText;
-    btn.innerText = "…";
-    btn.disabled = true;
-    
-    try {
-        const res = await fetch(`https://api.midra.xyz/api/competitors/remove?domain=${encodeURIComponent(domain)}`, {
-            method: 'DELETE'
-        });
-        
-        if (res.ok) {
-            fetchCompetitors();
-            loadCompetitorIntel();
-            loadCatalogGaps();
-            loadBestSellers();
-        } else {
-            const data = await res.json();
-            alert(data.detail || "Failed to remove competitor.");
-            btn.innerText = original;
-            btn.disabled = false;
-        }
-    } catch (e) {
-        alert("Network error removing competitor.");
-        btn.innerText = original;
-        btn.disabled = false;
-    }
-}

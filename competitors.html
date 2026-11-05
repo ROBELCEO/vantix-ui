@@ -131,6 +131,33 @@
         @media (max-width: 900px) { .screen { padding-left: 12px !important; padding-right: 12px !important; } }
     </style>
 
+    <!-- PREMIUM GRID LAYOUTS -->
+    <style>
+        .cmp-screen .cmp-wrap { padding-top: 0 !important; }
+        .cmp-screen .cmp-row-a { margin-bottom: 16px !important; align-items: flex-start !important; }
+        .cmp-screen .cmp-row-a > div:first-child { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+        .cmp-screen .cmp-title { font-size: 20px !important; margin: 0 !important; line-height: 1.2 !important; font-weight: 900 !important; }
+        .cmp-screen .cmp-eyebrow { font-size: 10px !important; margin: 0 !important; letter-spacing: 1.4px !important; text-transform: uppercase !important; font-weight: 800 !important; color: #0284C7 !important; }
+        .cmp-screen .cmp-sub { width: 100%; font-size: 13px !important; margin-top: 4px !important; line-height: 1.5 !important; color: #52525B !important; }
+        .cmp-screen .cmp-panel { display: flex; flex-direction: column; padding: 20px !important; }
+        .cmp-screen .cmp-view-all-btn { width: 100%; margin-top: 16px; padding: 10px; background: #FAFAFA; border: 1px dashed #D1D5DB; color: #0284C7; font-size: 12px; font-weight: 800; border-radius: 2px; cursor: pointer; transition: 0.2s; }
+        .cmp-screen .cmp-view-all-btn:hover { background: #F4F4F5; color: #0369A1; }
+        
+        /* Premium Grids */
+        .cmp-product-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .cmp-product-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        @media (max-width: 1200px) { .cmp-product-grid-4 { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 900px) { .cmp-product-grid-4 { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .cmp-product-grid-2, .cmp-product-grid-4 { grid-template-columns: 1fr; } }
+
+        /* Scrollbar */
+        .cmp-screen .cmp-list, #cmp-modal-body { scrollbar-width: thin !important; scrollbar-color: #E4E4E7 transparent !important; }
+        .cmp-screen .cmp-list::-webkit-scrollbar, #cmp-modal-body::-webkit-scrollbar { width: 6px !important; height: 6px !important; }
+        .cmp-screen .cmp-list::-webkit-scrollbar-track, #cmp-modal-body::-webkit-scrollbar-track { background: transparent !important; }
+        .cmp-screen .cmp-list::-webkit-scrollbar-thumb, #cmp-modal-body::-webkit-scrollbar-thumb { background: #E4E4E7 !important; border-radius: 4px !important; }
+        .cmp-screen .cmp-list::-webkit-scrollbar-thumb:hover, #cmp-modal-body::-webkit-scrollbar-thumb:hover { background: #D4D4D8 !important; }
+    </style>
+
 <link rel="stylesheet" href="css/masterpiece.css?v=0244">
 <link rel="icon" type="image/png" href="midra-icon.png?v=1">
 </head>
@@ -187,24 +214,6 @@
 </div>
 
 <div class="screen cmp-screen">
-    <!-- COMPETITORS PAGE — COMPACT LAYOUT FIX -->
-    <style>
-        .cmp-screen .cmp-wrap { padding-top: 0 !important; }
-        .cmp-screen .cmp-row-a { margin-bottom: 16px !important; align-items: flex-start !important; }
-        .cmp-screen .cmp-row-a > div:first-child { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
-        .cmp-screen .cmp-title { font-size: 20px !important; margin: 0 !important; line-height: 1.2 !important; font-weight: 900 !important; }
-        .cmp-screen .cmp-eyebrow { font-size: 10px !important; margin: 0 !important; letter-spacing: 1.4px !important; text-transform: uppercase !important; font-weight: 800 !important; color: #0284C7 !important; }
-        .cmp-screen .cmp-sub { width: 100%; font-size: 13px !important; margin-top: 4px !important; line-height: 1.5 !important; color: #52525B !important; }
-        .cmp-screen .cmp-panel { display: flex; flex-direction: column; padding: 20px !important; }
-        .cmp-screen .cmp-view-all-btn { width: 100%; margin-top: 16px; padding: 10px; background: #FAFAFA; border: 1px dashed #D1D5DB; color: #0284C7; font-size: 12px; font-weight: 800; border-radius: 2px; cursor: pointer; transition: 0.2s; }
-        .cmp-screen .cmp-view-all-btn:hover { background: #F4F4F5; color: #0369A1; }
-        .cmp-screen .cmp-list, #cmp-modal-body { scrollbar-width: thin !important; scrollbar-color: #E4E4E7 transparent !important; }
-        .cmp-screen .cmp-list::-webkit-scrollbar, #cmp-modal-body::-webkit-scrollbar { width: 6px !important; height: 6px !important; }
-        .cmp-screen .cmp-list::-webkit-scrollbar-track, #cmp-modal-body::-webkit-scrollbar-track { background: transparent !important; }
-        .cmp-screen .cmp-list::-webkit-scrollbar-thumb, #cmp-modal-body::-webkit-scrollbar-thumb { background: #E4E4E7 !important; border-radius: 4px !important; }
-        .cmp-screen .cmp-list::-webkit-scrollbar-thumb:hover, #cmp-modal-body::-webkit-scrollbar-thumb:hover { background: #D4D4D8 !important; }
-    </style>
-
     <div class="cmp-wrap">
 
         <!-- ROW A -->
@@ -229,7 +238,7 @@
                     </div>
                     <div class="cmp-badge cmp-badge-cyan">AI</div>
                 </div>
-                <button onclick="autoDiscover()" id="discover-btn" class="cmp-btn-primary">Find My Competitors →</button>
+                <button onclick="autoDiscover()" id="discover-btn" class="cmp-btn-primary" style="padding: 12px; font-size: 14px;">Find My Competitors →</button>
                 
                 <!-- AUTO-DISCOVER LOCK -->
                 <div id="discovery-results-lock" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: #F8FAFC; border: 1px dashed #D1D5DB; border-radius: 8px; text-align: center; width: 100%; margin-top: 16px;">
@@ -249,11 +258,11 @@
                         <div class="cmp-panel-sub">Enter a public Shopify store domain.</div>
                     </div>
                 </div>
-                <div class="cmp-input-row">
-                    <input type="text" id="comp-domain" class="cmp-input" placeholder="competitor.com" onkeypress="handleAddKey(event)">
-                    <button onclick="addCompetitor(document.getElementById('comp-domain').value)" class="cmp-btn-secondary">Add</button>
+                <div class="cmp-input-row" style="display: flex; gap: 8px;">
+                    <input type="text" id="comp-domain" class="cmp-input" placeholder="competitor.com" onkeypress="handleAddKey(event)" style="flex: 1; padding: 12px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.2s;">
+                    <button onclick="addCompetitor(document.getElementById('comp-domain').value)" class="cmp-btn-secondary" style="padding: 0 24px; font-weight: 800;">Add</button>
                 </div>
-                <div id="comp-status" class="cmp-status-msg" style="display: none;"></div>
+                <div id="comp-status" class="cmp-status-msg" style="display: none; margin-top: 12px; font-size: 13px; font-weight: 600;"></div>
             </div>
         </div>
 
@@ -298,8 +307,8 @@
                     <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
                 </div>
 
-                <div id="stockout-list" class="cmp-list" style="flex: 1;">
-                    <div class="cmp-empty">Scanning stock…</div>
+                <div id="stockout-list" class="cmp-list cmp-product-grid-2" style="flex: 1;">
+                    <div class="cmp-empty" style="grid-column: span 2;">Scanning stock…</div>
                 </div>
                 <button class="cmp-view-all-btn" onclick="openCmpModal('stockouts')">Show All Stock-Outs ↓</button>
             </div>
@@ -324,15 +333,15 @@
                     <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
                 </div>
 
-                <div id="launch-list" class="cmp-list" style="flex: 1;">
-                    <div class="cmp-empty">Scanning launches…</div>
+                <div id="launch-list" class="cmp-list cmp-product-grid-2" style="flex: 1;">
+                    <div class="cmp-empty" style="grid-column: span 2;">Scanning launches…</div>
                 </div>
                 <button class="cmp-view-all-btn" onclick="openCmpModal('launches')">Show All Launches ↓</button>
             </div>
         </div>
 
         <!-- BEST SELLERS -->
-        <div class="cmp-panel cmp-panel-cyan">
+        <div class="cmp-panel cmp-panel-cyan" style="margin-top: 12px;">
             <div class="cmp-panel-head">
                 <div>
                     <div class="cmp-panel-title">🔥 Competitor Best Sellers</div>
@@ -351,8 +360,8 @@
                 <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
             </div>
 
-            <div id="bestsellers-list" class="cmp-list" style="flex: 1;">
-                <div class="cmp-empty">Scanning best sellers…</div>
+            <div id="bestsellers-list" class="cmp-list cmp-product-grid-4" style="flex: 1;">
+                <div class="cmp-empty" style="grid-column: span 4;">Scanning best sellers…</div>
             </div>
             <button class="cmp-view-all-btn" onclick="openCmpModal('bestsellers')">Show All Best Sellers ↓</button>
         </div>
@@ -377,7 +386,7 @@
                 <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
             </div>
 
-            <div id="gap-list" class="cmp-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1;">
+            <div id="gap-list" class="cmp-list cmp-product-grid-2" style="flex: 1;">
                 <div class="cmp-empty" style="grid-column: span 2;">Scanning catalogs…</div>
             </div>
             <button class="cmp-view-all-btn" onclick="openCmpModal('gaps')">Show All Gaps ↓</button>
@@ -386,7 +395,7 @@
     </div>
 </div>
 
-<!-- COMPETITORS OVERLAY MODAL -->
+<!-- COMPETITORS OVERLAY MODAL (Show All) -->
 <div id="cmp-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px;">
     <div class="cmp-panel" style="width: 100%; max-width: 900px; max-height: 85vh; display: flex; flex-direction: column; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
         <div class="cmp-panel-head" style="margin-bottom: 16px;">
@@ -398,6 +407,22 @@
         </div>
         <div id="cmp-modal-body" class="cmp-list" style="overflow-y: auto; flex: 1; padding-right: 8px;">
             <!-- Content injected here -->
+        </div>
+    </div>
+</div>
+
+<!-- PRODUCT DETAILS MODAL (Deep Dive) -->
+<div id="cmp-product-modal" style="display: none; position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: #FFFFFF; border-radius: 12px; width: 100%; max-width: 500px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); display: flex; flex-direction: column; position: relative;">
+        <button onclick="closeProductModal()" style="position: absolute; top: 16px; right: 16px; background: rgba(0,0,0,0.5); border: none; color: #FFF; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 16px; z-index: 10;">✕</button>
+        <div style="width: 100%; height: 300px; background: #F8FAFC;">
+            <img id="pm-image" src="" style="width: 100%; height: 100%; object-fit: contain; background: #FFFFFF;">
+        </div>
+        <div style="padding: 24px;">
+            <div style="font-size: 11px; font-weight: 800; color: #0284C7; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;" id="pm-store">Store Name</div>
+            <h2 style="font-size: 20px; font-weight: 900; color: #09090B; margin: 0 0 16px 0; line-height: 1.3;" id="pm-title">Product Title</h2>
+            <div style="font-size: 24px; font-weight: 900; color: #059669; margin-bottom: 24px;" id="pm-price">$0.00</div>
+            <a id="pm-link" href="#" target="_blank" style="display: block; text-align: center; background: #09090B; color: #FFF; padding: 14px; border-radius: 8px; font-weight: 800; font-size: 14px; text-decoration: none; transition: 0.2s;" onmouseover="this.style.background='#27272A'" onmouseout="this.style.background='#09090B'">View Original Product ↗</a>
         </div>
     </div>
 </div>
@@ -436,7 +461,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 </script>
-<script src="js/app.js?v=1604"></script>
-<script src="js/competitors.js?v=1604"></script>
+<script src="js/app.js?v=2317"></script>
+<script src="js/competitors.js?v=2317"></script>
 </body>
 </html>
