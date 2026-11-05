@@ -58,8 +58,21 @@
     /* Grids */
     .cmp-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
     
-    /* 3 ITEMS PER ROW (Stock-Outs, Launches, Gaps) */
-    .cmp-product-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    /* 2 ROWS (6 ITEMS) WITH VERTICAL SCROLL */
+    .cmp-product-grid-3 { 
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 16px; 
+        max-height: 840px; /* Shows 2 rows of ~400px cards before scrolling */
+        overflow-y: auto; 
+        padding-right: 8px;
+        scrollbar-width: thin; 
+        scrollbar-color: #E4E4E7 transparent;
+    }
+    .cmp-product-grid-3::-webkit-scrollbar { width: 6px; }
+    .cmp-product-grid-3::-webkit-scrollbar-track { background: transparent; }
+    .cmp-product-grid-3::-webkit-scrollbar-thumb { background: #E4E4E7; border-radius: 4px; }
+    
     @media (max-width: 1100px) { .cmp-product-grid-3 { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 768px) { .cmp-product-grid-3 { grid-template-columns: 1fr; } }
     
@@ -70,7 +83,6 @@
     .cmp-slider::-webkit-scrollbar-thumb { background: #E4E4E7; border-radius: 4px; }
     .cmp-slider::-webkit-scrollbar-thumb:hover { background: #D4D4D8; }
     
-    /* 3 ITEMS PER ROW FOR BEST SELLERS */
     .cmp-slider > div { flex: 0 0 calc(33.333% - 11px); scroll-snap-align: start; display: flex; flex-direction: column; }
     @media (max-width: 1024px) { .cmp-slider > div { flex: 0 0 calc(50% - 8px); } }
     @media (max-width: 768px) { .cmp-slider > div { flex: 0 0 100%; } }
@@ -82,7 +94,6 @@
     .cmp-modal-title { font-size: 18px; font-weight: 900; color: #09090B; }
     .cmp-modal-close { background: none; border: none; font-size: 24px; color: #A1A1AA; cursor: pointer; }
     
-    /* FIXED MODAL GRID */
     .cmp-modal-body { 
         padding: 24px; 
         overflow-y: auto; 
@@ -263,7 +274,6 @@
                     <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
                 </div>
 
-                <!-- Changed to GRID 3 -->
                 <div id="stockout-list" class="cmp-list cmp-product-grid-3">
                     <div class="cmp-empty" style="grid-column: span 3; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning stock…</div>
                 </div>
@@ -287,7 +297,6 @@
                     <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
                 </div>
 
-                <!-- Changed to GRID 3 -->
                 <div id="launch-list" class="cmp-list cmp-product-grid-3">
                     <div class="cmp-empty" style="grid-column: span 3; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning launches…</div>
                 </div>
@@ -312,7 +321,6 @@
                 <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
             </div>
 
-            <!-- SLIDER CLASS APPLIED HERE ONLY -->
             <div id="bestsellers-list" class="cmp-list cmp-slider">
                 <div class="cmp-empty" style="width: 100%; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning best sellers…</div>
             </div>
@@ -336,7 +344,6 @@
                 <a href="membership.html" class="cmp-lock-btn">Upgrade to Pro</a>
             </div>
 
-            <!-- Changed to GRID 3 -->
             <div id="gap-list" class="cmp-list cmp-product-grid-3">
                 <div class="cmp-empty" style="grid-column: span 3; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning catalogs…</div>
             </div>
@@ -356,7 +363,6 @@
             </div>
             <button onclick="closeCmpModal()" class="cmp-modal-close">✕</button>
         </div>
-        <!-- Grid 3 enforced -->
         <div id="cmp-modal-body" class="cmp-modal-body">
             <!-- Content injected here -->
         </div>
@@ -420,7 +426,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 </script>
-<script src="js/app.js?v=0017"></script>
-<script src="js/competitors.js?v=0017"></script>
+<script src="js/app.js?v=0024"></script>
+<script src="js/competitors.js?v=0024"></script>
 </body>
 </html>
