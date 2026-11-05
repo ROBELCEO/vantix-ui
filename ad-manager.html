@@ -1,0 +1,336 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Midra — Ad Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-main: #09090B;
+            --text-muted: #52525B;
+            --border: #E4E4E7;
+            --primary: #09090B;
+            --cyan: #0284C7;
+            --green: #059669;
+            --red: #E11D48;
+            --amber: #D97706;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.5;
+            padding-bottom: 60px;
+        }
+        
+        /* Header */
+        .top-header {
+            background: #FFFFFF;
+            border-bottom: 1px solid var(--border);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-title { font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
+        .header-tabs { display: flex; gap: 8px; }
+        .header-tab {
+            padding: 8px 16px; border-radius: 4px; font-size: 13px; font-weight: 700;
+            text-decoration: none; color: var(--text-muted); border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        .header-tab:hover { background: #F4F4F5; }
+        .header-tab.active { background: #F4F4F5; border-color: var(--border); color: var(--text-main); }
+
+        /* Main Container */
+        .container { max-width: 1400px; margin: 0 auto; padding: 32px 40px; }
+
+        /* Section Titles */
+        .section-header { margin-bottom: 20px; margin-top: 48px; }
+        .section-header:first-child { margin-top: 0; }
+        .section-title { font-size: 18px; font-weight: 900; }
+        .section-sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+        /* KPI Grid */
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .kpi-card {
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 4px;
+            padding: 20px; display: flex; flex-direction: column; gap: 8px;
+        }
+        .kpi-label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .kpi-value { font-size: 28px; font-weight: 900; letter-spacing: -1px; }
+        .kpi-trend { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        .trend-up { color: var(--green); }
+        .trend-down { color: var(--red); }
+
+        /* Panels */
+        .panel {
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 4px;
+            padding: 24px; margin-top: 24px;
+        }
+        .panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .panel-title { font-size: 16px; font-weight: 900; }
+        .panel-sub { font-size: 12px; color: var(--text-muted); }
+
+        /* Table */
+        .data-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .data-table th { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+        .data-table td { font-size: 13px; font-weight: 600; padding: 16px 0; border-bottom: 1px solid #F4F4F5; }
+        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .status-active { background: #D1FAE5; color: var(--green); }
+        .status-paused { background: #FEF3C7; color: var(--amber); }
+        .roas-high { color: var(--green); font-weight: 900; }
+        .roas-low { color: var(--red); font-weight: 900; }
+
+        /* AI Panel */
+        .ai-panel { background: #F0F9FF; border-color: #BAE6FD; }
+        .ai-title { color: var(--cyan); }
+        .ai-list { display: flex; flex-direction: column; gap: 12px; }
+        .ai-item {
+            background: #FFFFFF; border: 1px solid #BAE6FD; padding: 16px; border-radius: 4px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .ai-action-btn {
+            background: var(--cyan); color: #FFF; border: none; padding: 8px 16px;
+            border-radius: 4px; font-weight: 800; font-size: 12px; cursor: pointer;
+        }
+
+        /* Grid for Creatives & Audiences */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        
+        /* Creatives */
+        .creative-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .creative-card { border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+        .creative-img { width: 100%; height: 150px; background: #E4E4E7; object-fit: cover; }
+        .creative-body { padding: 12px; }
+        .creative-title { font-size: 13px; font-weight: 800; }
+        .creative-meta { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+        /* Audiences */
+        .audience-list { display: flex; flex-direction: column; gap: 12px; }
+        .audience-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 4px; }
+        .audience-name { font-size: 14px; font-weight: 800; }
+        .audience-stats { font-size: 12px; color: var(--text-muted); }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Top Nav (Internal Links) -->
+    <div class="top-header">
+        <div class="header-title">Ad Manager</div>
+        <div class="header-tabs">
+            <a href="#dashboard" class="header-tab active">Dashboard</a>
+            <a href="#campaigns" class="header-tab">Campaigns</a>
+            <a href="#ai-optimizer" class="header-tab">AI Optimizer</a>
+            <a href="#creatives" class="header-tab">Creatives</a>
+            <a href="#audiences" class="header-tab">Audiences</a>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- SECTION 1: DASHBOARD -->
+        <div id="dashboard" class="section-header">
+            <div class="section-title">Performance Overview</div>
+            <div class="section-sub">Your ad spend and return on ad spend across all platforms.</div>
+        </div>
+
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Total Ad Spend</div>
+                <div class="kpi-value">$12,450.00</div>
+                <div class="kpi-trend trend-up">↗ 12% vs last month</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Total Revenue</div>
+                <div class="kpi-value">$48,920.00</div>
+                <div class="kpi-trend trend-up">↗ 18% vs last month</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Blended ROAS</div>
+                <div class="kpi-value">3.92x</div>
+                <div class="kpi-trend trend-up">↗ 0.4x vs last month</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Cost Per Acquisition</div>
+                <div class="kpi-value">$24.50</div>
+                <div class="kpi-trend trend-down">↘ $2.10 vs last month</div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: CAMPAIGNS -->
+        <div id="campaigns" class="section-header">
+            <div class="section-title">Active Campaigns</div>
+            <div class="section-sub">Manage your ad sets and monitor real-time performance.</div>
+        </div>
+
+        <div class="panel" style="margin-top: 0;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Campaign Name</th>
+                        <th>Status</th>
+                        <th>Budget</th>
+                        <th>Spend</th>
+                        <th>ROAS</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Retargeting — Abandoned Carts</td>
+                        <td><span class="status-badge status-active">Active</span></td>
+                        <td>$50/day</td>
+                        <td>$1,450.00</td>
+                        <td class="roas-high">6.4x</td>
+                        <td><button style="background:none; border:1px solid #E4E4E7; padding:4px 8px; border-radius:4px; cursor:pointer; font-weight:700; font-size:11px;">Edit</button></td>
+                    </tr>
+                    <tr>
+                        <td>Prospecting — Lookalike 1%</td>
+                        <td><span class="status-badge status-active">Active</span></td>
+                        <td>$150/day</td>
+                        <td>$4,500.00</td>
+                        <td class="roas-high">2.8x</td>
+                        <td><button style="background:none; border:1px solid #E4E4E7; padding:4px 8px; border-radius:4px; cursor:pointer; font-weight:700; font-size:11px;">Edit</button></td>
+                    </tr>
+                    <tr>
+                        <td>Broad — Winter Sale</td>
+                        <td><span class="status-badge status-paused">Paused</span></td>
+                        <td>$100/day</td>
+                        <td>$800.00</td>
+                        <td class="roas-low">0.9x</td>
+                        <td><button style="background:none; border:1px solid #E4E4E7; padding:4px 8px; border-radius:4px; cursor:pointer; font-weight:700; font-size:11px;">Edit</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- SECTION 3: AI OPTIMIZER -->
+        <div id="ai-optimizer" class="section-header">
+            <div class="section-title">AI Optimizer</div>
+            <div class="section-sub">Automated recommendations to improve your ROAS.</div>
+        </div>
+
+        <div class="panel ai-panel" style="margin-top: 0;">
+            <div class="panel-head">
+                <div>
+                    <div class="panel-title ai-title">⚡ Midra AI Suggestions</div>
+                    <div class="panel-sub">Based on the last 7 days of data.</div>
+                </div>
+            </div>
+            <div class="ai-list">
+                <div class="ai-item">
+                    <div>
+                        <div style="font-weight: 800; font-size: 14px; color: #09090B;">Scale "Retargeting — Abandoned Carts"</div>
+                        <div style="font-size: 12px; color: #52525B;">ROAS is 6.4x. Increase budget by 20% to capture more revenue.</div>
+                    </div>
+                    <button class="ai-action-btn">Apply +20%</button>
+                </div>
+                <div class="ai-item">
+                    <div>
+                        <div style="font-weight: 800; font-size: 14px; color: #09090B;">Pause "Broad — Winter Sale"</div>
+                        <div style="font-size: 12px; color: #52525B;">ROAS dropped to 0.9x. You are losing money on this campaign.</div>
+                    </div>
+                    <button class="ai-action-btn" style="background: var(--red);">Pause Ad</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 4 & 5: CREATIVES & AUDIENCES -->
+        <div class="grid-2">
+            
+            <!-- CREATIVES -->
+            <div>
+                <div id="creatives" class="section-header">
+                    <div class="section-title">Ad Creatives</div>
+                    <div class="section-sub">Top performing visuals.</div>
+                </div>
+                <div class="panel" style="margin-top: 0;">
+                    <div class="creative-grid">
+                        <div class="creative-card">
+                            <img src="https://placehold.co/300x200/E4E4E7/09090B?text=Creative+1" class="creative-img">
+                            <div class="creative-body">
+                                <div class="creative-title">Carousel — Best Sellers</div>
+                                <div class="creative-meta">CTR: 3.2% | ROAS: 5.1x</div>
+                            </div>
+                        </div>
+                        <div class="creative-card">
+                            <img src="https://placehold.co/300x200/E4E4E7/09090B?text=Creative+2" class="creative-img">
+                            <div class="creative-body">
+                                <div class="creative-title">Video — Unboxing</div>
+                                <div class="creative-meta">CTR: 2.8% | ROAS: 4.2x</div>
+                            </div>
+                        </div>
+                        <div class="creative-card">
+                            <img src="https://placehold.co/300x200/E4E4E7/09090B?text=Creative+3" class="creative-img">
+                            <div class="creative-body">
+                                <div class="creative-title">Static — 20% Off</div>
+                                <div class="creative-meta">CTR: 1.5% | ROAS: 1.8x</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AUDIENCES -->
+            <div>
+                <div id="audiences" class="section-header">
+                    <div class="section-title">Audience Insights</div>
+                    <div class="section-sub">Who is converting.</div>
+                </div>
+                <div class="panel" style="margin-top: 0;">
+                    <div class="audience-list">
+                        <div class="audience-item">
+                            <div>
+                                <div class="audience-name">Women 25-34</div>
+                                <div class="audience-stats">High LTV | 45% of Revenue</div>
+                            </div>
+                            <div style="color: var(--green); font-weight: 900;">High</div>
+                        </div>
+                        <div class="audience-item">
+                            <div>
+                                <div class="audience-name">Men 18-24</div>
+                                <div class="audience-stats">Low AOV | 12% of Revenue</div>
+                            </div>
+                            <div style="color: var(--amber); font-weight: 900;">Med</div>
+                        </div>
+                        <div class="audience-item">
+                            <div>
+                                <div class="audience-name">Returning Buyers</div>
+                                <div class="audience-stats">ROAS 8.2x | 30% of Revenue</div>
+                            </div>
+                            <div style="color: var(--green); font-weight: 900;">High</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Smooth scrolling for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+                
+                // Update active tab
+                document.querySelectorAll('.header-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

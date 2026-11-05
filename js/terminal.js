@@ -10,7 +10,7 @@ window.getAuthToken = function() {
     }
 };
 
-﻿let chartInstance = null;
+let chartInstance = null;
 let allComparisons = [];
 let activeIndex = 0;
 let watchlistExpanded = false;
@@ -152,15 +152,19 @@ function renderChart(product) {
 
     const ctx = canvas.getContext('2d');
     
+    // 1. Always start with YOUR price (Green)
     let labels = ['Your Price'];
     let data = [product.my_price || 0];
     let backgroundColors = ['#059669']; 
     
     const compColors = ['#E11D48', '#D97706', '#7C3AED', '#0284C7', '#F472B6', '#FBBF24'];
 
+    // 2. Add Competitor prices (Red, Orange, etc.)
     if (product.competitor_matches && product.competitor_matches.length > 0) {
         product.competitor_matches.forEach((match, i) => {
-            labels.push(match.competitor_name);
+            // Use comp_domain (e.g., "Boandtee") for the label, fallback to "Competitor"
+            const label = match.comp_domain ? match.comp_domain : 'Competitor';
+            labels.push(label);
             data.push(match.comp_price !== null ? match.comp_price : 0);
             backgroundColors.push(compColors[i % compColors.length]);
         });
@@ -171,7 +175,7 @@ function renderChart(product) {
     }
 
     const chartWrap = document.querySelector('.trm-chart-wrap');
-    chartWrap.style.height = '320px';
+    if (chartWrap) chartWrap.style.height = '320px';
 
     chartInstance = new Chart(ctx, {
         type: 'bar',
@@ -221,7 +225,6 @@ function renderSafeFloor(product) {
     }
 }
 
-
 function renderSimulator(product) {
     const div = document.getElementById('simulator-content');
     const safeCost = (product.my_cost !== null && product.my_cost !== undefined) ? product.my_cost : 0;
@@ -241,7 +244,6 @@ function renderSimulator(product) {
         </div>
     `;
 
-    // Calculate immediately
     calculateSimulation(safeCost, product.my_price);
 }
 
@@ -334,5 +336,3 @@ async function fetchAIAdvice(productName, myPrice, myCost, compPrice, safeFloor)
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(loadTerminal, 500);
 });
-
-
