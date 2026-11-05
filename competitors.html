@@ -371,22 +371,28 @@
 
 <!-- PRODUCT DETAILS MODAL (Deep Dive) -->
 <div id="cmp-product-modal" class="cmp-modal-overlay">
-    <div class="cmp-modal" style="max-width: 900px; flex-direction: row; overflow: hidden; position: relative;">
+    <div class="cmp-modal" style="max-width: 800px; flex-direction: row; overflow: hidden; position: relative; border-radius: 4px;">
         
-        <button onclick="closeProductModal()" style="position: absolute; top: 16px; right: 16px; background: #F8FAFC; border: 1px solid #E4E4E7; color: #09090B; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; font-size: 16px; z-index: 10; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#E4E4E7'" onmouseout="this.style.background='#F8FAFC'">✕</button>
+        <button onclick="closeProductModal()" style="position: absolute; top: 16px; right: 16px; background: #F8FAFC; border: 1px solid #E4E4E7; color: #09090B; width: 32px; height: 32px; border-radius: 2px; cursor: pointer; font-size: 16px; z-index: 10; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#E4E4E7'" onmouseout="this.style.background='#F8FAFC'">✕</button>
         
-        <div style="width: 50%; background: #F8FAFC; display: flex; align-items: center; justify-content: center; padding: 40px; border-right: 1px solid #E4E4E7; overflow-x: auto;">
-            <img id="pm-image" src="" style="max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+        <div style="width: 50%; background: #F8FAFC; display: flex; align-items: center; justify-content: center; padding: 32px; border-right: 1px solid #E4E4E7; overflow-x: auto;">
+            <img id="pm-image" src="" style="max-width: 100%; max-height: 350px; object-fit: contain; border-radius: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
         </div>
         
-        <div style="width: 50%; padding: 40px; display: flex; flex-direction: column; background: #FFFFFF;">
-            <div style="font-size: 10px; font-weight: 800; color: #0284C7; letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 12px;" id="pm-store">Store Name</div>
-            <h2 style="font-size: 20px; font-weight: 900; color: #09090B; margin: 0 0 24px 0; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;" id="pm-title">Product Title</h2>
+        <div style="width: 50%; padding: 32px; display: flex; flex-direction: column; background: #FFFFFF;">
+            <div style="font-size: 10px; font-weight: 800; color: #0284C7; letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 8px;" id="pm-store">Store Name</div>
             
-            <div style="margin-top: auto; border-top: 1px solid #E4E4E7; padding-top: 24px;">
-                <div style="font-size: 11px; font-weight: 800; color: #52525B; text-transform: uppercase; margin-bottom: 4px;">Competitor Price</div>
-                <div style="font-size: 36px; font-weight: 900; color: #059669; margin-bottom: 32px; letter-spacing: -1px;" id="pm-price">$0.00</div>
-                <a id="pm-link" href="#" target="_blank" class="cmp-btn-primary" style="padding: 16px; font-size: 14px; border-radius: 4px;">
+            <!-- Smaller Title -->
+            <h2 style="font-size: 16px; font-weight: 800; color: #09090B; margin: 0 0 16px 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;" id="pm-title">Product Title</h2>
+            
+            <div style="margin-top: auto; border-top: 1px solid #E4E4E7; padding-top: 20px;">
+                <div style="font-size: 10px; font-weight: 800; color: #52525B; text-transform: uppercase; margin-bottom: 4px;">Competitor Price</div>
+                
+                <!-- Smaller Price -->
+                <div style="font-size: 24px; font-weight: 800; color: #059669; margin-bottom: 24px; letter-spacing: -0.5px;" id="pm-price">$0.00</div>
+                
+                <!-- Sharp, smaller button -->
+                <a id="pm-link" href="#" target="_blank" class="cmp-btn-primary" style="padding: 10px 20px; font-size: 12px; border-radius: 2px; width: fit-content;">
                     View Original Product ↗
                 </a>
             </div>
@@ -426,7 +432,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 </script>
-<script src="js/app.js?v=0024"></script>
-<script src="js/competitors.js?v=0024"></script>
+<script src="js/app.js?v=0032"></script>
+<script src="js/competitors.js?v=0032"></script>
 </body>
 </html>
