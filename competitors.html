@@ -413,17 +413,36 @@
 
 <!-- PRODUCT DETAILS MODAL (Deep Dive) -->
 <div id="cmp-product-modal" style="display: none; position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px;">
-    <div style="background: #FFFFFF; border-radius: 12px; width: 100%; max-width: 500px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); display: flex; flex-direction: column; position: relative;">
-        <button onclick="closeProductModal()" style="position: absolute; top: 16px; right: 16px; background: rgba(0,0,0,0.5); border: none; color: #FFF; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 16px; z-index: 10;">✕</button>
-        <div style="width: 100%; height: 300px; background: #F8FAFC;">
-            <img id="pm-image" src="" style="width: 100%; height: 100%; object-fit: contain; background: #FFFFFF;">
+    <!-- Sharp Edge Modal Container -->
+    <div style="background: #FFFFFF; border-radius: 4px; border: 1px solid #E4E4E7; width: 100%; max-width: 900px; display: flex; flex-direction: row; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); position: relative;">
+        
+        <!-- Close Button -->
+        <button onclick="closeProductModal()" style="position: absolute; top: 16px; right: 16px; background: #F4F4F5; border: 1px solid #E4E4E7; color: #09090B; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; font-size: 16px; z-index: 10; display: flex; align-items: center; justify-content: center; transition: 0.2s;" onmouseover="this.style.background='#E4E4E7'" onmouseout="this.style.background='#F4F4F5'">✕</button>
+        
+        <!-- LEFT SIDE: Large Image Container -->
+        <div style="width: 50%; background: #F8FAFC; display: flex; align-items: center; justify-content: center; padding: 40px; border-right: 1px solid #E4E4E7; overflow-x: auto;">
+            <img id="pm-image" src="" style="max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
         </div>
-        <div style="padding: 24px;">
-            <div style="font-size: 11px; font-weight: 800; color: #0284C7; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;" id="pm-store">Store Name</div>
-            <h2 style="font-size: 20px; font-weight: 900; color: #09090B; margin: 0 0 16px 0; line-height: 1.3;" id="pm-title">Product Title</h2>
-            <div style="font-size: 24px; font-weight: 900; color: #059669; margin-bottom: 24px;" id="pm-price">$0.00</div>
-            <a id="pm-link" href="#" target="_blank" style="display: block; text-align: center; background: #09090B; color: #FFF; padding: 14px; border-radius: 8px; font-weight: 800; font-size: 14px; text-decoration: none; transition: 0.2s;" onmouseover="this.style.background='#27272A'" onmouseout="this.style.background='#09090B'">View Original Product ↗</a>
+        
+        <!-- RIGHT SIDE: Product Details -->
+        <div style="width: 50%; padding: 40px; display: flex; flex-direction: column; background: #FFFFFF;">
+            <!-- Store Name -->
+            <div style="font-size: 11px; font-weight: 800; color: #0284C7; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;" id="pm-store">Store Name</div>
+            
+            <!-- Title -->
+            <h2 style="font-size: 24px; font-weight: 900; color: #09090B; margin: 0 0 24px 0; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;" id="pm-title">Product Title</h2>
+            
+            <!-- Price & Button (Pushed to bottom) -->
+            <div style="margin-top: auto; border-top: 1px solid #F1F5F9; padding-top: 24px;">
+                <div style="font-size: 12px; font-weight: 800; color: #71717A; text-transform: uppercase; margin-bottom: 4px;">Competitor Price</div>
+                <div style="font-size: 36px; font-weight: 900; color: #059669; margin-bottom: 32px; letter-spacing: -1px;" id="pm-price">$0.00</div>
+                
+                <a id="pm-link" href="#" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #09090B; color: #FFF; padding: 16px; border-radius: 4px; font-weight: 800; font-size: 14px; text-decoration: none; transition: 0.2s;" onmouseover="this.style.background='#27272A'" onmouseout="this.style.background='#09090B'">
+                    View Original Product ↗
+                </a>
+            </div>
         </div>
+        
     </div>
 </div>
 
@@ -461,7 +480,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 </script>
-<script src="js/app.js?v=2326"></script>
-<script src="js/competitors.js?v=2326"></script>
+<script src="js/app.js?v=2337"></script>
+<script src="js/competitors.js?v=2337"></script>
 </body>
 </html>
