@@ -161,9 +161,14 @@ function renderChart(product) {
 
     // 2. Add Competitor prices (Red, Orange, etc.)
     if (product.competitor_matches && product.competitor_matches.length > 0) {
-        product.competitor_matches.forEach((match, i) => {
-            // Use comp_domain (e.g., "Boandtee") for the label, fallback to "Competitor"
-            const label = match.comp_domain ? match.comp_domain : 'Competitor';
+        // Limit to top 3 matches so the chart doesn't get too crowded
+        const topMatches = product.competitor_matches.slice(0, 3);
+        topMatches.forEach((match, i) => {
+            // Create a short label like "Boandtee: Mini Shorts"
+            const domain = match.comp_domain ? match.comp_domain : 'Competitor';
+            let shortTitle = match.comp_title ? match.comp_title.substring(0, 15) + '...' : '';
+            const label = shortTitle ? `${domain}: ${shortTitle}` : domain;
+            
             labels.push(label);
             data.push(match.comp_price !== null ? match.comp_price : 0);
             backgroundColors.push(compColors[i % compColors.length]);
