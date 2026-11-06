@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Midra — Competitors</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=005809">
+<link rel="stylesheet" href="css/style.css?v=042335">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -94,15 +94,42 @@
     .cmp-card-price-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; border-top: 1px solid #F1F5F9; padding-top: 12px; }
     .cmp-card-price { font-size: 18px; font-weight: 900; color: #059669; }
 
-    /* Modals */
+    /* ==========================================
+       FIXED MODAL GRID (No empty gaps, centered last row)
+       ========================================== */
     .cmp-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
     .cmp-modal { background: #FFFFFF; border-radius: 8px; width: 100%; max-width: 1200px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.2); overflow: hidden; }
     .cmp-modal-header { padding: 20px 24px; border-bottom: 1px solid #E4E4E7; display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; }
     .cmp-modal-title { font-size: 18px; font-weight: 900; color: #09090B; }
     .cmp-modal-close { background: none; border: none; font-size: 24px; color: #A1A1AA; cursor: pointer; }
-    .cmp-modal-body { padding: 24px; overflow-y: auto; flex: 1; scrollbar-width: thin; scrollbar-color: #E4E4E7 transparent; }
+    
+    .cmp-modal-body { 
+        padding: 24px; 
+        overflow-y: auto; 
+        flex: 1; 
+        display: flex; 
+        flex-wrap: wrap; 
+        gap: 20px; 
+        justify-content: center; /* Centers the last row */
+        align-content: flex-start;
+        scrollbar-width: thin; 
+        scrollbar-color: #E4E4E7 transparent; 
+    }
     .cmp-modal-body::-webkit-scrollbar { width: 6px; }
     .cmp-modal-body::-webkit-scrollbar-thumb { background: #E4E4E7; border-radius: 4px; }
+
+    /* Force modal cards to strictly 3 per row without stretching height */
+    .cmp-modal-body > .cmp-card {
+        width: calc(33.333% - 14px) !important;
+        flex: 0 0 auto !important;
+    }
+
+    @media (max-width: 1024px) {
+        .cmp-modal-body > .cmp-card { width: calc(50% - 10px) !important; }
+    }
+    @media (max-width: 600px) {
+        .cmp-modal-body > .cmp-card { width: 100% !important; }
+    }
 </style>
 
 <!-- GLOBAL LEFT SIDEBAR NAVIGATION -->
@@ -128,7 +155,7 @@
     }
 </style>
 
-<link rel="stylesheet" href="css/masterpiece.css?v=005809">
+<link rel="stylesheet" href="css/masterpiece.css?v=042335">
 <link rel="icon" type="image/png" href="midra-icon.png?v=1">
 <style>
     /* FIX TOP VERTICAL GAP (Universal) */
@@ -369,7 +396,8 @@
             <div class="cmp-modal-title" id="cmp-modal-title">Full List</div>
             <button onclick="closeCmpModal()" class="cmp-modal-close">✕</button>
         </div>
-        <div id="cmp-modal-body" class="cmp-modal-body" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+        <!-- INLINE STYLE REMOVED, REPLACED BY CSS CLASS -->
+        <div id="cmp-modal-body" class="cmp-modal-body">
             <!-- Content injected here -->
         </div>
     </div>
@@ -399,7 +427,7 @@
     </div>
 </div>
 
-<script src="js/app.js?v=005809"></script>
-<script src="js/competitors.js?v=005809"></script>
+<script src="js/app.js?v=042335"></script>
+<script src="js/competitors.js?v=042335"></script>
 </body>
 </html>
