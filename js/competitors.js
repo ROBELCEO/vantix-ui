@@ -7,6 +7,12 @@
     } catch(e) { return null; }
 };
 
+// Global storage for modal data
+window.stockoutsData = [];
+window.launchesData = [];
+window.bestsellersData = [];
+window.gapsData = [];
+
 function showStatus(msg, isError = false) {
     const el = document.getElementById('comp-status');
     if (!el) return;
@@ -137,7 +143,13 @@ async function autoDiscover() {
 }
 
 // 🎨 THE PERFECT DISCOVERY CARD
-function createCard(p, badgeHtml = '') {
+function createCard(p, type) {
+    let badgeHtml = '';
+    if (type === 'stockouts') badgeHtml = '<div style="position: absolute; top: 8px; right: 8px; background: #E11D48; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px; z-index: 10;">OUT OF STOCK</div>';
+    if (type === 'launches') badgeHtml = '<div style="position: absolute; top: 8px; right: 8px; background: #059669; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px; z-index: 10;">NEW LAUNCH</div>';
+    if (type === 'bestsellers') badgeHtml = '<div style="position: absolute; top: 8px; right: 8px; background: #F59E0B; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px; z-index: 10;">TOP SELLER</div>';
+    if (type === 'gaps') badgeHtml = `<div style="position: absolute; top: 8px; right: 8px; background: #7C3AED; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px; z-index: 10;">GAP: ${p.keyword}</div>`;
+
     const price = parseFloat(p.price || 0).toFixed(2);
     const safeTitle = (p.title || '').replace(/'/g, "\\'");
     const safeStore = (p.store || '').replace(/'/g, "\\'");
@@ -170,18 +182,21 @@ async function loadCompetitorIntel() {
         const res = await fetch('https://api.midra.xyz/api/competitors/opportunities', { headers: { 'Authorization': 'Bearer ' + token } });
         const data = await res.json();
         
+        window.stockoutsData = data.stock_outs || [];
+        window.launchesData = data.new_launches || [];
+
         const stockoutList = document.getElementById('stockout-list');
         const launchList = document.getElementById('launch-list');
         
         if (stockoutList) {
-            stockoutList.innerHTML = data.stock_outs?.length > 0 
-                ? data.stock_outs.map(p => createCard(p, '<div style="position: absolute; top: 8px; right: 8px; background: #E11D48; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px;">OUT OF STOCK</div>')).join('')
+            stockoutList.innerHTML = window.stockoutsData.length > 0 
+                ? window.stockoutsData.slice(0, 6).map(p => createCard(p, 'stockouts')).join('')
                 : '<div style="grid-column: span 3; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">No relevant stock-outs found.</div>';
         }
 
         if (launchList) {
-            launchList.innerHTML = data.new_launches?.length > 0
-                ? data.new_launches.map(p => createCard(p, '<div style="position: absolute; top: 8px; right: 8px; background: #059669; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px;">NEW LAUNCH</div>')).join('')
+            launchList.innerHTML = window.launchesData.length > 0
+                ? window.launchesData.slice(0, 6).map(p => createCard(p, 'launches')).join('')
                 : '<div style="grid-column: span 3; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">No new launches found.</div>';
         }
     } catch(e) { console.error("Intel error", e); }
@@ -190,10 +205,12 @@ async function loadCompetitorIntel() {
     try {
         const res = await fetch('https://api.midra.xyz/api/competitors/best-sellers', { headers: { 'Authorization': 'Bearer ' + token } });
         const data = await res.json();
+        window.bestsellersData = data.best_sellers || [];
+        
         const bsList = document.getElementById('bestsellers-list');
         if (bsList) {
-            bsList.innerHTML = data.best_sellers?.length > 0
-                ? data.best_sellers.map(p => createCard(p, '<div style="position: absolute; top: 8px; right: 8px; background: #F59E0B; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px;">TOP SELLER</div>')).join('')
+            bsList.innerHTML = window.bestsellersData.length > 0
+                ? window.bestsellersData.slice(0, 6).map(p => createCard(p, 'bestsellers')).join('')
                 : '<div style="grid-column: span 3; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">No best sellers found.</div>';
         }
     } catch(e) { console.error("BS error", e); }
@@ -202,13 +219,40 @@ async function loadCompetitorIntel() {
     try {
         const res = await fetch('https://api.midra.xyz/api/competitors/gaps', { headers: { 'Authorization': 'Bearer ' + token } });
         const data = await res.json();
+        window.gapsData = data.gaps || [];
+        
         const gapList = document.getElementById('gap-list');
         if (gapList) {
-            gapList.innerHTML = data.gaps?.length > 0
-                ? data.gaps.map(p => createCard(p, `<div style="position: absolute; top: 8px; right: 8px; background: #7C3AED; color: #FFF; font-size: 9px; font-weight: 900; padding: 4px 8px; border-radius: 4px;">GAP: ${p.keyword}</div>`)).join('')
-                : '<div style="grid-column: span 3; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">No gaps found. You are covering all categories.</div>';
+            gapList.innerHTML = window.gapsData.length > 0
+                ? window.gapsData.slice(0, 6).map(p => createCard(p, 'gaps')).join('')
+                : '<div style="grid-column: span 3; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">No gaps found.</div>';
         }
     } catch(e) { console.error("Gap error", e); }
+}
+
+// MODAL LOGIC (View All)
+function openCmpModal(type) {
+    const modal = document.getElementById('cmp-modal');
+    const title = document.getElementById('cmp-modal-title');
+    const body = document.getElementById('cmp-modal-body');
+    
+    let data = [];
+    if (type === 'stockouts') { data = window.stockoutsData; title.innerText = 'All Stock-Outs'; }
+    if (type === 'launches') { data = window.launchesData; title.innerText = 'All New Launches'; }
+    if (type === 'bestsellers') { data = window.bestsellersData; title.innerText = 'All Best Sellers'; }
+    if (type === 'gaps') { data = window.gapsData; title.innerText = 'All Catalog Gaps'; }
+
+    if (data.length === 0) {
+        body.innerHTML = '<div style="grid-column: span 3; padding: 20px; text-align: center; color: #71717A;">No items to show.</div>';
+    } else {
+        body.innerHTML = data.map(p => createCard(p, type)).join('');
+    }
+    
+    modal.style.display = 'flex';
+}
+
+function closeCmpModal() {
+    document.getElementById('cmp-modal').style.display = 'none';
 }
 
 function showProductDetails(title, store, price, image, url) {
