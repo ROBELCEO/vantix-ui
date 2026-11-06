@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Midra — Competitors</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=9999">
+<link rel="stylesheet" href="css/style.css?v=003003">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -115,18 +115,20 @@
     .header .tab.active { background-color: transparent !important; color: #00E5FF !important; font-weight: 800 !important; }
     .header > div:last-child { width: 100% !important; flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; margin-top: auto !important; }
     .header > div:last-child button { width: 100% !important; }
-    .screen { margin-left: 240px !important; width: calc(100% - 240px) !important; padding-top: 24px !important; padding-left: 16px !important; padding-right: 16px !important; }
+    
+    /* TOP PADDING FIX */
+    .screen { margin-left: 240px !important; width: calc(100% - 240px) !important; padding-top: 0px !important; padding-left: 16px !important; padding-right: 16px !important; }
     @media (max-width: 900px) {
         .header { width: 100% !important; height: 56px !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important; padding: 0 16px !important; border-right: none !important; border-bottom: 1px solid #222222 !important; }
         .header .brand { margin-bottom: 0 !important; width: auto !important; }
         .header .tabs { display: none !important; }
         .header > div:last-child { flex-direction: row !important; width: auto !important; margin-top: 0 !important; gap: 12px !important; }
         .header > div:last-child button { width: auto !important; }
-        .screen { margin-left: 0 !important; width: 100% !important; margin-top: 56px !important; height: calc(100vh - 56px) !important; padding-top: 16px !important; padding-left: 12px !important; padding-right: 12px !important; }
+        .screen { margin-left: 0 !important; width: 100% !important; margin-top: 56px !important; height: calc(100vh - 56px) !important; padding-top: 0px !important; padding-left: 12px !important; padding-right: 12px !important; }
     }
 </style>
 
-<link rel="stylesheet" href="css/masterpiece.css?v=9999">
+<link rel="stylesheet" href="css/masterpiece.css?v=003003">
 <link rel="icon" type="image/png" href="midra-icon.png?v=1">
 </head>
 <body>
@@ -384,7 +386,7 @@
     </div>
 </div>
 
-<script src="js/app.js?v=002446"></script>
-<script src="js/competitors.js?v=002446"></script>
+<script src="js/app.js?v=003003"></script>
+<script src="js/competitors.js?v=003003"></script>
 </body>
 </html>
