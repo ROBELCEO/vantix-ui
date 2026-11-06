@@ -142,7 +142,13 @@ function selectProduct(index) {
         compPrice = product.competitor_matches[0].comp_price;
         safeFloor = product.competitor_matches[0].safe_floor;
     }
-    fetchAIAdvice(product.my_product, product.my_price, product.my_cost, compPrice, safeFloor);
+    let compTitle = null;
+    let matchConfidence = null;
+    if (product.competitor_matches && product.competitor_matches.length > 0) {
+        compTitle = product.competitor_matches[0].comp_title;
+        matchConfidence = product.competitor_matches[0].confidence;
+    }
+    fetchAIAdvice(product.my_product, product.my_price, product.my_cost, compPrice, safeFloor, compTitle, matchConfidence);
 }
 
 function renderChart(product) {
