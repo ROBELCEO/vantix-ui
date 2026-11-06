@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Midra — Terminal</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=003003">
+<link rel="stylesheet" href="css/style.css?v=003750">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -81,11 +81,13 @@
             width: 100% !important;
         }
 
-        /* 5. Push the main page content to the right */
+        /* 5. Push the main page content to the right (Reduced Top Padding) */
         .screen {
             margin-left: 240px !important;
             width: calc(100% - 240px) !important;
-            padding-top: 24px !important;
+            padding-top: 8px !important; /* Reduced from 24px to 8px */
+            padding-left: 16px !important;
+            padding-right: 16px !important;
         }
 
         /* 6. Mobile Fix: Revert to top bar on small screens */
@@ -109,11 +111,10 @@
                 width: 100% !important;
                 margin-top: 56px !important; 
                 height: calc(100vh - 56px) !important;
-                padding-top: 16px !important;
+                padding-top: 8px !important;
             }
         }
     </style>
-
 
     <!-- FULL WIDTH CONTENT FIX -->
     <style>
@@ -138,7 +139,7 @@
         }
     </style>
 
-<link rel="stylesheet" href="css/masterpiece.css?v=003003">
+<link rel="stylesheet" href="css/masterpiece.css?v=003750">
 <link rel="icon" type="image/png" href="midra-icon.png?v=1">
 </head>
 <body>
@@ -250,6 +251,40 @@
         .trm-screen .trm-list::-webkit-scrollbar-track { background: transparent !important; }
         .trm-screen .trm-list::-webkit-scrollbar-thumb { background: #E4E4E7 !important; border-radius: 4px !important; }
         .trm-screen .trm-list::-webkit-scrollbar-thumb:hover { background: #D4D4D8 !important; }
+
+        /* 5. RESPONSIVE FIX (Prevents horizontal stretch) */
+        .trm-layout {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: flex-start !important;
+            gap: 20px !important;
+        }
+        .trm-left-col {
+            width: 340px !important;
+            flex-shrink: 0 !important;
+        }
+        .trm-right-col {
+            flex: 1 !important;
+            min-width: 0 !important; /* Crucial for Chart.js to shrink */
+        }
+
+        /* Stack layout on smaller screens/zoom */
+        @media (max-width: 1100px) {
+            .trm-layout {
+                flex-direction: column !important;
+            }
+            .trm-left-col, .trm-right-col {
+                width: 100% !important;
+                flex: none !important;
+            }
+        }
+
+        /* Stack Safe Floor and Simulator on smaller screens */
+        @media (max-width: 768px) {
+            .trm-grid-2 {
+                grid-template-columns: 1fr !important;
+            }
+        }
     </style>
 
     <div class="trm-wrap">
@@ -385,7 +420,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 </script>
-<script src="js/app.js?v=003003"></script>
-<script src="js/terminal.js?v=003003"></script>
+<script src="js/app.js?v=003750"></script>
+<script src="js/terminal.js?v=003750"></script>
 </body>
 </html>
