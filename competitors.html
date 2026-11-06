@@ -15,8 +15,8 @@
     .cmp-screen { padding-top: 4px !important; }
     .cmp-wrap { max-width: 100% !important; margin: 0 !important; padding-left: 0 !important; padding-right: 0 !important; padding-bottom: 64px !important; }
 
-    /* Header */
-    .cmp-header-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+    /* Header (Gap Reduced) */
+    .cmp-header-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
     .cmp-header-left { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
     .cmp-title { font-size: 20px; font-weight: 900; color: #09090B; margin: 0; line-height: 1.2; }
     .cmp-eyebrow { font-size: 10px; font-weight: 800; color: #0284C7; text-transform: uppercase; letter-spacing: 1.4px; margin: 0; }
@@ -33,6 +33,10 @@
     .cmp-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
     .cmp-btn-secondary { background: #FFF; color: #09090B; border: 1px solid #E4E4E7; padding: 10px 16px; font-weight: 800; font-size: 13px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
     .cmp-btn-secondary:hover { background: #F8FAFC; }
+    
+    /* View All Button */
+    .cmp-view-all-btn { width: 100%; margin-top: 16px; padding: 10px; background: #F8FAFC; border: 1px dashed #D1D5DB; color: #0284C7; font-size: 12px; font-weight: 800; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+    .cmp-view-all-btn:hover { background: #F4F4F5; color: #0369A1; }
 
     /* Inputs */
     .cmp-input { width: 100%; background: #FFF; border: 1px solid #E4E4E7; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #09090B; outline: none; }
@@ -57,20 +61,13 @@
        ========================================== */
     .cmp-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
     
+    /* Removed internal scrolling */
     .cmp-list-grid { 
         display: grid; 
         grid-template-columns: repeat(3, 1fr); 
         gap: 20px; 
         align-items: start;
-        max-height: 640px; /* 2 rows visible */
-        overflow-y: auto; 
-        padding-right: 8px;
-        scrollbar-width: thin; 
-        scrollbar-color: #E4E4E7 transparent;
     }
-    .cmp-list-grid::-webkit-scrollbar { width: 6px; }
-    .cmp-list-grid::-webkit-scrollbar-track { background: transparent; }
-    .cmp-list-grid::-webkit-scrollbar-thumb { background: #E4E4E7; border-radius: 4px; }
     
     @media (max-width: 1100px) { .cmp-list-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 768px) { .cmp-list-grid { grid-template-columns: 1fr; } }
@@ -96,9 +93,17 @@
 
     /* Modals */
     .cmp-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
-    .cmp-modal { background: #FFFFFF; border-radius: 8px; width: 100%; max-width: 800px; flex-direction: row; overflow: hidden; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-    .cmp-modal-close { position: absolute; top: 16px; right: 16px; background: #F8FAFC; border: 1px solid #E4E4E7; color: #09090B; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; font-size: 16px; z-index: 10; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-    .cmp-modal-close:hover { background: #E4E4E7; }
+    .cmp-modal { background: #FFFFFF; border-radius: 8px; width: 100%; max-width: 1200px; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.2); overflow: hidden; }
+    .cmp-modal-header { padding: 20px 24px; border-bottom: 1px solid #E4E4E7; display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; }
+    .cmp-modal-title { font-size: 18px; font-weight: 900; color: #09090B; }
+    .cmp-modal-close { background: none; border: none; font-size: 24px; color: #A1A1AA; cursor: pointer; }
+    .cmp-modal-body { padding: 24px; overflow-y: auto; flex: 1; scrollbar-width: thin; scrollbar-color: #E4E4E7 transparent; }
+    .cmp-modal-body::-webkit-scrollbar { width: 6px; }
+    .cmp-modal-body::-webkit-scrollbar-thumb { background: #E4E4E7; border-radius: 4px; }
+
+    .cmp-product-modal { max-width: 800px; flex-direction: row; position: relative; }
+    .cmp-product-close { position: absolute; top: 16px; right: 16px; background: #F8FAFC; border: 1px solid #E4E4E7; color: #09090B; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; font-size: 16px; z-index: 10; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+    .cmp-product-close:hover { background: #E4E4E7; }
 </style>
 
 <!-- GLOBAL LEFT SIDEBAR NAVIGATION -->
@@ -243,8 +248,8 @@
             </div>
         </div>
 
-        <!-- ROW D: SPY NETWORK -->
-        <div class="cmp-eyebrow" style="margin-top: 32px; margin-bottom: 16px;">🕵️ SPY NETWORK</div>
+        <!-- ROW D: SPY NETWORK (Gap Reduced) -->
+        <div class="cmp-eyebrow" style="margin-top: 16px; margin-bottom: 16px;">🕵️ SPY NETWORK</div>
 
         <div class="cmp-grid-2">
             <!-- STOCK OUT RADAR -->
@@ -267,6 +272,7 @@
                 <div id="stockout-list" class="cmp-list cmp-list-grid">
                     <div class="cmp-empty" style="grid-column: span 3; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning stock…</div>
                 </div>
+                <button class="cmp-view-all-btn" onclick="openCmpModal('stockouts')">Show All Stock-Outs ↓</button>
             </div>
 
             <!-- NEW LAUNCH TRACKER -->
@@ -289,6 +295,7 @@
                 <div id="launch-list" class="cmp-list cmp-list-grid">
                     <div class="cmp-empty" style="grid-column: span 3; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning launches…</div>
                 </div>
+                <button class="cmp-view-all-btn" onclick="openCmpModal('launches')">Show All Launches ↓</button>
             </div>
         </div>
 
@@ -312,6 +319,7 @@
             <div id="bestsellers-list" class="cmp-list cmp-list-grid">
                 <div class="cmp-empty" style="grid-column: span 3; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning best sellers…</div>
             </div>
+            <button class="cmp-view-all-btn" onclick="openCmpModal('bestsellers')">Show All Best Sellers ↓</button>
         </div>
 
         <!-- CATALOG GAP ANALYZER -->
@@ -334,15 +342,29 @@
             <div id="gap-list" class="cmp-list cmp-list-grid">
                 <div class="cmp-empty" style="grid-column: span 3; padding: 20px; text-align: center; color: #71717A; font-size: 13px;">Scanning catalogs…</div>
             </div>
+            <button class="cmp-view-all-btn" onclick="openCmpModal('gaps')">Show All Gaps ↓</button>
         </div>
 
     </div>
 </div>
 
+<!-- COMPETITORS OVERLAY MODAL (Show All) -->
+<div id="cmp-modal" class="cmp-modal-overlay">
+    <div class="cmp-modal">
+        <div class="cmp-modal-header">
+            <div class="cmp-modal-title" id="cmp-modal-title">Full List</div>
+            <button onclick="closeCmpModal()" class="cmp-modal-close">✕</button>
+        </div>
+        <div id="cmp-modal-body" class="cmp-modal-body" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+            <!-- Content injected here -->
+        </div>
+    </div>
+</div>
+
 <!-- PRODUCT DETAILS MODAL -->
 <div id="cmp-product-modal" class="cmp-modal-overlay">
-    <div class="cmp-modal">
-        <button onclick="closeProductModal()" class="cmp-modal-close">✕</button>
+    <div class="cmp-modal cmp-product-modal">
+        <button onclick="closeProductModal()" class="cmp-product-close">✕</button>
         
         <div style="width: 50%; background: #F8FAFC; display: flex; align-items: center; justify-content: center; padding: 32px; border-right: 1px solid #E4E4E7;">
             <img id="pm-image" src="" style="max-width: 100%; max-height: 350px; object-fit: contain; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
@@ -363,7 +385,7 @@
     </div>
 </div>
 
-<script src="js/app.js?v=234736"></script>
-<script src="js/competitors.js?v=234736"></script>
+<script src="js/app.js?v=001746"></script>
+<script src="js/competitors.js?v=001746"></script>
 </body>
 </html>
