@@ -137,9 +137,24 @@ function renderDiscoveryCards(trends) {
                     </div>
                 </div>
 
-                <div style="background: #F5F3FF; border-left: 2px solid #8B5CF6; padding: 8px 12px; font-size: 11px; color: #4C1D95; font-weight: 600; line-height: 1.4;">
-                    ⚡ STRONG POTENTIAL. ${item.orders_count || '943'} orders on AliExpress. Margin is solid at ${item.margin_pct || '93.3'}%.
-                </div>
+                ${(() => {
+                    const margin = parseFloat(item.margin_pct) || 0;
+                    const orders = item.orders_count || 0;
+                    
+                    if (margin < 0) {
+                        return `<div style="background: #FEF2F2; border-left: 2px solid #E11D48; padding: 8px 12px; font-size: 11px; color: #991B1B; font-weight: 600; line-height: 1.4;">
+                            🚨 BAD MARGIN (${margin.toFixed(2)}%). You will lose money on this item. Requires manual cost review.
+                        </div>`;
+                    } else if (margin < 25) {
+                        return `<div style="background: #FFFBEB; border-left: 2px solid #D97706; padding: 8px 12px; font-size: 11px; color: #92400E; font-weight: 600; line-height: 1.4;">
+                            ⚠️ LOW MARGIN (${margin.toFixed(2)}%). ${orders} orders on AliExpress. Proceed with caution.
+                        </div>`;
+                    } else {
+                        return `<div style="background: #F5F3FF; border-left: 2px solid #8B5CF6; padding: 8px 12px; font-size: 11px; color: #4C1D95; font-weight: 600; line-height: 1.4;">
+                            ⚡ STRONG POTENTIAL. ${orders} orders on AliExpress. Margin is solid at ${margin.toFixed(2)}%.
+                        </div>`;
+                    }
+                })()}
 
                 <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
                     <!-- SOURCE LINKS -->
