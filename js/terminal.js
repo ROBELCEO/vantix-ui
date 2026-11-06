@@ -290,7 +290,7 @@ function calculateSimulation(cost, originalPrice) {
     `;
 }
 
-async function fetchAIAdvice(productName, myPrice, myCost, compPrice, safeFloor) {
+async function fetchAIAdvice(productName, myPrice, myCost, compPrice, safeFloor, compTitle, matchConfidence) {
     const div = document.getElementById('ai-advisor-content');
     if (!div) return;
 
@@ -316,6 +316,8 @@ async function fetchAIAdvice(productName, myPrice, myCost, compPrice, safeFloor)
         if (myCost !== undefined && myCost !== null) url.searchParams.append('my_cost', myCost);
         if (compPrice !== undefined && compPrice !== null) url.searchParams.append('comp_price', compPrice);
         if (safeFloor !== undefined && safeFloor !== null) url.searchParams.append('safe_floor', safeFloor);
+        if (compTitle !== undefined && compTitle !== null) url.searchParams.append('comp_title', compTitle);
+        if (matchConfidence !== undefined && matchConfidence !== null) url.searchParams.append('match_confidence', matchConfidence);
 
         const res = await fetch(url.toString());
         
