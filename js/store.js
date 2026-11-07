@@ -273,12 +273,15 @@ async function stLoadDeadStock(token) {
         if (d.__status) { list.innerHTML = '<div class="st-empty">Could not load dead stock.</div>'; return; }
         
         const items = d.dead_items || [];
-        if (!items.length) {
+        // Filter out items with 0 cash trapped (e.g. missing COGS)
+        const validItems = items.filter(x => (x.cash_trapped || 0) > 0);
+        
+        if (!validItems.length) {
             list.innerHTML = '<div class="st-empty">✅ No dead stock — inventory moving.</div>';
             return;
         }
         
-        list.innerHTML = items.slice(0, 4).map(x => {
+        list.innerHTML = validItems.slice(0, 4).map(x => {
             const t = x.title || 'Untitled';
             const units = x.stock || 0;
             const cash = x.cash_trapped || 0; // ✅ FIXED HERE
