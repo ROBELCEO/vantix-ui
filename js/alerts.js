@@ -146,6 +146,15 @@ async function loadAlerts() {
 
     try {
         const res = await fetch('https://api.midra.xyz/api/alerts/list');
+        
+        if (res.status === 402) {
+            const lockEl = document.getElementById('alerts-container-lock');
+            if (container) container.style.display = 'none';
+            if (lockEl) lockEl.style.display = 'flex';
+            if (statusEl) statusEl.innerText = "Upgrade Required";
+            return;
+        }
+
         if (!res.ok) {
             container.innerHTML = '<div class="alrt-empty alrt-text-red">Failed to load alerts.</div>';
             if (statusEl) statusEl.innerText = "Error";
