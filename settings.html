@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Midra — Settings</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=011644">
+<link rel="stylesheet" href="css/style.css?v=020125">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- GLOBAL LEFT SIDEBAR NAVIGATION -->
@@ -137,7 +137,7 @@
         }
     </style>
 
-<link rel="stylesheet" href="css/masterpiece.css?v=011644">
+<link rel="stylesheet" href="css/masterpiece.css?v=020125">
 <link rel="icon" type="image/png" href="midra-icon.png?v=1">
 <style>
     /* FIX TOP VERTICAL GAP (Universal) */
@@ -291,7 +291,35 @@
                     </div>
                     <div class="set-row">
                         <div>
-                            <div class="set-label">Telegram Bot</div>
+                            
+            <!-- STORE OPERATIONS -->
+            <div style="grid-column: 1 / -1; margin-top: 16px; margin-bottom: 8px;">
+                <h3 style="font-size: 14px; font-weight: 800; color: #09090B; text-transform: uppercase; letter-spacing: 1px;">Store Financials</h3>
+            </div>
+
+            <div class="set-row">
+                <div>
+                    <div class="set-label">Avg Shipping Cost ($)</div>
+                    <div class="set-value" style="font-size:12px; color:#71717A;">Cost per order to ship</div>
+                </div>
+                <input type="number" id="setting-shipping" class="set-input" placeholder="0.00" step="0.01" style="width: 100px; padding: 8px; border: 1px solid #E4E4E7; border-radius: 4px;">
+            </div>
+
+            <div class="set-row">
+                <div>
+                    <div class="set-label">Gateway Fee (%)</div>
+                    <div class="set-value" style="font-size:12px; color:#71717A;">e.g. Shopify/Stripe percentage</div>
+                </div>
+                <input type="number" id="setting-gateway" class="set-input" placeholder="0.00" step="0.1" style="width: 100px; padding: 8px; border: 1px solid #E4E4E7; border-radius: 4px;">
+            </div>
+
+            <div class="set-row" style="border-bottom: none;">
+                <div></div>
+                <button id="save-store-settings" class="set-btn-secondary" style="background: #09090B; color: #FFF;">Save Financials</button>
+            </div>
+
+            <div class="set-row">
+                <div class="set-label">Telegram Bot</div>
                             <div class="set-value" id="settings-telegram">Checking…</div>
                         </div>
                         <a href="connect.html" class="set-btn-secondary">Manage</a>
@@ -332,8 +360,8 @@
     </div>
 </div>
 
-<script src="js/app.js?v=011644"></script>
-<script src="js/settings.js?v=011644"></script>
+<script src="js/app.js?v=020125"></script>
+<script src="js/settings.js?v=020125"></script>
 </body>
 </html>
 
