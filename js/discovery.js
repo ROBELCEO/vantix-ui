@@ -71,6 +71,19 @@ async function loadDiscovery() {
         const res = await fetch('https://api.midra.xyz/api/discovery/trends', {
             headers: { 'Authorization': 'Bearer ' + token }
         });
+
+        if (res.status === 402) {
+            const lockEl = document.getElementById('discovery-results-lock');
+            const feedEl = document.getElementById('discovery-results');
+            if (feedEl) feedEl.style.display = 'none';
+            if (lockEl) lockEl.style.display = 'flex';
+            if (countEl) countEl.innerText = "0 Goldmines";
+            return;
+        }
+
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+        }
         
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
