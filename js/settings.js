@@ -23,10 +23,24 @@
         }
 
         const teleEl = document.getElementById('settings-telegram');
+        const teleBtn = document.getElementById('telegram-action-btn');
+        
         if (data.telegram_linked) {
             teleEl.innerText = "Connected & Active";
             teleEl.style.color = "#059669";
+            if (teleBtn) {
+                teleBtn.innerText = "Disconnect";
+                teleBtn.href = "#"; // Handle disconnect later if needed
+            }
         } else {
+            // Show the connect link
+            if (teleBtn) {
+                teleBtn.innerText = "Connect Bot";
+                // Replace with the actual user ID from auth data
+                const uid = data.user_id || data.id || "YOUR_USER_ID"; 
+                teleBtn.href = `https://t.me/Vantixshopifyv1Bot?start=${uid}`;
+                teleBtn.target = "_blank";
+            }
             teleEl.innerText = "Not Linked";
             teleEl.style.color = "#E11D48";
         }
