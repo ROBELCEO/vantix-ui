@@ -91,7 +91,20 @@ async function loadOverview() {
             }
         }
 
-        if (summary && Array.isArray(summary.actions) && summary.actions.length) {
+        if (summary && summary.ai_locked) {
+            ovSet("ov-ai-status", "AI: upgrade required");
+            const oppEl = document.getElementById("ov-opportunities");
+            if (oppEl) {
+                oppEl.innerHTML = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; background: #F8FAFC; border: 1px dashed #D1D5DB; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
+                        <div style="font-weight: 900; font-size: 16px; color: #09090B; margin-bottom: 8px;">Pro Feature</div>
+                        <div style="font-size: 13px; color: #52525B; margin-bottom: 20px;">Get AI-powered pricing strategies and margin protection.</div>
+                        <a href="membership.html" style="background: #09090B; color: #FFF; padding: 10px 20px; border-radius: 4px; font-size: 13px; font-weight: 800; text-decoration: none;">Upgrade to Pro</a>
+                    </div>
+                `;
+            }
+        } else if (summary && Array.isArray(summary.actions) && summary.actions.length) {
             ovSet("ov-ai-status", "AI: ready");
             renderOpportunities(summary.actions, "AI recommendation");
         } else {
