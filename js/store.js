@@ -242,8 +242,7 @@ window.closeStoreModal = function() {
 
 
 // ============================================================
-// MY STORE PRO PANELS — Dead Stock / Bundles / VIP LTV
-// Reserves fixed space to prevent any layout jump.
+// MY STORE PRO PANELS — Parallel Fetch, Fixed Mapping
 // ============================================================
 const ST_API = 'https://api.midra.xyz/api';
 
@@ -266,6 +265,7 @@ function stReserve(id, minH) {
     if (el) el.style.minHeight = (minH || 260) + 'px';
 }
 
+// ---- Dead Stock (FIXED MAPPING) ----
 async function stLoadDeadStock(token) {
     const list = document.getElementById('dead-stock-list');
     if (!list) return;
@@ -274,27 +274,32 @@ async function stLoadDeadStock(token) {
         const d = await stProFetch('/store/dead-stock', token);
         if (d.__status === 402) { list.innerHTML = '<div class="st-empty">🔒 Pro feature</div>'; return; }
         if (d.__status) { list.innerHTML = '<div class="st-empty">Could not load dead stock.</div>'; return; }
+        
         const items = d.dead_items || [];
         if (!items.length) {
             list.innerHTML = '<div class="st-empty">✅ No dead stock — inventory moving.</div>';
             return;
         }
+        
         list.innerHTML = items.slice(0, 4).map(x => {
-            const t = x.title || x.product_title || x.variant_title || 'Untitled';
-            const units = x.stock ?? x.quantity ?? 0;
-            const idle = x.days_since_sale ?? x.days_idle;
-            const cash = x.cash_value ?? x.value ?? 0;
+            const t = x.title || 'Untitled';
+            const units = x.stock || 0;
+            const cash = x.cash_trapped || 0; // ✅ FIXED HERE
             return `<div class="st-row">
                 <div class="st-row-body">
                     <div class="st-row-title">${stEsc(t)}</div>
-                    <div class="st-row-meta">${stNum(units)} units${idle ? ' · ' + idle + 'd idle' : ''}</div>
+                    <div class="st-row-meta">${stNum(units)} units slow-moving</div>
                 </div>
                 <div class="st-row-amount st-amber">${stMoney(cash)}</div>
             </div>`;
         }).join('');
-    } catch { list.innerHTML = '<div class="st-empty">Dead stock unavailable.</div>'; }
+    } catch (e) { 
+        console.error("Dead Stock Error:", e);
+        list.innerHTML = '<div class="st-empty">Dead stock unavailable.</div>'; 
+    }
 }
 
+// ---- AOV Bundle ----
 async function stLoadBundles(token) {
     const c = document.getElementById('bundle-container');
     if (!c) return;
@@ -317,30 +322,83 @@ async function stLoadBundles(token) {
                     <div><span style="color:#71717A;">Bundled</span> <b style="color:#059669;">${stMoney(a.suggested_price)}</b></div>
                 </div>
             </div>`;
-    } catch { c.innerHTML = '<div class="st-empty">Bundle suggestion unavailable.</div>'; }
+    } catch (e) { 
+        console.error("Bundle Error:", e);
+        c.innerHTML = '<div class="st-empty">Bundle suggestion unavailable.</div>'; 
+    }
 }
 
+// ---- VIP LTV + Customer Snapshot ----
 async function stLoadCustomers(token) {
     const list = document.getElementById('ltv-list');
+    const snapshot = document.getElementById('customer-snapshot');
     if (!list) return;
     stReserve('ltv-list', 260);
+    stReserve('customer-snapshot', 260);
+    
     try {
         const d = await stProFetch('/store/customers', token);
-        if (d.__status === 402) { list.innerHTML = '<div class="st-empty">🔒 Pro feature</div>'; return; }
-        if (d.__status) { list.innerHTML = '<div class="st-empty">Could not load customers.</div>'; return; }
+        if (d.__status === 402) { 
+            list.innerHTML = '<div class="st-empty">🔒 Pro feature</div>'; 
+            if(snapshot) snapshot.innerHTML = '<div class="st-empty">🔒 Pro feature</div>';
+            return; 
+        }
+        if (d.__status) { 
+            list.innerHTML = '<div class="st-empty">Could not load customers.</div>'; 
+            if(snapshot) snapshot.innerHTML = '<div class="st-empty">Could not load data.</div>';
+            return; 
+        }
+        
         const cs = d.customers || [];
-        if (!cs.length) { list.innerHTML = '<div class="st-empty">No customers yet.</div>'; return; }
-        list.innerHTML = cs.slice(0, 3).map(x => `
-            <div class="st-row">
-                <div class="st-row-body">
-                    <div class="st-row-title">${stEsc(x.displayName || x.email || 'Anonymous')}</div>
-                    <div class="st-row-meta">${stNum(x.numberOfOrders || 0)} orders</div>
-                </div>
-                <div class="st-row-amount st-green">${stMoney(x.amountSpent || 0)}</div>
-            </div>`).join('');
-    } catch { list.innerHTML = '<div class="st-empty">Customer data unavailable.</div>'; }
+        
+        // Render VIP LTV
+        if (!cs.length) { 
+            list.innerHTML = '<div class="st-empty">No customers yet.</div>'; 
+        } else {
+            list.innerHTML = cs.slice(0, 3).map(x => `
+                <div class="st-row">
+                    <div class="st-row-body">
+                        <div class="st-row-title">${stEsc(x.displayName || x.email || 'Anonymous')}</div>
+                        <div class="st-row-meta">${stNum(x.numberOfOrders || 0)} orders</div>
+                    </div>
+                    <div class="st-row-amount st-green">${stMoney(x.amountSpent || 0)}</div>
+                </div>`).join('');
+        }
+
+        // ✅ RENDER CUSTOMER SNAPSHOT (The 5th Panel)
+        if (snapshot) {
+            if (!cs.length) {
+                snapshot.innerHTML = '<div class="st-empty">Not enough customer data yet.</div>';
+            } else {
+                const totalSpent = cs.reduce((sum, x) => sum + (parseFloat(x.amountSpent) || 0), 0);
+                const totalOrders = cs.reduce((sum, x) => sum + (parseInt(x.numberOfOrders) || 0), 0);
+                const aov = totalOrders > 0 ? (totalSpent / totalOrders) : 0;
+                
+                snapshot.innerHTML = `
+                    <div style="display:flex; flex-direction:column; gap:12px; padding: 8px 0;">
+                        <div class="st-row">
+                            <div class="st-row-body"><div class="st-row-title">Total Customer Spend</div></div>
+                            <div class="st-row-amount st-green">${stMoney(totalSpent)}</div>
+                        </div>
+                        <div class="st-row">
+                            <div class="st-row-body"><div class="st-row-title">Average Order Value</div></div>
+                            <div class="st-row-amount">${stMoney(aov)}</div>
+                        </div>
+                        <div class="st-row">
+                            <div class="st-row-body"><div class="st-row-title">Repeat Customers</div></div>
+                            <div class="st-row-amount">${cs.filter(x => x.numberOfOrders > 1).length}</div>
+                        </div>
+                    </div>`;
+            }
+        }
+    } catch (e) { 
+        console.error("Customers Error:", e);
+        list.innerHTML = '<div class="st-empty">Customer data unavailable.</div>'; 
+        if(snapshot) snapshot.innerHTML = '<div class="st-empty">Data unavailable.</div>';
+    }
 }
 
+// Orchestrator — PARALLEL Fetch (No sequential blocking)
 async function stLoadProPanels() {
     const token = stGetToken();
     if (!token) return;
@@ -355,10 +413,15 @@ async function stLoadProPanels() {
     stReserve('dead-stock-list', 260);
     stReserve('bundle-container', 260);
     stReserve('ltv-list', 260);
+    stReserve('customer-snapshot', 260);
 
-    if (!deadVisible) await stLoadDeadStock(token);
-    if (!bundleVisible) await stLoadBundles(token);
-    if (!ltvVisible) await stLoadCustomers(token);
+    // 🚀 RUN IN PARALLEL
+    const promises = [];
+    if (!deadVisible) promises.push(stLoadDeadStock(token));
+    if (!bundleVisible) promises.push(stLoadBundles(token));
+    if (!ltvVisible) promises.push(stLoadCustomers(token));
+    
+    await Promise.all(promises);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
