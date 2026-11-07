@@ -65,18 +65,28 @@ async function loadInventory() {
 
     // 1. Check tier and apply locks IMMEDIATELY
     const tier = await ensureInvTier();
-    if (tier === 'starter') {
+    if (tier !== 'pro' && tier !== 'scale') {
         applyInvStarterLocks();
     }
 
     // 2. Fetch data
     try {
         const res = await fetch('https://api.midra.xyz/api/inventory/analytics');
+        if (res.status === 402) {
+            document.getElementById('inventory-list').innerHTML = `
+                <div style="text-align:center; padding:60px 20px;">
+                    <div style="font-size:36px; margin-bottom:12px;">🔒</div>
+                    <div style="font-weight:900; font-size:18px; color:#09090B; margin-bottom:8px;">Pro Feature</div>
+                    <div style="font-size:14px; color:#52525B; margin-bottom:24px;">Upgrade to Pro to unlock full inventory analytics.</div>
+                    <a href="membership.html" style="background:#0284C7; color:#FFF; padding:10px 20px; border-radius:4px; font-weight:800; text-decoration:none;">Upgrade</a>
+                </div>`;
+            return;
+        }
         if (!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
 
         // Update KPIs only if not locked
-        if (tier !== 'starter') {
+        if (tier === 'pro' || tier === 'scale') {
             const cashEl = document.getElementById('kpi-cash');
             if (cashEl) {
                 if (data.kpis.has_missing_costs) {
