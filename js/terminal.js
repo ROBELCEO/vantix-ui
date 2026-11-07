@@ -302,7 +302,7 @@ async function fetchAIAdvice(productName, myPrice, myCost, compPrice, safeFloor,
 
     div.innerHTML = '<div class="trm-empty">Analyzing strategy…</div>';
 
-    if (window.userTier === 'starter') {
+    if (window.userTier !== 'pro' && window.userTier !== 'scale') {
         div.style.position = 'relative';
         div.innerHTML = `
             <div style="position: absolute; inset: 0; z-index: 10; backdrop-filter: blur(4px); background: rgba(255,255,255,0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 2px;">
@@ -331,7 +331,7 @@ async function fetchAIAdvice(productName, myPrice, myCost, compPrice, safeFloor,
             if (res.status === 400 || res.status === 404) {
                 div.innerHTML = `<div class="trm-text-muted" style="font-size: 13px; line-height: 1.5;">No direct competitor found. Focus on your ad creatives and brand positioning to win this market.</div>`;
             } else {
-                div.innerHTML = `<div class="trm-text-red">Failed to load advice. AI might be busy.</div>`;
+                div.innerHTML = `<div class="trm-text-red">Failed to load advice. Please try again.</div>`;
             }
             return;
         }
