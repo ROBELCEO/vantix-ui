@@ -147,14 +147,11 @@ async function loadStoreData() {
         renderLowStock((data.low_stock || []).slice(0, 3));
 
         // Handle Dead Stock, Bundle, and LTV panels
-        const bundle = document.getElementById('bundle-container');
-        if (bundle) bundle.innerHTML = '<div class="st-empty">Analyzing order history…</div>';
+        // Pro panels are handled by stLoadProPanels() to prevent flicker
         
-        const ltv = document.getElementById('ltv-list');
-        if (ltv) ltv.innerHTML = '<div class="st-empty">Loading VIP customers…</div>';
+        // Pro panels are handled by stLoadProPanels() to prevent flicker
         
-        const deadStock = document.getElementById('dead-stock-list');
-        if (deadStock) deadStock.innerHTML = '<div class="st-empty">Analyzing inventory…</div>';
+        // Pro panels are handled by stLoadProPanels() to prevent flicker
 
     } catch(e) {
         console.error("Failed to load store data", e);
